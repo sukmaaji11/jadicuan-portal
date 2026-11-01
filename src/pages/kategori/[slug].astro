@@ -1,0 +1,45 @@
+---
+import ArticleCard from "../../components/ArticleCard.astro";
+import SiteLayout from "../../components/SiteLayout.astro";
+import { categories } from "../../lib/categories";
+import { getArticlesByCategory } from "../../lib/sanity";
+
+export async function getStaticPaths() {
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+    props: { category },
+  }));
+}
+
+const category = Astro.props.category;
+const articles = await getArticlesByCategory(category.slug);
+---
+
+<SiteLayout
+  title={`${category.title} — JadiCuan`}
+  description={category.description}
+  canonicalPath={`/kategori/${category.slug}`}
+>
+  <section class="page-width">
+    <header class="page-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Ruang {category.title}</span>
+      <h1>{category.title}, untuk langkah berikutnya.</h1>
+      <p>{category.description}</p>
+    </header>
+    <div class="listing-section">
+      {articles.length > 0 ? (
+        <div class="article-grid">
+          {articles.map((article) => <ArticleCard article={article} />)}
+        </div>
+      ) : (
+        <div class="empty-editorial">
+          <span class="empty-icon" aria-hidden="true">{category.icon}</span>
+          <div>
+            <h2>Belum ada artikel di kategori ini.</h2>
+            <p>Konten baru sedang disiapkan. Kembali lagi untuk menemukan cerita terbaru.</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</SiteLayout>

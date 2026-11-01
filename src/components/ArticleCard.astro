@@ -1,0 +1,38 @@
+---
+import type { Article } from "../lib/sanity";
+import { articleImageUrl, formatDate } from "../lib/sanity";
+import { categories } from "../lib/categories";
+
+interface Props {
+  article: Article;
+  featured?: boolean;
+}
+
+const { article, featured = false } = Astro.props;
+const category = categories.find((item) => item.slug === article.category);
+const image = articleImageUrl(article.coverImage, featured ? 1000 : 640);
+---
+
+<article class:list={["article-card", { "article-card-featured": featured }]}>
+  <a class="article-card-link" href={`/artikel/${article.slug}/`}>
+    <div class:list={["article-image", `category-${article.category}`]}>
+      {image ? (
+        <img
+          src={image}
+          alt={article.coverImage?.alt || ""}
+          loading={featured ? "eager" : "lazy"}
+          fetchpriority={featured ? "high" : "auto"}
+        />
+      ) : (
+        <span class="image-mark" aria-hidden="true">{category?.icon ?? "✦"}</span>
+      )}
+      <span class="category-pill">{category?.title ?? "Artikel"}</span>
+    </div>
+    <div class="article-card-copy">
+      <p class="article-meta">{formatDate(article.publishedAt)} <span aria-hidden="true">·</span> {article.author}</p>
+      <h3>{article.title}</h3>
+      <p class="article-excerpt">{article.excerpt}</p>
+      <span class="read-link">Baca cerita <span aria-hidden="true">↗</span></span>
+    </div>
+  </a>
+</article>

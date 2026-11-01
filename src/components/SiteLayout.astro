@@ -1,0 +1,65 @@
+---
+import "../styles/global.css";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+
+type Props = {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalPath?: string;
+  noIndex?: boolean;
+  type?: "website" | "article";
+};
+
+const {
+  title = "JadiCuan — Cerita, Inspirasi, Peluang",
+  description = "Temukan cerita bisnis, inspirasi, wawasan digital, dan peluang untuk melangkah lebih jauh bersama JadiCuan.",
+  image,
+  canonicalPath = Astro.url.pathname,
+  noIndex = false,
+  type = "website",
+} = Astro.props;
+const site = Astro.site ?? new URL("https://jadicuan.co.id");
+const normalizedCanonicalPath =
+  canonicalPath === "/" || canonicalPath.endsWith("/")
+    ? canonicalPath
+    : `${canonicalPath}/`;
+const canonical = new URL(normalizedCanonicalPath, site);
+const socialImage = image ? new URL(image, site).href : undefined;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex,follow" />}
+    <meta name="theme-color" content="#f5f9ff" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" type="application/rss+xml" title="JadiCuan" href="/rss.xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="JadiCuan" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {socialImage && <meta property="og:image" content={socialImage} />}
+    <meta name="twitter:card" content={socialImage ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {socialImage && <meta name="twitter:image" content={socialImage} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="top-accent" aria-hidden="true"></div>
+    <SiteHeader />
+    <main>
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

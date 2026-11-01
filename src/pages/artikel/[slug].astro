@@ -1,0 +1,139 @@
+---
+import { toHTML } from "@portabletext/to-html";
+import ArticleCard from "../../components/ArticleCard.astro";
+import SiteLayout from "../../components/SiteLayout.astro";
+import { categories } from "../../lib/categories";
+import {
+  articleImageUrl,
+  formatDate,
+  getAllArticles,
+  readingTime,
+} from "../../lib/sanity";
+
+export async function getStaticPaths() {
+  const articles = await getAllArticles();
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: {
+      article,
+      related: articles
+        .filter(
+          (item) => item.category === article.category && item._id !== article._id,
+        )
+        .slice(0, 3),
+    },
+  }));
+}
+
+const { article, related } = Astro.props;
+
+if (!article) {
+  return Astro.redirect("/404");
+}
+
+const category = categories.find((item) => item.slug === article.category);
+const cover = articleImageUrl(article.coverImage);
+const title = article.seoTitle || `${article.title} | JadiCuan`;
+const description = article.seoDescription || article.excerpt;
+
+function escapeAttribute(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character] ?? character;
+  });
+}
+
+function safeHref(value: unknown): string {
+  if (typeof value !== "string") return "#";
+  try {
+    const url = new URL(value);
+    return ["https:", "http:", "mailto:"].includes(url.protocol) ? url.href : "#";
+  } catch {
+    return "#";
+  }
+}
+
+const articleBody = toHTML(article.body, {
+  components: {
+    marks: {
+      link: ({ children, value }) =>
+        `<a href="${escapeAttribute(safeHref(value?.href))}" rel="noopener noreferrer">${children}</a>`,
+    },
+    types: {
+      image: ({ value }) => {
+        const source = articleImageUrl(value as typeof article.coverImage);
+        if (!source) return "";
+        const alt =
+          typeof value.alt === "string" ? escapeAttribute(value.alt) : "";
+        return `<figure><img src="${escapeAttribute(source)}" alt="${alt}" loading="lazy" /></figure>`;
+      },
+    },
+  },
+});
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: article.title,
+  description,
+  datePublished: article.publishedAt,
+  dateModified: article._updatedAt,
+  author: { "@type": "Person", name: article.author },
+  publisher: {
+    "@type": "Organization",
+    name: "JadiCuan",
+    url: "https://jadicuan.co.id",
+  },
+  mainEntityOfPage: `https://jadicuan.co.id/artikel/${article.slug}/`,
+  ...(cover ? { image: [cover] } : {}),
+};
+---
+
+<SiteLayout
+  title={title}
+  description={description}
+  image={cover}
+  canonicalPath={`/artikel/${article.slug}`}
+  type="article"
+>
+  <article class="article-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Beranda</a><span aria-hidden="true">/</span>
+      {category && <a       href={`/kategori/${category.slug}/`}>{category.title}</a>}
+      <span aria-hidden="true">/</span><span>{article.title}</span>
+    </nav>
+    <header class="article-header">
+      {category && <span class="eyebrow"><span class="eyebrow-dot"></span>{category.title}</span>}
+      <h1>{article.title}</h1>
+      <p>{article.excerpt}</p>
+      <div class="article-byline">
+        <span>{article.author}</span><span aria-hidden="true">·</span>
+        <time datetime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+        <span aria-hidden="true">·</span><span>{readingTime(article.body)} menit baca</span>
+      </div>
+    </header>
+    {cover && <img class="article-cover" src={cover} alt={article.coverImage?.alt || ""} fetchpriority="high" />}
+    <div class="article-body" set:html={articleBody} />
+    <aside class="article-end">
+      <h2>Cerita baik layak dibagikan.</h2>
+      <p>Temukan lebih banyak cerita, inspirasi, dan peluang bersama JadiCuan.</p>
+    </aside>
+  </article>
+  {related.length > 0 && (
+    <section class="content-section page-width">
+      <div class="section-heading">
+        <div><span class="section-kicker">Lanjutkan membaca</span><h2>Cerita lainnya.</h2></div>
+      </div>
+      <div class="article-grid">
+        {related.map((item) => <ArticleCard article={item} />)}
+      </div>
+    </section>
+  )}
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, "\\u003c")} />
+</SiteLayout>

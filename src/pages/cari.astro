@@ -1,0 +1,106 @@
+---
+import SiteLayout from "../components/SiteLayout.astro";
+---
+
+<SiteLayout title="Cari artikel — JadiCuan" noIndex>
+  <section class="page-width">
+    <header class="page-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Temukan inspirasi</span>
+      <h1>Cari cerita yang kamu butuhkan.</h1>
+      <p>Telusuri artikel JadiCuan seputar bisnis, teknologi, produktivitas, dan peluang.</p>
+      <form class="search-form" id="search-form" action="/cari/" method="get" role="search">
+        <label class="sr-only" for="search-query">Kata kunci artikel</label>
+        <input id="search-query" name="q" type="search" placeholder="Contoh: memulai bisnis" autocomplete="off" />
+        <button class="button button-primary" type="submit">Cari artikel <span aria-hidden="true">⌕</span></button>
+      </form>
+    </header>
+    <section class="listing-section search-results" aria-live="polite">
+      <p class="search-status" id="search-status">Masukkan kata kunci untuk mulai mencari.</p>
+      <div class="search-result-list" id="search-result-list"></div>
+    </section>
+  </section>
+</SiteLayout>
+
+<script>
+  type SearchArticle = {
+    title: string;
+    slug: string;
+    excerpt: string;
+    category: string;
+    publishedAt: string;
+  };
+
+  const form = document.querySelector<HTMLFormElement>("#search-form");
+  const input = document.querySelector<HTMLInputElement>("#search-query");
+  const status = document.querySelector<HTMLParagraphElement>("#search-status");
+  const results = document.querySelector<HTMLDivElement>("#search-result-list");
+
+  const categories: Record<string, string> = {
+    cerita: "Cerita",
+    inspirasi: "Inspirasi",
+    peluang: "Peluang",
+  };
+
+  async function search(query: string) {
+    if (!status || !results) return;
+    results.replaceChildren();
+
+    if (!query.trim()) {
+      status.textContent = "Masukkan kata kunci untuk mulai mencari.";
+      return;
+    }
+
+    status.textContent = "Mencari artikel...";
+    try {
+      const response = await fetch("/search-index.json");
+      if (!response.ok) throw new Error(`Search index request failed: ${response.status}`);
+      const articles = (await response.json()) as SearchArticle[];
+      const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
+      const matches = articles.filter((article) =>
+        `${article.title} ${article.excerpt} ${article.category}`
+          .toLocaleLowerCase("id-ID")
+          .includes(normalizedQuery),
+      );
+
+      status.textContent = matches.length
+        ? `${matches.length} artikel ditemukan.`
+        : "Belum ada artikel yang cocok. Coba kata kunci lain.";
+
+      for (const article of matches) {
+        const link = document.createElement("a");
+        link.className = "search-result";
+        link.href = `/artikel/${encodeURIComponent(article.slug)}/`;
+
+        const category = document.createElement("span");
+        category.className = "section-kicker";
+        category.textContent = categories[article.category] ?? "Artikel";
+
+        const heading = document.createElement("h2");
+        heading.textContent = article.title;
+
+        const excerpt = document.createElement("p");
+        excerpt.textContent = article.excerpt;
+
+        link.append(category, heading, excerpt);
+        results.append(link);
+      }
+    } catch (error) {
+      console.error("Article search failed.", error);
+      status.textContent = "Pencarian belum tersedia. Silakan coba beberapa saat lagi.";
+    }
+  }
+
+  const initialQuery = new URLSearchParams(window.location.search).get("q") ?? "";
+  if (input) input.value = initialQuery;
+  if (initialQuery) void search(initialQuery);
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = input?.value.trim() ?? "";
+    const url = new URL(window.location.href);
+    if (query) url.searchParams.set("q", query);
+    else url.searchParams.delete("q");
+    window.history.replaceState({}, "", url);
+    void search(query);
+  });
+</script>

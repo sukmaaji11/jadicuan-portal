@@ -1,0 +1,5 @@
+/studio
+  X-Robots-Tag: noindex, nofollow
+
+/studio/*
+  X-Robots-Tag: noindex, nofollow

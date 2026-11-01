@@ -1,0 +1,19 @@
+---
+import { categories } from "../lib/categories";
+---
+
+<header class="site-header">
+  <a class="brand" href="/" aria-label="JadiCuan, beranda">
+    <span class="brand-mark" aria-hidden="true"><span></span></span>
+    <span class="brand-copy">
+      <strong>JadiCuan</strong>
+      <small>@jadicuan.pub</small>
+    </span>
+  </a>
+  <nav class="main-nav" aria-label="Navigasi utama">
+    {categories.map((category) => (
+      <a href={`/kategori/${category.slug}/`}>{category.title}</a>
+    ))}
+    <a class="search-link" href="/cari/" aria-label="Cari artikel">Cari <span aria-hidden="true">⌕</span></a>
+  </nav>
+</header>
