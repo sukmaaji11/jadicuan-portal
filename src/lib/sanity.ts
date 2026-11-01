@@ -1,4 +1,4 @@
-import { sanityClient } from "sanity:client";
+import { createClient } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { CategorySlug } from "./categories";
@@ -28,6 +28,13 @@ const isConfigured =
   typeof projectId === "string" &&
   projectId.length > 0 &&
   projectId !== "demo-project";
+
+const sanityClient = createClient({
+  projectId: projectId || "demo-project",
+  dataset,
+  apiVersion: "2026-01-01",
+  useCdn: false,
+});
 
 const imageBuilder = createImageUrlBuilder({
   projectId: projectId || "demo-project",

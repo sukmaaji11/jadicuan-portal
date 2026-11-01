@@ -90,50 +90,12 @@ img {
 }
 
 .brand-mark {
-  position: relative;
-  display: grid;
-  place-items: center;
+  display: block;
+  flex: 0 0 auto;
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: linear-gradient(145deg, #eef7ff, #d9fffa);
-}
-
-.brand-mark::before,
-.brand-mark::after,
-.brand-mark span {
-  position: absolute;
-  display: block;
-  content: "";
-}
-
-.brand-mark::before {
-  width: 25px;
-  height: 8px;
-  top: 9px;
-  left: 9px;
-  border-radius: 7px 7px 2px 7px;
-  background: var(--blue);
-  transform: skew(-25deg);
-}
-
-.brand-mark::after {
-  width: 8px;
-  height: 23px;
-  top: 12px;
-  left: 9px;
-  border-radius: 3px 2px 7px 7px;
-  background: linear-gradient(180deg, var(--blue), var(--teal));
-  transform: skew(-7deg);
-}
-
-.brand-mark span {
-  width: 8px;
-  height: 13px;
-  top: 20px;
-  right: 9px;
-  border-radius: 2px 2px 7px 2px;
-  background: var(--teal);
+  object-fit: cover;
 }
 
 .brand-copy {
@@ -174,8 +136,43 @@ img {
 }
 
 .search-link span {
-  font-size: 18px;
-  vertical-align: -2px;
+  font-size: inherit;
+}
+
+.main-nav .search-link {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 15px;
+  border: 1px solid #dfe8f3;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 3px 12px rgba(27, 68, 122, 0.045);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.main-nav .search-link:hover {
+  border-color: #b7d8f6;
+  background: #f5faff;
+  color: var(--blue);
+  box-shadow: 0 5px 16px rgba(27, 68, 122, 0.09);
+}
+
+.search-link svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .hero {
@@ -327,27 +324,6 @@ img {
   width: 27px;
   height: 27px;
   border-radius: 8px;
-}
-
-.brand-mark-small::before {
-  width: 16px;
-  height: 5px;
-  top: 6px;
-  left: 6px;
-}
-
-.brand-mark-small::after {
-  width: 5px;
-  height: 15px;
-  top: 8px;
-  left: 6px;
-}
-
-.brand-mark-small span {
-  width: 5px;
-  height: 8px;
-  top: 13px;
-  right: 6px;
 }
 
 .editorial-badge {
@@ -900,7 +876,12 @@ img {
 .article-page {
   width: min(850px, calc(100% - 48px));
   margin-inline: auto;
-  padding-block: 46px 100px;
+  margin-block: 36px 64px;
+  padding: 38px clamp(24px, 5vw, 56px) 58px;
+  border: 1px solid #eeece5;
+  border-radius: 24px;
+  background: #fffefa;
+  box-shadow: 0 16px 46px rgba(40, 47, 57, 0.045);
 }
 
 .breadcrumbs {
@@ -949,9 +930,23 @@ img {
 
 .article-body {
   margin-top: 40px;
-  color: #263e61;
+  color: #374151;
   font-size: 17px;
-  line-height: 1.9;
+  line-height: 1.85;
+}
+
+.article-body p {
+  margin: 0 0 1.35em;
+}
+
+.article-body ul,
+.article-body ol {
+  padding-left: 1.4em;
+}
+
+.article-body li {
+  padding-left: 0.25em;
+  margin-bottom: 0.45em;
 }
 
 .article-body h2,
@@ -978,11 +973,14 @@ img {
 
 .article-body blockquote {
   margin: 28px 0;
-  padding: 5px 0 5px 22px;
+  padding: 15px 20px;
   border-left: 3px solid var(--teal);
-  color: #456487;
-  font-size: 20px;
+  border-radius: 0 12px 12px 0;
+  background: #f3f7f5;
+  color: #41515f;
+  font-size: 18px;
   font-weight: 650;
+  line-height: 1.7;
 }
 
 .article-body figure {
@@ -1004,9 +1002,9 @@ img {
 .article-end {
   margin-top: 52px;
   padding: 25px;
-  border: 1px solid var(--line);
+  border: 1px solid #e8ebee;
   border-radius: 17px;
-  background: #fff;
+  background: #f8fafb;
 }
 
 .article-end h2 {
@@ -1098,6 +1096,18 @@ img {
   .brand-mark {
     width: 36px;
     height: 36px;
+    border-radius: 10px;
+  }
+
+  .main-nav .search-link {
+    min-height: 36px;
+    gap: 6px;
+    padding-inline: 11px;
+  }
+
+  .search-link svg {
+    width: 15px;
+    height: 15px;
   }
 
   .brand-copy strong {
@@ -1254,7 +1264,9 @@ img {
 
   .article-page {
     width: min(100% - 34px, 850px);
-    padding-block: 34px 70px;
+    margin-block: 18px 48px;
+    padding: 27px 19px 42px;
+    border-radius: 19px;
   }
 
   .article-header h1 {
