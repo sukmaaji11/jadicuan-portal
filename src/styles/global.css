@@ -1229,7 +1229,7 @@ img {
 
 .hpp-promo {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 210px) auto;
   align-items: center;
   gap: 20px;
   margin-top: 18px;
@@ -1246,6 +1246,18 @@ img {
   margin: 8px 0 0;
 }
 
+.hpp-promo-image-link {
+  display: block;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.hpp-promo-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
 .hpp-promo-actions {
   display: grid;
   min-width: 170px;
@@ -1254,17 +1266,6 @@ img {
 
 .hpp-promo-actions .button {
   width: 100%;
-}
-
-.hpp-waitlist-disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.hpp-promo .hpp-waitlist-note {
-  grid-column: 1 / -1;
-  margin-top: -12px;
-  font-size: 12px;
 }
 
 .hpp-page :focus-visible {
@@ -1476,6 +1477,16 @@ img {
   .hpp-ingredient-row > .hpp-remove {
     justify-self: end;
   }
+
+  .hpp-promo {
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 180px);
+  }
+
+  .hpp-promo-actions {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
 }
 
 @media (max-width: 620px) {
@@ -1619,9 +1630,9 @@ img {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hpp-ingredient-row > .hpp-field:first-child,
-  .hpp-promo .hpp-waitlist-note {
-    grid-column: auto;
+  .hpp-promo-image-link {
+    width: min(100%, 250px);
+    justify-self: center;
   }
 
   .hpp-ingredient-row,
@@ -1637,10 +1648,7 @@ img {
 
   .hpp-promo-actions {
     width: 100%;
-  }
-
-  .hpp-promo .hpp-waitlist-note {
-    margin-top: -13px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .hpp-metrics {

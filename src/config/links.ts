@@ -1,5 +1,4 @@
-export const links: { waitlist: string | null; instagram: string } = {
-  // TODO: Replace with the real Kasir Kaki Lima waitlist URL when available.
-  waitlist: null,
+export const links: { kasirApp: string; instagram: string } = {
+  kasirApp: "https://jadicuan.my.id/",
   instagram: "https://www.instagram.com/jadicuan.pub/",
 };

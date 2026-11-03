@@ -226,19 +226,17 @@ const webApplicationJsonLd = {
 
     <aside class="hpp-promo" id="kasir-promo" aria-labelledby="kasir-promo-heading" hidden>
       <div>
-        <span class="section-kicker">Sedang dikembangkan</span>
+        <span class="section-kicker">Kasir Kaki Lima</span>
         <h2 id="kasir-promo-heading">Kalkulator ini menghitung sekali.</h2>
-        <p>Kasir Kaki Lima sedang dikembangkan untuk membantu mencatat belanja harian, memantau perubahan harga bahan, dan tutup kas. Belum dirilis, jadi belum bisa digunakan.</p>
+        <p>Kasir Kaki Lima membantu mencatat aktivitas usaha harian. Kunjungi situs aplikasinya untuk melihat informasi lebih lanjut.</p>
       </div>
+      <a class="hpp-promo-image-link" href={links.kasirApp} target="_blank" rel="noopener noreferrer" aria-label="Lihat aplikasi Kasir Kaki Lima">
+        <img class="hpp-promo-image" src="/kasir-kaki-lima-promo.png" alt="Tampilan aplikasi Kasir Kaki Lima pada ponsel" width="768" height="768" loading="lazy" />
+      </a>
       <div class="hpp-promo-actions">
-        {links.waitlist ? (
-          <a class="button button-primary" id="waitlist-cta" href={links.waitlist} target="_blank" rel="noreferrer">Daftar tunggu <span aria-hidden="true">↗</span></a>
-        ) : (
-          <span class="button button-primary hpp-waitlist-disabled" aria-disabled="true" title="Tautan daftar tunggu belum tersedia">Daftar tunggu</span>
-        )}
+        <a class="button button-primary" id="kasir-app-cta" href={links.kasirApp} target="_blank" rel="noopener noreferrer">Buka aplikasi <span aria-hidden="true">↗</span></a>
         <a class="button button-secondary" id="instagram-cta" href={links.instagram} target="_blank" rel="noreferrer">Ikuti Instagram <span aria-hidden="true">↗</span></a>
       </div>
-      {links.waitlist ? null : <p class="hpp-waitlist-note">Tautan daftar tunggu akan ditambahkan saat sudah tersedia.</p>}
     </aside>
   </section>
 
@@ -255,7 +253,7 @@ const webApplicationJsonLd = {
     | "calc_start"
     | "calc_complete"
     | "share_click"
-    | "waitlist_click"
+    | "app_click"
     | "instagram_click";
 
   function track(eventName: TrackEvent): void {
@@ -588,8 +586,8 @@ const webApplicationJsonLd = {
 
   shareLink.addEventListener("click", () => track("share_click"));
   document
-    .querySelector<HTMLAnchorElement>("#waitlist-cta")
-    ?.addEventListener("click", () => track("waitlist_click"));
+    .querySelector<HTMLAnchorElement>("#kasir-app-cta")
+    ?.addEventListener("click", () => track("app_click"));
   document
     .querySelector<HTMLAnchorElement>("#instagram-cta")
     ?.addEventListener("click", () => track("instagram_click"));
