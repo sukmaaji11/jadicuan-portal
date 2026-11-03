@@ -1,0 +1,599 @@
+---
+import SiteLayout from "../components/SiteLayout.astro";
+import { links } from "../config/links";
+
+const webApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Kalkulator HPP JadiCuan",
+  url: "https://jadicuan.co.id/kalkulator-hpp/",
+  description:
+    "Hitung biaya produksi dan harga pokok penjualan per porsi untuk menu usaha F&B.",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  inLanguage: "id-ID",
+};
+---
+
+<SiteLayout
+  title="Kalkulator HPP Menu — JadiCuan"
+  description="Hitung biaya bahan, biaya tambahan, dan HPP per porsi menu usaha F&B. Perhitungan berjalan di perangkatmu."
+  canonicalPath="/kalkulator-hpp"
+>
+  <section class="hpp-page">
+    <header class="hpp-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Alat gratis untuk usaha F&amp;B</span>
+      <h1>Kalkulator HPP menu.</h1>
+      <p>Catat bahan dan biaya satu batch, lalu lihat perkiraan biaya untuk setiap porsi. Angka tetap di perangkatmu.</p>
+    </header>
+
+    <form class="hpp-calculator" id="hpp-form" novalidate>
+      <section class="hpp-panel" aria-labelledby="hpp-batch-heading">
+        <div class="hpp-section-heading">
+          <span class="section-kicker">01 · Biaya produksi</span>
+          <h2 id="hpp-batch-heading">Apa yang dibuat?</h2>
+        </div>
+        <div class="hpp-basic-fields">
+          <label class="hpp-field">
+            Nama menu <span class="hpp-optional">(opsional)</span>
+            <input id="menu-name" name="menuName" type="text" maxlength="100" placeholder="Contoh: Nasi ayam" autocomplete="off" />
+          </label>
+          <label class="hpp-field">
+            Porsi per batch <span aria-hidden="true">*</span>
+            <input id="portions" name="portions" type="number" min="1" step="1" inputmode="numeric" placeholder="Contoh: 10" required />
+          </label>
+        </div>
+      </section>
+
+      <section class="hpp-panel" aria-labelledby="hpp-ingredients-heading">
+        <div class="hpp-section-heading">
+          <span class="section-kicker">02 · Bahan</span>
+          <h2 id="hpp-ingredients-heading">Bahan yang dipakai</h2>
+          <p>Isi harga dan jumlah saat dibeli, lalu jumlah yang masuk ke batch ini.</p>
+        </div>
+        <div class="hpp-rows" id="ingredient-rows">
+          <div class="hpp-row hpp-ingredient-row" data-ingredient-row>
+            <label class="hpp-field">
+              Nama bahan
+              <input data-field="name" type="text" maxlength="80" placeholder="Contoh: Ayam" autocomplete="off" />
+            </label>
+            <label class="hpp-field">
+              Harga beli (Rp)
+              <input data-field="purchasePrice" type="number" min="0" step="1" inputmode="numeric" placeholder="29000" />
+            </label>
+            <div class="hpp-measure">
+              <label class="hpp-field">
+                Jumlah dibeli
+                <input data-field="purchaseQuantity" type="number" min="0" step="any" inputmode="decimal" placeholder="1" />
+              </label>
+              <label class="hpp-field">
+                Satuan beli
+                <select data-field="purchaseUnit">
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                  <option value="pcs">pcs</option>
+                </select>
+              </label>
+            </div>
+            <div class="hpp-measure">
+              <label class="hpp-field">
+                Jumlah dipakai
+                <input data-field="usedQuantity" type="number" min="0" step="any" inputmode="decimal" placeholder="500" />
+              </label>
+              <label class="hpp-field">
+                Satuan pakai
+                <select data-field="usedUnit">
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                  <option value="pcs">pcs</option>
+                </select>
+              </label>
+            </div>
+            <button class="hpp-remove" type="button" data-remove-row aria-label="Hapus bahan">Hapus</button>
+          </div>
+        </div>
+        <template id="ingredient-template">
+          <div class="hpp-row hpp-ingredient-row" data-ingredient-row>
+            <label class="hpp-field">
+              Nama bahan
+              <input data-field="name" type="text" maxlength="80" placeholder="Contoh: Ayam" autocomplete="off" />
+            </label>
+            <label class="hpp-field">
+              Harga beli (Rp)
+              <input data-field="purchasePrice" type="number" min="0" step="1" inputmode="numeric" placeholder="29000" />
+            </label>
+            <div class="hpp-measure">
+              <label class="hpp-field">
+                Jumlah dibeli
+                <input data-field="purchaseQuantity" type="number" min="0" step="any" inputmode="decimal" placeholder="1" />
+              </label>
+              <label class="hpp-field">
+                Satuan beli
+                <select data-field="purchaseUnit">
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                  <option value="pcs">pcs</option>
+                </select>
+              </label>
+            </div>
+            <div class="hpp-measure">
+              <label class="hpp-field">
+                Jumlah dipakai
+                <input data-field="usedQuantity" type="number" min="0" step="any" inputmode="decimal" placeholder="500" />
+              </label>
+              <label class="hpp-field">
+                Satuan pakai
+                <select data-field="usedUnit">
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                  <option value="pcs">pcs</option>
+                </select>
+              </label>
+            </div>
+            <button class="hpp-remove" type="button" data-remove-row aria-label="Hapus bahan">Hapus</button>
+          </div>
+        </template>
+        <button class="hpp-add" type="button" data-add="ingredient">+ Tambah bahan</button>
+      </section>
+
+      <section class="hpp-panel" aria-labelledby="hpp-costs-heading">
+        <div class="hpp-section-heading">
+          <span class="section-kicker">03 · Biaya lain</span>
+          <h2 id="hpp-costs-heading">Biaya tambahan per batch</h2>
+          <p>Misalnya gas, listrik, atau kemasan. Bagian ini boleh dikosongkan.</p>
+        </div>
+        <div class="hpp-rows" id="other-cost-rows"></div>
+        <template id="other-cost-template">
+          <div class="hpp-row hpp-other-cost-row" data-other-cost-row>
+            <label class="hpp-field">
+              Nama biaya
+              <input data-field="name" type="text" maxlength="80" placeholder="Contoh: Gas/listrik" autocomplete="off" />
+            </label>
+            <label class="hpp-field">
+              Biaya per batch (Rp)
+              <input data-field="amount" type="number" min="0" step="1" inputmode="numeric" placeholder="6000" />
+            </label>
+            <button class="hpp-remove" type="button" data-remove-row aria-label="Hapus biaya tambahan">Hapus</button>
+          </div>
+        </template>
+        <button class="hpp-add" type="button" data-add="other-cost">+ Tambah biaya</button>
+      </section>
+
+      <section class="hpp-panel" aria-labelledby="hpp-pricing-heading">
+        <div class="hpp-section-heading">
+          <span class="section-kicker">04 · Harga menu</span>
+          <h2 id="hpp-pricing-heading">Mau cek harga jual?</h2>
+          <p>Pilih salah satu, atau lewati bagian ini untuk melihat HPP saja.</p>
+        </div>
+        <fieldset class="hpp-pricing-options">
+          <legend class="sr-only">Pilih cara menghitung harga jual</legend>
+          <label class="hpp-choice">
+            <input type="radio" name="pricing-mode" value="none" checked />
+            <span>Lewati dulu</span>
+          </label>
+          <label class="hpp-choice">
+            <input type="radio" name="pricing-mode" value="price" />
+            <span>Saya punya harga jual</span>
+          </label>
+          <label class="hpp-choice">
+            <input type="radio" name="pricing-mode" value="margin" />
+            <span>Cari harga dari target margin</span>
+          </label>
+        </fieldset>
+        <fieldset class="hpp-pricing-field" id="selling-price-fields" disabled hidden>
+          <legend>Harga jual per porsi</legend>
+          <label class="hpp-field" for="selling-price">
+            Harga jual (Rp)
+            <input id="selling-price" type="number" min="0" step="1" inputmode="numeric" placeholder="8000" />
+          </label>
+        </fieldset>
+        <fieldset class="hpp-pricing-field" id="target-margin-fields" disabled hidden>
+          <legend>Target margin</legend>
+          <label class="hpp-field" for="target-margin">
+            Target margin (%)
+            <input id="target-margin" type="number" min="0" max="99.99" step="any" inputmode="decimal" placeholder="50" />
+          </label>
+          <p>Margin dihitung dari harga jual, bukan dari HPP.</p>
+        </fieldset>
+      </section>
+
+      <section class="hpp-results" aria-labelledby="hpp-results-heading">
+        <div class="hpp-section-heading">
+          <span class="section-kicker">Hasil hitung</span>
+          <h2 id="hpp-results-heading">Ringkasan biayamu</h2>
+        </div>
+        <div class="hpp-result-content" id="hpp-result-content" aria-live="polite" aria-atomic="false">
+          <p class="hpp-hint">Isi jumlah porsi dan minimal satu bahan atau biaya tambahan untuk melihat hasil.</p>
+        </div>
+        <a class="button button-secondary hpp-share" id="hpp-share" href="#" target="_blank" rel="noreferrer" hidden>Bagikan hasil via WhatsApp <span aria-hidden="true">↗</span></a>
+      </section>
+    </form>
+
+    <section class="hpp-explainer" aria-labelledby="hpp-explainer-heading">
+      <span class="section-kicker">Biar lebih kebayang</span>
+      <h2 id="hpp-explainer-heading">Apa itu HPP?</h2>
+      <p>HPP (harga pokok penjualan) di kalkulator ini adalah perkiraan biaya bahan dan biaya tambahan untuk satu porsi. Caranya, total biaya satu batch dibagi jumlah porsi yang dihasilkan.</p>
+      <p>Contoh: total biaya batch Rp30.000 dan hasilnya 10 porsi, jadi HPP-nya Rp3.000 per porsi. Angka ini membantu membaca biaya produksi; hasilnya bergantung pada data yang kamu masukkan dan bukan jaminan keuntungan.</p>
+    </section>
+
+    <aside class="hpp-promo" id="kasir-promo" aria-labelledby="kasir-promo-heading" hidden>
+      <div>
+        <span class="section-kicker">Sedang dikembangkan</span>
+        <h2 id="kasir-promo-heading">Kalkulator ini menghitung sekali.</h2>
+        <p>Kasir Kaki Lima sedang dikembangkan untuk membantu mencatat belanja harian, memantau perubahan harga bahan, dan tutup kas. Belum dirilis, jadi belum bisa digunakan.</p>
+      </div>
+      <div class="hpp-promo-actions">
+        {links.waitlist ? (
+          <a class="button button-primary" id="waitlist-cta" href={links.waitlist} target="_blank" rel="noreferrer">Daftar tunggu <span aria-hidden="true">↗</span></a>
+        ) : (
+          <span class="button button-primary hpp-waitlist-disabled" aria-disabled="true" title="Tautan daftar tunggu belum tersedia">Daftar tunggu</span>
+        )}
+        <a class="button button-secondary" id="instagram-cta" href={links.instagram} target="_blank" rel="noreferrer">Ikuti Instagram <span aria-hidden="true">↗</span></a>
+      </div>
+      {links.waitlist ? null : <p class="hpp-waitlist-note">Tautan daftar tunggu akan ditambahkan saat sudah tersedia.</p>}
+    </aside>
+  </section>
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(webApplicationJsonLd).replace(/</g, "\\u003c")}
+  />
+</SiteLayout>
+
+<script>
+  import { calculateHpp, type HppInput, type HppResult } from "../lib/hpp";
+
+  type TrackEvent =
+    | "calc_start"
+    | "calc_complete"
+    | "share_click"
+    | "waitlist_click"
+    | "instagram_click";
+
+  function track(eventName: TrackEvent): void {
+    void eventName;
+  }
+
+  function getRequiredElement<T extends Element>(selector: string): T {
+    const element = document.querySelector<T>(selector);
+    if (!element) {
+      throw new Error(`Elemen kalkulator HPP "${selector}" tidak ditemukan.`);
+    }
+    return element;
+  }
+
+  const form = getRequiredElement<HTMLFormElement>("#hpp-form");
+  const ingredientRows =
+    getRequiredElement<HTMLDivElement>("#ingredient-rows");
+  const otherCostRows =
+    getRequiredElement<HTMLDivElement>("#other-cost-rows");
+  const resultContent =
+    getRequiredElement<HTMLDivElement>("#hpp-result-content");
+  const promo = getRequiredElement<HTMLElement>("#kasir-promo");
+  const shareLink =
+    getRequiredElement<HTMLAnchorElement>("#hpp-share");
+  const menuNameInput =
+    getRequiredElement<HTMLInputElement>("#menu-name");
+  const priceModeFields =
+    getRequiredElement<HTMLFieldSetElement>("#selling-price-fields");
+  const marginModeFields =
+    getRequiredElement<HTMLFieldSetElement>("#target-margin-fields");
+
+  const currencyFormatter = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  });
+  const percentFormatter = new Intl.NumberFormat("id-ID", {
+    maximumFractionDigits: 1,
+  });
+  let nextRowId = 2;
+  let hasTrackedStart = false;
+  let calcCompleteTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  function parseNumber(input: HTMLInputElement | null): number | null {
+    if (!input || input.value.trim() === "") return null;
+    return input.valueAsNumber;
+  }
+
+  function readField<T extends HTMLInputElement | HTMLSelectElement>(
+    row: HTMLElement,
+    name: string,
+  ): T | null {
+    return row.querySelector<T>(`[data-field="${name}"]`);
+  }
+
+  function collectInput(): HppInput {
+    const ingredientInputs = [...ingredientRows.querySelectorAll<HTMLElement>(
+      "[data-ingredient-row]",
+    )].map((row) => ({
+      name: readField<HTMLInputElement>(row, "name")?.value ?? "",
+      purchasePrice: parseNumber(
+        readField<HTMLInputElement>(row, "purchasePrice"),
+      ),
+      purchaseQuantity: parseNumber(
+        readField<HTMLInputElement>(row, "purchaseQuantity"),
+      ),
+      purchaseUnit:
+        readField<HTMLSelectElement>(row, "purchaseUnit")
+          ?.value as HppInput["ingredients"][number]["purchaseUnit"],
+      usedQuantity: parseNumber(
+        readField<HTMLInputElement>(row, "usedQuantity"),
+      ),
+      usedUnit:
+        readField<HTMLSelectElement>(row, "usedUnit")
+          ?.value as HppInput["ingredients"][number]["usedUnit"],
+    }));
+
+    const otherCosts = [...otherCostRows.querySelectorAll<HTMLElement>(
+      "[data-other-cost-row]",
+    )].map((row) => ({
+      name: readField<HTMLInputElement>(row, "name")?.value ?? "",
+      amount: parseNumber(readField<HTMLInputElement>(row, "amount")),
+    }));
+
+    const mode = form.querySelector<HTMLInputElement>(
+      'input[name="pricing-mode"]:checked',
+    )?.value;
+
+    return {
+      portions: parseNumber(
+        document.querySelector<HTMLInputElement>("#portions"),
+      ),
+      ingredients: ingredientInputs,
+      otherCosts,
+      sellingPrice:
+        mode === "price"
+          ? parseNumber(
+              document.querySelector<HTMLInputElement>("#selling-price"),
+            )
+          : null,
+      targetMarginPercent:
+        mode === "margin"
+          ? parseNumber(
+              document.querySelector<HTMLInputElement>("#target-margin"),
+            )
+          : null,
+    };
+  }
+
+  function addRow(kind: "ingredient" | "other-cost"): void {
+    const template = document.querySelector<HTMLTemplateElement>(
+      kind === "ingredient" ? "#ingredient-template" : "#other-cost-template",
+    );
+    const container = kind === "ingredient" ? ingredientRows : otherCostRows;
+    const row = template?.content.firstElementChild?.cloneNode(true);
+
+    if (!template || !(row instanceof HTMLElement)) {
+      throw new Error(`Template baris ${kind} tidak tersedia.`);
+    }
+
+    row.dataset.rowId = String(nextRowId++);
+    container.append(row);
+    row.querySelector<HTMLInputElement>("input")?.focus();
+    updateResults();
+  }
+
+  function addText(parent: HTMLElement, tagName: string, text: string): HTMLElement {
+    const element = document.createElement(tagName);
+    element.textContent = text;
+    parent.append(element);
+    return element;
+  }
+
+  function renderErrors(errors: string[]): void {
+    const errorBox = document.createElement("div");
+    errorBox.className = "hpp-errors";
+    errorBox.setAttribute("role", "alert");
+    const list = document.createElement("ul");
+    for (const error of errors) addText(list, "li", error);
+    errorBox.append(list);
+    resultContent.replaceChildren(errorBox);
+  }
+
+  function addMetric(parent: HTMLElement, label: string, value: string): void {
+    const metric = document.createElement("div");
+    metric.className = "hpp-metric";
+    addText(metric, "span", label);
+    addText(metric, "strong", value);
+    parent.append(metric);
+  }
+
+  function renderBreakdown(result: HppResult): void {
+    const section = document.createElement("section");
+    section.className = "hpp-breakdown";
+    addText(section, "h3", "Rincian biaya per batch");
+    const list = document.createElement("ul");
+
+    for (const line of [...result.ingredientCosts, ...result.otherCosts]) {
+      const item = document.createElement("li");
+      addText(item, "span", line.name);
+      addText(item, "strong", currencyFormatter.format(line.cost));
+      list.append(item);
+    }
+
+    section.append(list);
+    resultContent.append(section);
+  }
+
+  function updateShareLink(input: HppInput, result: HppResult): void {
+    if (result.costPerPortion === null || result.totalBatchCost === null) {
+      shareLink.hidden = true;
+      shareLink.removeAttribute("href");
+      return;
+    }
+
+    const menuName = input.ingredients.length
+      ? menuNameInput.value.trim()
+      : "";
+    const lines = [
+      `Hasil hitung HPP${menuName ? ` ${menuName}` : ""} di JadiCuan`,
+      `Total biaya batch: ${currencyFormatter.format(result.totalBatchCost)}`,
+      `HPP per porsi: ${currencyFormatter.format(result.costPerPortion)}`,
+    ];
+    if (result.profitPerPortion !== null && result.margin !== null) {
+      lines.push(
+        `Untung per porsi: ${currencyFormatter.format(result.profitPerPortion)}`,
+        `Margin: ${percentFormatter.format(result.margin * 100)}%`,
+      );
+    }
+    if (result.roundedSuggestedSellingPrice !== null) {
+      lines.push(
+        `Harga saran dibulatkan: ${currencyFormatter.format(result.roundedSuggestedSellingPrice)}`,
+      );
+    }
+    lines.push("https://jadicuan.co.id/kalkulator-hpp/");
+    shareLink.href = `https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`;
+    shareLink.hidden = false;
+  }
+
+  function updateResults(): void {
+    if (calcCompleteTimeout !== undefined) {
+      clearTimeout(calcCompleteTimeout);
+      calcCompleteTimeout = undefined;
+    }
+
+    const input = collectInput();
+    const result = calculateHpp(input);
+    promo.hidden = true;
+    shareLink.hidden = true;
+    resultContent.replaceChildren();
+
+    if (result.errors.length > 0) {
+      renderErrors(result.errors);
+      return;
+    }
+
+    if (result.totalBatchCost === null || result.costPerPortion === null) {
+      addText(
+        resultContent,
+        "p",
+        "Isi jumlah porsi dan minimal satu bahan atau biaya tambahan untuk melihat hasil.",
+      ).className = "hpp-hint";
+      return;
+    }
+
+    const metrics = document.createElement("div");
+    metrics.className = "hpp-metrics";
+    addMetric(metrics, "Total biaya batch", currencyFormatter.format(result.totalBatchCost));
+    addMetric(metrics, "HPP per porsi", currencyFormatter.format(result.costPerPortion));
+
+    if (result.profitPerPortion !== null) {
+      addMetric(
+        metrics,
+        "Untung per porsi",
+        currencyFormatter.format(result.profitPerPortion),
+      );
+    }
+    if (result.margin !== null) {
+      addMetric(
+        metrics,
+        "Margin dari harga jual",
+        `${percentFormatter.format(result.margin * 100)}%`,
+      );
+    }
+    if (result.suggestedSellingPrice !== null) {
+      addMetric(
+        metrics,
+        "Harga saran",
+        currencyFormatter.format(result.suggestedSellingPrice),
+      );
+    }
+    if (result.roundedSuggestedSellingPrice !== null) {
+      addMetric(
+        metrics,
+        "Dibulatkan ke atas (kelipatan Rp500)",
+        currencyFormatter.format(result.roundedSuggestedSellingPrice),
+      );
+    }
+
+    resultContent.append(metrics);
+    if (result.pricingError) {
+      addText(resultContent, "p", result.pricingError).className = "hpp-pricing-error";
+    }
+    renderBreakdown(result);
+    updateShareLink(input, result);
+    promo.hidden = false;
+    calcCompleteTimeout = setTimeout(() => {
+      calcCompleteTimeout = undefined;
+      track("calc_complete");
+    }, 500);
+  }
+
+  function updatePricingFields(): void {
+    const mode = form.querySelector<HTMLInputElement>(
+      'input[name="pricing-mode"]:checked',
+    )?.value;
+    priceModeFields.hidden = mode !== "price";
+    priceModeFields.disabled = mode !== "price";
+    marginModeFields.hidden = mode !== "margin";
+    marginModeFields.disabled = mode !== "margin";
+  }
+
+  form.addEventListener("input", () => {
+    if (!hasTrackedStart) {
+      hasTrackedStart = true;
+      track("calc_start");
+    }
+    updateResults();
+  });
+
+  form.addEventListener("change", (event) => {
+    const target = event.target;
+    if (
+      target instanceof HTMLInputElement &&
+      target.name === "pricing-mode"
+    ) {
+      updatePricingFields();
+    }
+    if (!hasTrackedStart) {
+      hasTrackedStart = true;
+      track("calc_start");
+    }
+    updateResults();
+  });
+
+  form.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const addButton = target.closest<HTMLButtonElement>("[data-add]");
+    if (addButton) {
+      addRow(addButton.dataset.add as "ingredient" | "other-cost");
+      if (!hasTrackedStart) {
+        hasTrackedStart = true;
+        track("calc_start");
+      }
+      return;
+    }
+
+    const removeButton = target.closest<HTMLButtonElement>("[data-remove-row]");
+    if (removeButton) {
+      removeButton.closest<HTMLElement>("[data-ingredient-row], [data-other-cost-row]")?.remove();
+      if (!hasTrackedStart) {
+        hasTrackedStart = true;
+        track("calc_start");
+      }
+      updateResults();
+    }
+  });
+
+  shareLink.addEventListener("click", () => track("share_click"));
+  document
+    .querySelector<HTMLAnchorElement>("#waitlist-cta")
+    ?.addEventListener("click", () => track("waitlist_click"));
+  document
+    .querySelector<HTMLAnchorElement>("#instagram-cta")
+    ?.addEventListener("click", () => track("instagram_click"));
+
+  updatePricingFields();
+  updateResults();
+</script>

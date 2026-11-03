@@ -3,6 +3,7 @@ import ArticleCard from "../components/ArticleCard.astro";
 import SiteLayout from "../components/SiteLayout.astro";
 import { categories } from "../lib/categories";
 import { getLatestArticles } from "../lib/sanity";
+import { links } from "../config/links";
 
 const articles = await getLatestArticles(7);
 const featured = articles.find((article) => article.featured) ?? articles[0];
@@ -97,7 +98,7 @@ const latest = articles.filter((article) => article._id !== featured?._id);
           <h3>Ide baik selalu punya cerita lanjutan.</h3>
           <p>Ikuti kabar terbaru JadiCuan dan temukan lebih banyak inspirasi melalui Instagram.</p>
         </div>
-        <a class="button button-primary" href="https://www.instagram.com/jadicuan.pub/" target="_blank" rel="noreferrer">Ikuti JadiCuan <span aria-hidden="true">↗</span></a>
+        <a class="button button-primary" href={links.instagram} target="_blank" rel="noreferrer">Ikuti JadiCuan <span aria-hidden="true">↗</span></a>
       </div>
     </div>
   </section>
@@ -109,7 +110,7 @@ const latest = articles.filter((article) => article._id !== featured?._id);
       name: "JadiCuan",
       url: "https://jadicuan.co.id",
       logo: "https://jadicuan.co.id/jadicuan-logo.png",
-      sameAs: ["https://www.instagram.com/jadicuan.pub/"],
+      sameAs: [links.instagram],
     }).replace(/</g, "\\u003c")}
   />
 </SiteLayout>

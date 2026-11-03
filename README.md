@@ -2,6 +2,8 @@
 
 Portal artikel JadiCuan dibangun dengan Astro, Sanity CMS, dan Cloudflare Pages. Halaman artikel dibuat sebagai HTML statis saat build agar cepat dan mudah diindeks mesin pencari. Dashboard CMS tersedia di `/studio`.
 
+Kalkulator HPP tersedia di `/kalkulator-hpp/`. Semua hitungan dilakukan di browser dan tidak dikirim atau disimpan ke server.
+
 ## Menjalankan secara lokal
 
 Gunakan Node.js 20.19+, 22.13+, atau 23.5+.
@@ -56,5 +58,6 @@ Situs menghasilkan title/description unik, canonical URL, Open Graph/Twitter met
 
 ```sh
 npm run check
+npm run test:hpp
 npm run build
 ```
