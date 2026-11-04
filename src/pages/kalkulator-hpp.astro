@@ -276,6 +276,9 @@ const webApplicationJsonLd = {
       "script",
       "https://connect.facebook.net/en_US/fbevents.js",
     );
+    // Matikan event otomatis Meta (SubscribedButtonClick dan pencocokan
+    // otomatis). Event itu ikut mengirim isian dan hasil kalkulator.
+    fbq("set", "autoConfig", false, metaPixelId);
     fbq("init", metaPixelId);
     fbq("track", "PageView");
   </script>
