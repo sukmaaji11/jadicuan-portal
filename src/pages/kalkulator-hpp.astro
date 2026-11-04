@@ -2,6 +2,10 @@
 import SiteLayout from "../components/SiteLayout.astro";
 import { links } from "../config/links";
 
+// Pixel ID diisi lewat environment variable (Cloudflare Pages / .env),
+// bukan ditulis di repositori. Kalau kosong, Pixel tidak dipasang.
+const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim();
+
 const webApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -249,7 +253,8 @@ const webApplicationJsonLd = {
     Astro berhenti mem-bundle <script> kalkulator di bawah dan mengirim
     TypeScript mentah ke browser, sehingga kalkulator tidak berjalan.
   -->
-  <script is:inline>
+  {metaPixelId && (
+  <script is:inline define:vars={{ metaPixelId }}>
     !(function (f, b, e, v, n, t, s) {
       if (f.fbq) return;
       n = f.fbq = function () {
@@ -271,18 +276,21 @@ const webApplicationJsonLd = {
       "script",
       "https://connect.facebook.net/en_US/fbevents.js",
     );
-    fbq("init", "1114664104611011");
+    fbq("init", metaPixelId);
     fbq("track", "PageView");
   </script>
+  )}
+  {metaPixelId && (
   <noscript>
     <img
       height="1"
       width="1"
       style="display:none"
-      src="https://www.facebook.com/tr?id=1114664104611011&ev=PageView&noscript=1"
+      src={`https://www.facebook.com/tr?id=${encodeURIComponent(metaPixelId)}&ev=PageView&noscript=1`}
       alt=""
     />
   </noscript>
+  )}
 </SiteLayout>
 
 <script>
@@ -627,8 +635,9 @@ const webApplicationJsonLd = {
   });
 
   shareLink.addEventListener("click", () => track("share_click"));
-  // Klik tombol dan gambar Kasir Kaki Lima sengaja belum dilacak dari kode.
-  // Menunggu keputusan Owner soal getApp_click / getAppImage_click.
+  // Klik tombol dan gambar Kasir Kaki Lima (getApp_click, getAppImage_click)
+  // dilacak lewat Penyiapan Peristiwa di Events Manager. Jangan dilacak juga
+  // dari kode, supaya satu klik tidak terhitung dua kali.
 
   updatePricingFields();
   updateResults();

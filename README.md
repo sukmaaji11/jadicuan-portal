@@ -45,6 +45,7 @@ Hubungkan repository ini ke Cloudflare Pages dengan konfigurasi berikut:
 - Environment variable `NODE_VERSION`: `22`
 - Environment variable `PUBLIC_SANITY_PROJECT_ID`: project ID Sanity
 - Environment variable `PUBLIC_SANITY_DATASET`: `production`
+- Environment variable `PUBLIC_META_PIXEL_ID`: ID Meta Pixel untuk Kalkulator HPP. Kalau kosong, Pixel tidak dipasang.
 
 Tambahkan domain `jadicuan.co.id` di pengaturan **Custom domains** Cloudflare Pages. Pastikan DNS domain mengarah ke project Pages sebelum mengganti website yang sedang live.
 
