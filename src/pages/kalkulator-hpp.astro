@@ -296,7 +296,12 @@ const webApplicationJsonLd = {
 <script>
   import { calculateHpp, type HppInput, type HppResult } from "../lib/hpp";
 
-  type TrackEvent = "calc_start" | "calc_complete" | "share_click";
+  type TrackEvent =
+    | "calc_start"
+    | "calc_complete"
+    | "share_click"
+    | "getApp_click"
+    | "getAppImage_click";
 
   // Kirim nama event saja. Jangan pernah menambahkan parameter berisi isian
   // atau hasil kalkulator (nama bahan, harga, biaya, HPP, dan sejenisnya).
@@ -635,9 +640,12 @@ const webApplicationJsonLd = {
   });
 
   shareLink.addEventListener("click", () => track("share_click"));
-  // Klik tombol dan gambar Kasir Kaki Lima (getApp_click, getAppImage_click)
-  // dilacak lewat Penyiapan Peristiwa di Events Manager. Jangan dilacak juga
-  // dari kode, supaya satu klik tidak terhitung dua kali.
+  document
+    .querySelector<HTMLAnchorElement>("#kasir-app-cta")
+    ?.addEventListener("click", () => track("getApp_click"));
+  document
+    .querySelector<HTMLAnchorElement>(".hpp-promo-image-link")
+    ?.addEventListener("click", () => track("getAppImage_click"));
 
   updatePricingFields();
   updateResults();
