@@ -1237,6 +1237,10 @@ img {
   background: linear-gradient(115deg, #f4faff, #f1fbf8);
 }
 
+.hpp-page [hidden] {
+  display: none !important;
+}
+
 .hpp-promo h2 {
   margin-top: 8px;
 }
@@ -1253,9 +1257,10 @@ img {
 }
 
 .hpp-promo-image {
+  display: block;
   width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
 }
 
 .hpp-promo-actions {
