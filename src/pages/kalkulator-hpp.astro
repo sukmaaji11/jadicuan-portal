@@ -224,7 +224,7 @@ const webApplicationJsonLd = {
       <p>Contoh: total biaya batch Rp30.000 dan hasilnya 10 porsi, jadi HPP-nya Rp3.000 per porsi. Angka ini membantu membaca biaya produksi; hasilnya bergantung pada data yang kamu masukkan dan bukan jaminan keuntungan.</p>
     </section>
 
-    <aside class="hpp-promo" id="kasir-promo" aria-labelledby="kasir-promo-heading" hidden>
+    <aside class="hpp-promo" id="kasir-promo" aria-labelledby="kasir-promo-heading">
       <div>
         <span class="section-kicker">Kasir Kaki Lima</span>
         <h2 id="kasir-promo-heading">Kalkulator ini menghitung sekali.</h2>
@@ -234,8 +234,7 @@ const webApplicationJsonLd = {
         <img class="hpp-promo-image" src="/kasir-kaki-lima-promo.png" alt="Tampilan aplikasi Kasir Kaki Lima pada ponsel" width="768" height="768" loading="lazy" />
       </a>
       <div class="hpp-promo-actions">
-        <a class="button button-primary" id="kasir-app-cta" href={links.kasirApp} target="_blank" rel="noopener noreferrer">Buka aplikasi <span aria-hidden="true">↗</span></a>
-        <a class="button button-secondary" id="instagram-cta" href={links.instagram} target="_blank" rel="noreferrer">Ikuti Instagram <span aria-hidden="true">↗</span></a>
+        <a class="button button-primary" id="kasir-app-cta" href={links.kasirApp} target="_blank" rel="noopener noreferrer">Dapatkan Aplikasi <span aria-hidden="true">↗</span></a>
       </div>
     </aside>
   </section>
@@ -253,8 +252,7 @@ const webApplicationJsonLd = {
     | "calc_start"
     | "calc_complete"
     | "share_click"
-    | "app_click"
-    | "instagram_click";
+    | "app_click";
 
   function track(eventName: TrackEvent): void {
     void eventName;
@@ -275,7 +273,6 @@ const webApplicationJsonLd = {
     getRequiredElement<HTMLDivElement>("#other-cost-rows");
   const resultContent =
     getRequiredElement<HTMLDivElement>("#hpp-result-content");
-  const promo = getRequiredElement<HTMLElement>("#kasir-promo");
   const shareLink =
     getRequiredElement<HTMLAnchorElement>("#hpp-share");
   const menuNameInput =
@@ -461,7 +458,6 @@ const webApplicationJsonLd = {
 
     const input = collectInput();
     const result = calculateHpp(input);
-    promo.hidden = true;
     shareLink.hidden = true;
     resultContent.replaceChildren();
 
@@ -519,7 +515,6 @@ const webApplicationJsonLd = {
     }
     renderBreakdown(result);
     updateShareLink(input, result);
-    promo.hidden = false;
     calcCompleteTimeout = setTimeout(() => {
       calcCompleteTimeout = undefined;
       track("calc_complete");
@@ -588,9 +583,6 @@ const webApplicationJsonLd = {
   document
     .querySelector<HTMLAnchorElement>("#kasir-app-cta")
     ?.addEventListener("click", () => track("app_click"));
-  document
-    .querySelector<HTMLAnchorElement>("#instagram-cta")
-    ?.addEventListener("click", () => track("instagram_click"));
 
   updatePricingFields();
   updateResults();
