@@ -288,14 +288,15 @@ const webApplicationJsonLd = {
 <script>
   import { calculateHpp, type HppInput, type HppResult } from "../lib/hpp";
 
-  type TrackEvent =
-    | "calc_start"
-    | "calc_complete"
-    | "share_click"
-    | "app_click";
+  type TrackEvent = "calc_start" | "calc_complete" | "share_click";
 
+  // Kirim nama event saja. Jangan pernah menambahkan parameter berisi isian
+  // atau hasil kalkulator (nama bahan, harga, biaya, HPP, dan sejenisnya).
   function track(eventName: TrackEvent): void {
-    void eventName;
+    (window as Window & { fbq?: (...args: unknown[]) => void }).fbq?.(
+      "trackCustom",
+      eventName,
+    );
   }
 
   function getRequiredElement<T extends Element>(selector: string): T {
@@ -332,6 +333,7 @@ const webApplicationJsonLd = {
   });
   let nextRowId = 2;
   let hasTrackedStart = false;
+  let hasTrackedComplete = false;
   let calcCompleteTimeout: ReturnType<typeof setTimeout> | undefined;
 
   function parseNumber(input: HTMLInputElement | null): number | null {
@@ -555,10 +557,15 @@ const webApplicationJsonLd = {
     }
     renderBreakdown(result);
     updateShareLink(input, result);
-    calcCompleteTimeout = setTimeout(() => {
-      calcCompleteTimeout = undefined;
-      track("calc_complete");
-    }, 500);
+    // Sekali per kunjungan: hanya hasil valid pertama setelah pengunjung mulai
+    // mengisi (bukan isian yang dipulihkan browser saat halaman dimuat).
+    if (hasTrackedStart && !hasTrackedComplete) {
+      calcCompleteTimeout = setTimeout(() => {
+        calcCompleteTimeout = undefined;
+        hasTrackedComplete = true;
+        track("calc_complete");
+      }, 500);
+    }
   }
 
   function updatePricingFields(): void {
@@ -620,9 +627,8 @@ const webApplicationJsonLd = {
   });
 
   shareLink.addEventListener("click", () => track("share_click"));
-  document
-    .querySelector<HTMLAnchorElement>("#kasir-app-cta")
-    ?.addEventListener("click", () => track("app_click"));
+  // Klik tombol dan gambar Kasir Kaki Lima sengaja belum dilacak dari kode.
+  // Menunggu keputusan Owner soal getApp_click / getAppImage_click.
 
   updatePricingFields();
   updateResults();
