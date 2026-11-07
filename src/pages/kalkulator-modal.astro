@@ -159,7 +159,7 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
           <p>Biaya tetap yang keluar walaupun dagangan sepi. Modal bahan tidak perlu diisi di sini.</p>
         </div>
         <div class="modal-grid">
-          <ModalNumberField field="sewaBulanan" label="Sewa tempat per bulan" kind="rupiah" placeholder="isi sendiri" hint="Kosongkan kalau tidak menyewa." />
+          <ModalNumberField field="sewaBulanan" label="Sewa tempat per bulan" kind="rupiah" placeholder="isi sendiri" help="sewa" hint="Kosongkan kalau tidak menyewa." />
           <ModalNumberField field="gajiKaryawan" label="Gaji karyawan" kind="rupiah" placeholder="isi sendiri" />
           <ModalNumberField field="utilitas" label="Listrik, air, internet" kind="rupiah" placeholder="isi sendiri" />
           <ModalNumberField field="marketing" label="Marketing" kind="rupiah" placeholder="isi sendiri" hint="Iklan, brosur, promo." />
@@ -210,6 +210,15 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
       <p class="modal-estimate-label">Estimasi berdasarkan angka yang kamu isi. Bukan jaminan keuntungan.</p>
 
       <div class="modal-hero-card" id="result-hero"></div>
+      <details class="modal-advanced modal-rent-explain" id="rent-explain" hidden>
+        <summary>Kenapa sewa terlihat dihitung dua kali?</summary>
+        <div class="modal-rent-explain-body">
+          <p>Sewa setahun yang kamu bayar di depan masuk ke modal awal. Sewa per bulan tetap dihitung sebagai biaya bulanan, dan ikut dalam cadangan kas, supaya perkiraan tidak terlalu optimis. Alasannya: setelah 12 bulan, sewa harus dibayar lagi.</p>
+          <p>Artinya, balik modal di sini bisa terlihat sekitar 1 sampai 2 bulan lebih lama dari kenyataan di tahun pertama. Itu disengaja agar kamu punya ruang aman.</p>
+          <p>Titik impas per hari adalah angka untuk jangka panjang, termasuk sewa.</p>
+          <p>Kalau mau melihat tahun pertama saja, kosongkan kolom "Sewa tempat per bulan", lalu bandingkan hasilnya.</p>
+        </div>
+      </details>
       <div class="modal-messages" id="result-messages"></div>
 
       <div class="modal-metrics" id="result-metrics"></div>
@@ -306,6 +315,12 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
   } from "../lib/modal";
   import { PRICE_TEST_VARIANTS, SHOW_PRICE_TEST } from "../config/kalkulator-modal";
   import { trackCustomEvent } from "../lib/meta-pixel";
+  import {
+    CATATAN_BEP_SEWA,
+    CATATAN_RINGKASAN_SEWA,
+    adaSewaBulanan,
+    sewaDihitungDuaKali,
+  } from "../lib/modal-sewa";
 
   // ---------- Penyimpanan aman (halaman tetap jalan bila gagal) ----------
   const STORAGE_KEY = "jadicuan:kalkulator-modal:v1";
@@ -564,7 +579,7 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
     const rentHint = document.querySelector<HTMLElement>('[data-hint-for="sewaBulanan"]');
     if (rentHint) {
       rentHint.textContent = autoRent
-        ? `Otomatis dari sewa setahun ÷ 12 (${formatRupiah(autoRent)}). Boleh diubah.`
+        ? "Terisi otomatis dari sewa setahun ÷ 12. Sewa tahun pertama sudah ada di modal awal, tapi biaya ini tetap dihitung agar perkiraan lebih hati-hati, karena tahun depan sewa harus dibayar lagi. Mau mengosongkannya? Boleh, tapi hasilnya hanya cocok untuk tahun pertama."
         : "Kosongkan kalau tidak menyewa.";
     }
     $("#rent-auto").hidden = !(state.sewaBulananManual && autoRent && state.values.sewaBulanan !== autoRent);
@@ -675,6 +690,9 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
     }
     hero.replaceChildren(...heroChildren);
 
+    // Penjelasan sewa (hanya teks, tidak menghitung ulang). Ditutup bawaan.
+    $("#rent-explain").hidden = !sewaDihitungDuaKali(v);
+
     // Penjelasan otomatis
     const messages: Array<{ tone: "danger" | "warn" | "info" | "ok"; text: string }> = [];
     if (!kurangPenjualan && r.dibawahBep) {
@@ -751,6 +769,7 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
         bepValue = "–";
         bepNote = "Isi harga jual dulu.";
     }
+    if (r.bepStatus === "ok" && adaSewaBulanan(v)) bepNote += ` ${CATATAN_BEP_SEWA}`;
     const metrics: Array<[string, string, string, string]> = [
       ["Total modal awal", formatRupiah(r.totalModalAwal), "Termasuk dana tak terduga dan cadangan kas.", ""],
       [
@@ -834,6 +853,7 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
       `Laba bersih per bulan: ${formatRupiah(r.labaBersihBulanan)}`,
       `Perkiraan balik modal: ${balik}`,
       `Titik impas: ${bep}`,
+      ...(sewaDihitungDuaKali(state.values) ? [CATATAN_RINGKASAN_SEWA] : []),
       "",
       "Estimasi, bukan jaminan. Dihitung di jadicuan.co.id",
     ].join("\n");

@@ -1696,6 +1696,25 @@ img {
   padding: 4px 16px 18px;
 }
 
+.modal-results .modal-rent-explain {
+  margin-top: 0;
+}
+
+.modal-rent-explain-body {
+  padding: 0 16px 16px;
+}
+
+.modal-rent-explain-body p {
+  margin: 0;
+  color: #334864;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.modal-rent-explain-body p + p {
+  margin-top: 10px;
+}
+
 .modal-notes {
   padding: 12px 16px;
   border: 1px solid #f3e2c2;

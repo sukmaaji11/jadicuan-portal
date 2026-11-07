@@ -11,7 +11,7 @@
     "build": "astro check && astro build",
     "check": "astro check",
     "test:hpp": "node --test src/lib/hpp.test.mjs",
-    "test:modal": "node --test src/lib/modal.test.mjs",
+    "test:modal": "node --test src/lib/modal.test.mjs src/lib/modal-sewa.test.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
