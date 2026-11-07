@@ -1,10 +1,7 @@
 ---
+import MetaPixel from "../components/MetaPixel.astro";
 import SiteLayout from "../components/SiteLayout.astro";
 import { links } from "../config/links";
-
-// Pixel ID diisi lewat environment variable (Cloudflare Pages / .env),
-// bukan ditulis di repositori. Kalau kosong, Pixel tidak dipasang.
-const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim();
 
 const webApplicationJsonLd = {
   "@context": "https://schema.org",
@@ -254,51 +251,12 @@ const webApplicationJsonLd = {
     Astro berhenti mem-bundle <script> kalkulator di bawah dan mengirim
     TypeScript mentah ke browser, sehingga kalkulator tidak berjalan.
   -->
-  {metaPixelId && (
-  <script is:inline define:vars={{ metaPixelId }}>
-    !(function (f, b, e, v, n, t, s) {
-      if (f.fbq) return;
-      n = f.fbq = function () {
-        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-      };
-      if (!f._fbq) f._fbq = n;
-      n.push = n;
-      n.loaded = true;
-      n.version = "2.0";
-      n.queue = [];
-      t = b.createElement(e);
-      t.async = true;
-      t.src = v;
-      s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s);
-    })(
-      window,
-      document,
-      "script",
-      "https://connect.facebook.net/en_US/fbevents.js",
-    );
-    // Matikan event otomatis Meta (SubscribedButtonClick dan pencocokan
-    // otomatis). Event itu ikut mengirim isian dan hasil kalkulator.
-    fbq("set", "autoConfig", false, metaPixelId);
-    fbq("init", metaPixelId);
-    fbq("track", "PageView");
-  </script>
-  )}
-  {metaPixelId && (
-  <noscript>
-    <img
-      height="1"
-      width="1"
-      style="display:none"
-      src={`https://www.facebook.com/tr?id=${encodeURIComponent(metaPixelId)}&ev=PageView&noscript=1`}
-      alt=""
-    />
-  </noscript>
-  )}
+  <MetaPixel tool="hpp" />
 </SiteLayout>
 
 <script>
   import { calculateHpp, type HppInput, type HppResult } from "../lib/hpp";
+  import { trackCustomEvent } from "../lib/meta-pixel";
 
   type TrackEvent =
     | "calc_start"
@@ -310,10 +268,7 @@ const webApplicationJsonLd = {
   // Kirim nama event saja. Jangan pernah menambahkan parameter berisi isian
   // atau hasil kalkulator (nama bahan, harga, biaya, HPP, dan sejenisnya).
   function track(eventName: TrackEvent): void {
-    (window as Window & { fbq?: (...args: unknown[]) => void }).fbq?.(
-      "trackCustom",
-      eventName,
-    );
+    trackCustomEvent(eventName);
   }
 
   function getRequiredElement<T extends Element>(selector: string): T {

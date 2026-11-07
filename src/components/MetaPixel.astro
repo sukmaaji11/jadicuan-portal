@@ -1,8 +1,16 @@
 ---
-// Meta Pixel dengan autoConfig dimatikan, sama seperti di Kalkulator HPP.
-// Pixel ID dari PUBLIC_META_PIXEL_ID; kalau kosong, tidak ada yang dipasang.
+// Meta Pixel dengan autoConfig dimatikan. Setiap kalkulator punya Pixel sendiri:
+//   hpp   -> PUBLIC_META_PIXEL_ID
+//   modal -> PUBLIC_META_PIXEL_ID_MODAL
+// Kalau variabelnya kosong, Pixel tidak dipasang di halaman itu.
 // Letakkan di dalam <SiteLayout> (lihat catatan di kalkulator-hpp.astro).
-const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim();
+type Props = { tool: "hpp" | "modal" };
+const { tool } = Astro.props;
+const pixelIds = {
+  hpp: import.meta.env.PUBLIC_META_PIXEL_ID,
+  modal: import.meta.env.PUBLIC_META_PIXEL_ID_MODAL,
+};
+const metaPixelId = pixelIds[tool]?.trim();
 ---
 
 {metaPixelId && (

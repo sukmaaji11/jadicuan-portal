@@ -71,7 +71,9 @@ Hubungkan repository ini ke Cloudflare Pages dengan konfigurasi berikut:
 - Environment variable `NODE_VERSION`: `22`
 - Environment variable `PUBLIC_SANITY_PROJECT_ID`: project ID Sanity
 - Environment variable `PUBLIC_SANITY_DATASET`: `production`
-- Environment variable `PUBLIC_META_PIXEL_ID`: ID Meta Pixel untuk Kalkulator HPP dan Kalkulator Modal. Kalau kosong, Pixel tidak dipasang.
+- Environment variable `PUBLIC_META_PIXEL_ID`: ID Meta Pixel untuk Kalkulator HPP.
+- Environment variable `PUBLIC_META_PIXEL_ID_MODAL`: ID Meta Pixel untuk Kalkulator Modal.
+- Kalau salah satu kosong, Pixel tidak dipasang di halaman itu. Kode Pixel ada di `src/components/MetaPixel.astro`.
 
 Tambahkan domain `jadicuan.co.id` di pengaturan **Custom domains** Cloudflare Pages. Pastikan DNS domain mengarah ke project Pages sebelum mengganti website yang sedang live.
 
