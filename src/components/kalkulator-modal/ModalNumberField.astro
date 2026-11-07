@@ -1,0 +1,57 @@
+---
+// Kolom angka untuk Kalkulator Modal. Format ribuan dan pembacaan angka
+// diatur oleh <script> halaman lewat data-field dan data-kind.
+// Tulis {unit} di label/suffix untuk satuan yang mengikuti jenis usaha
+// (porsi, gelas, transaksi).
+import ModalHelp, { type HelpTerm } from "./ModalHelp.astro";
+
+type Props = {
+  field: string;
+  label: string;
+  kind: "rupiah" | "bulat" | "persen";
+  suffix?: string;
+  optional?: boolean;
+  hint?: string;
+  help?: HelpTerm;
+  placeholder?: string;
+};
+
+const { field, label, kind, suffix, optional = false, hint, help, placeholder } = Astro.props;
+const id = `modal-${field}`;
+const hintId = hint ? `${id}-hint` : undefined;
+const [labelBefore, labelAfter] = label.split("{unit}");
+const hasLabelUnit = label.includes("{unit}");
+const [suffixBefore, suffixAfter] = (suffix ?? "").split("{unit}");
+const hasSuffixUnit = suffix?.includes("{unit}") ?? false;
+---
+
+<div class="hpp-field modal-field">
+  <div class="modal-label-row">
+    <label for={id}>
+      {labelBefore}{hasLabelUnit && <span data-unit>porsi</span>}{labelAfter}
+      {optional && <span class="hpp-optional"> (opsional)</span>}
+    </label>
+    {help && <ModalHelp term={help} id={field} />}
+  </div>
+  <div class:list={["modal-input-wrap", { "has-prefix": kind === "rupiah", "has-suffix": !!suffix }]}>
+    {kind === "rupiah" && <span class="modal-affix modal-affix-start" aria-hidden="true">Rp</span>}
+    <input
+      id={id}
+      type="text"
+      inputmode={kind === "persen" ? "decimal" : "numeric"}
+      autocomplete="off"
+      maxlength={kind === "persen" ? 6 : 19}
+      placeholder={placeholder}
+      aria-describedby={hintId}
+      data-field={field}
+      data-kind={kind}
+    />
+    {suffix && (
+      <span class="modal-affix modal-affix-end" aria-hidden="true">
+        {suffixBefore}{hasSuffixUnit && <span data-unit>porsi</span>}{suffixAfter}
+      </span>
+    )}
+  </div>
+  {hint && <p class="modal-hint" id={hintId} data-hint-for={field}>{hint}</p>}
+  <slot />
+</div>

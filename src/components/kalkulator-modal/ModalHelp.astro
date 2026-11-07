@@ -1,0 +1,54 @@
+---
+// Ikon bantuan "?" yang membuka penjelasan singkat sebuah istilah.
+// Perilaku buka/tutup ada di <script> halaman kalkulator-modal.
+const GLOSSARY = {
+  hpp: {
+    title: "HPP",
+    text: "Modal bahan per satu porsi, ditulis dalam persen dari harga jual. Kalau es teh dijual Rp5.000 dan bahannya Rp2.000, HPP-nya 40%.",
+  },
+  bep: {
+    title: "titik impas (BEP)",
+    text: "Jumlah yang perlu terjual per hari supaya penjualan pas menutup semua biaya: tidak untung, tidak rugi. Kalau biaya bulanan Rp2.600.000, buka 26 hari, dan sisa per porsi setelah bahan Rp5.000, titik impasnya 20 porsi per hari.",
+  },
+  "balik-modal": {
+    title: "balik modal",
+    text: "Perkiraan berapa bulan sampai laba bersih menutup modal awal. Modal awal Rp30.000.000 dengan laba bersih Rp5.000.000 per bulan berarti balik modal sekitar 6 bulan.",
+  },
+  "cadangan-kas": {
+    title: "cadangan kas",
+    text: "Uang yang disisihkan untuk membayar biaya bulanan saat penjualan belum stabil. Biaya bulanan Rp3.000.000 dengan cadangan 3 bulan berarti siapkan Rp9.000.000.",
+  },
+  "dana-tak-terduga": {
+    title: "dana tak terduga",
+    text: "Uang jaga-jaga kalau belanja alat atau renovasi meleset. Peralatan dan renovasi Rp10.000.000 dengan 10% berarti siapkan Rp1.000.000.",
+  },
+  platform: {
+    title: "biaya platform",
+    text: "Potongan dari aplikasi pesan-antar, dihitung dari penjualan. Penjualan lewat aplikasi Rp10.000.000 dengan potongan 20% berarti biaya platform Rp2.000.000.",
+  },
+  "laba-bersih": {
+    title: "laba bersih",
+    text: "Penjualan dikurangi modal bahan, biaya platform, dan semua biaya bulanan. Penjualan Rp15.000.000, bahan Rp7.500.000, dan biaya bulanan Rp3.500.000 berarti laba bersih Rp4.000.000.",
+  },
+} as const;
+
+export type HelpTerm = keyof typeof GLOSSARY;
+
+type Props = { term: HelpTerm; id: string };
+const { term, id } = Astro.props;
+const entry = GLOSSARY[term];
+const textId = `help-${id}`;
+---
+
+<button
+  class="modal-help-button"
+  type="button"
+  aria-expanded="false"
+  aria-controls={textId}
+  data-help-toggle
+  data-help-term={term}
+>
+  <span aria-hidden="true">?</span>
+  <span class="sr-only">Apa itu {entry.title}?</span>
+</button>
+<p class="modal-help-text" id={textId} hidden>{entry.text}</p>

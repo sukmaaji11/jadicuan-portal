@@ -2,7 +2,33 @@
 
 Portal artikel JadiCuan dibangun dengan Astro, Sanity CMS, dan Cloudflare Pages. Halaman artikel dibuat sebagai HTML statis saat build agar cepat dan mudah diindeks mesin pencari. Dashboard CMS tersedia di `/studio`.
 
-Kalkulator HPP tersedia di `/kalkulator-hpp/`. Semua hitungan dilakukan di browser dan tidak dikirim atau disimpan ke server.
+Kalkulator HPP tersedia di `/kalkulator-hpp/`, dan Kalkulator Modal & Balik Modal di `/kalkulator-modal/`. Semua hitungan dilakukan di browser dan tidak dikirim atau disimpan ke server. Kalkulator Modal menyimpan isian di `localStorage` perangkat pengunjung saja, dan pengunjung bisa menghapusnya lewat tombol "Hapus data saya".
+
+## Kalkulator Modal & Balik Modal
+
+- Halaman: `src/pages/kalkulator-modal.astro`
+- Rumus (fungsi murni): `src/lib/modal.ts`, diuji di `src/lib/modal.test.mjs`
+- Contoh Cepat (es teh, nasi goreng, sate ayam): `CONTOH_CEPAT` di `src/lib/modal.ts`. Sumber harga bahan ada di komentar kode.
+
+### Event Meta Pixel (nama resmi menunggu konfirmasi Owner, tugas K3)
+
+| Event | Pemicu | Parameter |
+|---|---|---|
+| `modal_start` | Interaksi pertama dengan isian (termasuk "Pakai contoh"), sekali per kunjungan | – |
+| `modal_complete` | Sampai halaman hasil, sekali per muat halaman | – |
+| `modal_share_click` | Klik "Salin ringkasan" | – |
+| `modal_upgrade_click` | Klik "Kabari aku saat tersedia" | `price_variant`: `79000`, `99000`, atau `off` |
+
+Isian dan hasil hitung pengunjung tidak pernah dikirim ke Pixel. Event Kalkulator HPP tidak diubah.
+
+### Uji harga versi lengkap
+
+Versi lengkap belum ada. Kartu terkunci di bawah hasil hanya mengukur minat: tidak ada pembayaran dan tidak ada data pribadi yang dikumpulkan. Pengaturannya ada di `src/config/kalkulator-modal.ts`:
+
+- **Mematikan uji harga:** ubah `SHOW_PRICE_TEST` menjadi `false`. Baris harga hilang, dan klik tetap dicatat dengan `price_variant: "off"`.
+- **Mengganti harga:** ubah `PRICE_TEST_VARIANTS`. `price` adalah angka yang tampil, `id` adalah nilai yang dikirim sebagai `price_variant`. Ganti `id` juga kalau harganya diganti, supaya data lama dan baru tidak tercampur. Pengunjung lama otomatis mendapat varian baru.
+
+Setiap pengunjung mendapat satu varian secara acak, yang disimpan di `localStorage` (`jadicuan:kalkulator-modal:varian-harga`).
 
 ## Menjalankan secara lokal
 
@@ -45,7 +71,7 @@ Hubungkan repository ini ke Cloudflare Pages dengan konfigurasi berikut:
 - Environment variable `NODE_VERSION`: `22`
 - Environment variable `PUBLIC_SANITY_PROJECT_ID`: project ID Sanity
 - Environment variable `PUBLIC_SANITY_DATASET`: `production`
-- Environment variable `PUBLIC_META_PIXEL_ID`: ID Meta Pixel untuk Kalkulator HPP. Kalau kosong, Pixel tidak dipasang.
+- Environment variable `PUBLIC_META_PIXEL_ID`: ID Meta Pixel untuk Kalkulator HPP dan Kalkulator Modal. Kalau kosong, Pixel tidak dipasang.
 
 Tambahkan domain `jadicuan.co.id` di pengaturan **Custom domains** Cloudflare Pages. Pastikan DNS domain mengarah ke project Pages sebelum mengganti website yang sedang live.
 
@@ -60,5 +86,6 @@ Situs menghasilkan title/description unik, canonical URL, Open Graph/Twitter met
 ```sh
 npm run check
 npm run test:hpp
+npm run test:modal
 npm run build
 ```

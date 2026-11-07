@@ -1,0 +1,42 @@
+---
+// Meta Pixel dengan autoConfig dimatikan, sama seperti di Kalkulator HPP.
+// Pixel ID dari PUBLIC_META_PIXEL_ID; kalau kosong, tidak ada yang dipasang.
+// Letakkan di dalam <SiteLayout> (lihat catatan di kalkulator-hpp.astro).
+const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim();
+---
+
+{metaPixelId && (
+  <script is:inline define:vars={{ metaPixelId }}>
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = true;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    // Event otomatis Meta ikut mengirim isian formulir. Jangan diaktifkan.
+    fbq("set", "autoConfig", false, metaPixelId);
+    fbq("init", metaPixelId);
+    fbq("track", "PageView");
+  </script>
+)}
+{metaPixelId && (
+  <noscript>
+    <img
+      height="1"
+      width="1"
+      style="display:none"
+      src={`https://www.facebook.com/tr?id=${encodeURIComponent(metaPixelId)}&ev=PageView&noscript=1`}
+      alt=""
+    />
+  </noscript>
+)}

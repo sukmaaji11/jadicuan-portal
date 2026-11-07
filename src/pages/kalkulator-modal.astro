@@ -1,0 +1,1041 @@
+---
+import SiteLayout from "../components/SiteLayout.astro";
+import MetaPixel from "../components/MetaPixel.astro";
+import ModalHelp from "../components/kalkulator-modal/ModalHelp.astro";
+import ModalNumberField from "../components/kalkulator-modal/ModalNumberField.astro";
+import { CONTOH_CEPAT } from "../lib/modal";
+import { links } from "../config/links";
+
+const webApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Kalkulator Modal & Balik Modal JadiCuan",
+  url: "https://jadicuan.co.id/kalkulator-modal/",
+  description:
+    "Hitung modal awal, laba bersih per bulan, titik impas harian, dan perkiraan balik modal untuk usaha kecil.",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  inLanguage: "id-ID",
+  isAccessibleForFree: true,
+};
+
+const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
+---
+
+<SiteLayout
+  title="Kalkulator Modal & Balik Modal Usaha — JadiCuan"
+  description="Hitung modal awal usaha, laba bersih per bulan, titik impas harian, dan perkiraan kapan modal kembali. Gratis, langkah demi langkah, angka tetap di perangkatmu."
+  canonicalPath="/kalkulator-modal"
+>
+  <section class="hpp-page modal-page">
+    <header class="hpp-intro modal-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Alat gratis untuk usaha kecil</span>
+      <h1>Kalkulator modal &amp; balik modal.</h1>
+      <p>Isi empat langkah singkat, lalu lihat berapa modal yang perlu disiapkan, berapa yang perlu terjual per hari, dan kira-kira kapan modalmu kembali. Angka tetap di perangkatmu.</p>
+      <button class="modal-text-button" type="button" id="tour-again">Lihat panduan lagi</button>
+    </header>
+
+    <div class="modal-progress" id="modal-progress">
+      <p class="modal-progress-label" id="progress-label" aria-live="polite">Langkah 1 dari 4 · Usahamu</p>
+      <div
+        class="modal-progress-track"
+        role="progressbar"
+        aria-labelledby="progress-label"
+        aria-valuemin="1"
+        aria-valuemax="5"
+        aria-valuenow="1"
+      >
+        <span id="progress-fill" style="width: 25%"></span>
+      </div>
+      <ol class="modal-progress-steps" aria-hidden="true">
+        {steps.map((name, index) => <li data-progress-step={index + 1}>{name}</li>)}
+        <li data-progress-step="5">Hasil</li>
+      </ol>
+    </div>
+
+    <form class="modal-form" id="modal-form" novalidate>
+      <!-- Langkah 1 -->
+      <section class="hpp-panel modal-step" data-step="1" aria-labelledby="step-1-heading">
+        <div class="hpp-section-heading">
+          <span class="section-kicker">Langkah 1 · Usahamu</span>
+          <h2 id="step-1-heading" tabindex="-1">Usaha apa yang mau dihitung?</h2>
+          <p>Dua isian ini hanya untuk label hasil. Boleh dilewati.</p>
+        </div>
+        <div class="modal-grid">
+          <div class="hpp-field modal-field">
+            <div class="modal-label-row">
+              <label for="modal-businessName">Nama usaha <span class="hpp-optional">(opsional)</span></label>
+            </div>
+            <input id="modal-businessName" class="modal-text-input" type="text" maxlength="60" autocomplete="off" placeholder="Contoh: Es Teh Bu Sari" data-text-field="businessName" />
+          </div>
+          <div class="hpp-field modal-field">
+            <div class="modal-label-row">
+              <label for="modal-businessType">Jenis usaha</label>
+            </div>
+            <select id="modal-businessType" class="modal-select" data-text-field="businessType">
+              <option value="">Pilih jenis usaha</option>
+              <option value="makanan">Makanan</option>
+              <option value="minuman">Minuman</option>
+              <option value="jajanan">Jajanan atau kue</option>
+              <option value="warung">Warung atau toko</option>
+              <option value="jasa">Jasa</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-example" id="modal-example">
+          <div class="modal-example-head">
+            <div>
+              <h3>Belum punya angka?</h3>
+              <p>Coba pakai contoh dulu, lalu ganti dengan angkamu.</p>
+            </div>
+            <button class="button button-secondary modal-example-toggle" type="button" id="example-toggle" aria-expanded="false" aria-controls="example-options">Pakai contoh</button>
+          </div>
+          <div class="modal-example-options" id="example-options" hidden>
+            <p class="modal-example-label">Contoh angka, ganti dengan angkamu. Angka contoh hanya perkiraan, bukan data lapak tertentu.</p>
+            <div class="modal-example-list">
+              {CONTOH_CEPAT.map((contoh) => (
+                <button class="modal-example-choice" type="button" data-example={contoh.id}>
+                  <strong>{contoh.nama}</strong>
+                  <span>Harga Rp{contoh.hargaJual.toLocaleString("id-ID")} · HPP {contoh.persenHPP}% · {contoh.targetHarian} {contoh.satuan}/hari</span>
+                </button>
+              ))}
+            </div>
+            <p class="modal-example-note">Contoh hanya mengisi harga jual, persen HPP, dan target penjualan. Modal, sewa, dan biaya bulanan tetap isi sendiri.</p>
+          </div>
+          <p class="modal-example-status" id="example-status" role="status"></p>
+        </div>
+      </section>
+
+      <!-- Langkah 2 -->
+      <section class="hpp-panel modal-step" data-step="2" aria-labelledby="step-2-heading" hidden>
+        <div class="hpp-section-heading">
+          <span class="section-kicker">Langkah 2 · Modal awal</span>
+          <h2 id="step-2-heading" tabindex="-1">Apa saja yang perlu dibeli sebelum buka?</h2>
+          <p>Isi yang ada saja. Kolom yang tidak relevan boleh dikosongkan.</p>
+        </div>
+        <div class="modal-grid">
+          <ModalNumberField field="sewaSetahun" label="Sewa tempat setahun" kind="rupiah" placeholder="isi sendiri" hint="Kosongkan kalau usaha di rumah atau keliling." />
+          <ModalNumberField field="peralatan" label="Peralatan dan perlengkapan" kind="rupiah" placeholder="isi sendiri" hint="Kompor, blender, etalase, meja, kursi, wadah." />
+          <ModalNumberField field="renovasi" label="Renovasi atau gerobak" kind="rupiah" placeholder="isi sendiri" />
+          <ModalNumberField field="bahanBakuAwal" label="Bahan baku awal" kind="rupiah" placeholder="isi sendiri" hint="Belanja stok pertama sebelum buka." />
+          <ModalNumberField field="perizinan" label="Perizinan" kind="rupiah" optional placeholder="isi sendiri" />
+        </div>
+        <div class="modal-subtotal" aria-live="polite">
+          <span>Total sementara</span>
+          <strong id="subtotal-modal">Rp0</strong>
+          <small>Dana tak terduga dan cadangan kas ditambahkan di hasil.</small>
+        </div>
+      </section>
+
+      <!-- Langkah 3 -->
+      <section class="hpp-panel modal-step" data-step="3" aria-labelledby="step-3-heading" hidden>
+        <div class="hpp-section-heading">
+          <span class="section-kicker">Langkah 3 · Penjualan</span>
+          <h2 id="step-3-heading" tabindex="-1">Berapa yang bisa terjual?</h2>
+          <p>Pakai angka yang masuk akal untuk hari biasa, bukan hari paling ramai.</p>
+        </div>
+        <p class="modal-example-badge" id="example-badge" hidden>Contoh angka, ganti dengan angkamu.</p>
+        <div class="modal-grid">
+          <ModalNumberField field="hargaJual" label="Harga jual rata-rata per {unit}" kind="rupiah" placeholder="5.000" />
+          <ModalNumberField field="targetHarian" label="Target terjual per hari" kind="bulat" suffix="{unit}" placeholder="50" />
+          <ModalNumberField field="hariBuka" label="Hari buka per bulan" kind="bulat" suffix="hari" placeholder="26" />
+          <ModalNumberField field="persenHPP" label="Persen HPP" kind="persen" suffix="%" placeholder="40" help="hpp" hint="Modal bahan dibagi harga jual.">
+            <a class="modal-inline-link" href="/kalkulator-hpp/">Belum tahu HPP-mu? Hitung di Kalkulator HPP</a>
+          </ModalNumberField>
+        </div>
+        <div class="modal-subtotal" aria-live="polite">
+          <span>Perkiraan penjualan per bulan</span>
+          <strong id="subtotal-sales">Rp0</strong>
+        </div>
+      </section>
+
+      <!-- Langkah 4 -->
+      <section class="hpp-panel modal-step" data-step="4" aria-labelledby="step-4-heading" hidden>
+        <div class="hpp-section-heading">
+          <span class="section-kicker">Langkah 4 · Biaya bulanan</span>
+          <h2 id="step-4-heading" tabindex="-1">Apa saja yang dibayar tiap bulan?</h2>
+          <p>Biaya tetap yang keluar walaupun dagangan sepi. Modal bahan tidak perlu diisi di sini.</p>
+        </div>
+        <div class="modal-grid">
+          <ModalNumberField field="sewaBulanan" label="Sewa tempat per bulan" kind="rupiah" placeholder="isi sendiri" hint="Kosongkan kalau tidak menyewa." />
+          <ModalNumberField field="gajiKaryawan" label="Gaji karyawan" kind="rupiah" placeholder="isi sendiri" />
+          <ModalNumberField field="utilitas" label="Listrik, air, internet" kind="rupiah" placeholder="isi sendiri" />
+          <ModalNumberField field="marketing" label="Marketing" kind="rupiah" placeholder="isi sendiri" hint="Iklan, brosur, promo." />
+          <ModalNumberField field="transport" label="Transport" kind="rupiah" placeholder="isi sendiri" />
+          <ModalNumberField field="lainnya" label="Lainnya" kind="rupiah" placeholder="isi sendiri" hint="Gas, kemasan, iuran, dan sejenisnya." />
+        </div>
+        <button class="modal-text-button modal-rent-reset" type="button" id="rent-auto" hidden>Pakai sewa otomatis dari sewa setahun</button>
+
+        <div class="modal-owner-salary">
+          <label class="modal-check">
+            <input type="checkbox" id="modal-hitungGajiSendiri" data-bool-field="hitungGajiSendiri" />
+            <span>Hitung gaji untuk diriku sendiri</span>
+          </label>
+          <div id="owner-salary-field" hidden>
+            <ModalNumberField field="gajiSendiri" label="Gaji untuk dirimu per bulan" kind="rupiah" placeholder="isi sendiri" />
+          </div>
+        </div>
+
+        <details class="modal-advanced" id="modal-advanced">
+          <summary>Pengaturan lanjutan</summary>
+          <div class="modal-grid">
+            <ModalNumberField field="persenTakTerduga" label="Dana tak terduga" kind="persen" suffix="% dari alat + renovasi" placeholder="10" help="dana-tak-terduga" />
+            <ModalNumberField field="bulanCadangan" label="Cadangan kas" kind="bulat" suffix="bulan biaya" placeholder="3" help="cadangan-kas" />
+            <ModalNumberField field="persenPlatform" label="Biaya platform online" kind="persen" suffix="% dari penjualan" placeholder="0" help="platform" />
+          </div>
+        </details>
+
+        <div class="modal-subtotal" aria-live="polite">
+          <span>Total biaya bulanan</span>
+          <strong id="subtotal-opex">Rp0</strong>
+        </div>
+      </section>
+
+      <div class="modal-notes" id="modal-notes" role="status" hidden></div>
+
+      <div class="modal-nav" id="modal-nav">
+        <button class="button button-secondary modal-nav-button" type="button" id="nav-back">← Kembali</button>
+        <button class="button button-primary modal-nav-button" type="button" id="nav-next">Lanjut →</button>
+      </div>
+    </form>
+
+    <!-- Hasil -->
+    <section class="modal-results" id="modal-results" aria-labelledby="results-heading" hidden>
+      <div class="hpp-section-heading">
+        <span class="section-kicker">Hasil hitung</span>
+        <h2 id="results-heading" tabindex="-1">Ringkasan usahamu</h2>
+      </div>
+      <p class="modal-estimate-label">Estimasi berdasarkan angka yang kamu isi. Bukan jaminan keuntungan.</p>
+
+      <div class="modal-hero-card" id="result-hero"></div>
+      <div class="modal-messages" id="result-messages"></div>
+
+      <div class="modal-metrics" id="result-metrics"></div>
+
+      <div class="modal-breakdowns">
+        <section class="modal-breakdown" aria-labelledby="capital-heading">
+          <h3 id="capital-heading">Rincian modal awal</h3>
+          <div id="result-capital"></div>
+        </section>
+        <section class="modal-breakdown" aria-labelledby="monthly-heading">
+          <h3 id="monthly-heading">Ke mana penjualan sebulan pergi</h3>
+          <div id="result-monthly"></div>
+        </section>
+      </div>
+
+      <div class="modal-result-actions">
+        <button class="button button-primary" type="button" id="copy-summary">Salin ringkasan</button>
+        <button class="button button-secondary" type="button" id="edit-numbers">Ubah angka</button>
+        <button class="button button-secondary" type="button" id="restart">Mulai dari awal</button>
+      </div>
+      <p class="modal-copy-status" id="copy-status" role="status"></p>
+
+      <section class="modal-locked" id="modal-locked" aria-labelledby="locked-heading">
+        <div class="modal-locked-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="10" rx="2.5" /><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" /></svg>
+        </div>
+        <div class="modal-locked-body">
+          <span class="section-kicker">Versi lengkap · Belum tersedia</span>
+          <h3 id="locked-heading">3 skenario (sepi, normal, ramai) + simpan banyak usaha + unduh PDF</h3>
+          <p><strong>Belum tersedia.</strong> Fitur ini belum dibuat. Kami ingin tahu dulu apakah kamu membutuhkannya.</p>
+          <p class="modal-price" id="price-test" hidden></p>
+          <button class="button button-primary" type="button" id="upgrade-button">Kabari aku saat tersedia</button>
+          <p class="modal-thanks" id="upgrade-thanks" role="status" hidden>Terima kasih, minatmu sudah kami catat. Kami tidak meminta kontak apa pun, jadi pantau kabarnya di Instagram <a href={links.instagram} target="_blank" rel="noreferrer">@jadicuan.pub</a>.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="hpp-explainer modal-explainer" aria-labelledby="modal-explainer-heading">
+      <span class="section-kicker">Biar lebih kebayang</span>
+      <h2 id="modal-explainer-heading">Cara kalkulator ini menghitung</h2>
+      <ul>
+        <li><strong>Laba bersih per bulan</strong> <ModalHelp term="laba-bersih" id="explainer-laba" /> = penjualan sebulan − modal bahan − biaya platform − biaya bulanan.</li>
+        <li><strong>Total modal awal</strong> = semua belanja sebelum buka + dana tak terduga + cadangan kas <ModalHelp term="cadangan-kas" id="explainer-cadangan" />.</li>
+        <li><strong>Balik modal</strong> <ModalHelp term="balik-modal" id="explainer-balik" /> = total modal awal ÷ laba bersih per bulan.</li>
+        <li><strong>Titik impas</strong> <ModalHelp term="bep" id="explainer-bep" /> = jumlah terjual per hari supaya tidak rugi.</li>
+      </ul>
+    </section>
+
+    <div class="modal-data-note">
+      <p>Isianmu tersimpan otomatis di perangkat ini saja, tidak dikirim ke server.</p>
+      <button class="modal-text-button" type="button" id="clear-data">Hapus data saya</button>
+      <p class="modal-copy-status" id="clear-status" role="status"></p>
+    </div>
+
+    <!-- Tur panduan -->
+    <div class="modal-tour" id="modal-tour" hidden>
+      <div class="modal-tour-spot" id="tour-spot" aria-hidden="true"></div>
+      <div class="modal-tour-bubble" id="tour-bubble" role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-text" tabindex="-1">
+        <p class="modal-tour-count" id="tour-count"></p>
+        <h2 id="tour-title"></h2>
+        <p id="tour-text"></p>
+        <div class="modal-tour-actions">
+          <button class="modal-text-button" type="button" id="tour-skip">Lewati</button>
+          <span>
+            <button class="button button-secondary" type="button" id="tour-prev">Kembali</button>
+            <button class="button button-primary" type="button" id="tour-next">Lanjut</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(webApplicationJsonLd).replace(/</g, "\\u003c")}
+  />
+  <MetaPixel />
+</SiteLayout>
+
+<script>
+  import {
+    CONTOH_CEPAT,
+    calculateModal,
+    emptyModalInput,
+    formatBulan,
+    formatRibuan,
+    formatRupiah,
+    parseBulat,
+    parsePersen,
+    sewaBulananDariSetahun,
+    type ModalField,
+    type ModalInput,
+    type ModalResult,
+  } from "../lib/modal";
+  import { PRICE_TEST_VARIANTS, SHOW_PRICE_TEST } from "../config/kalkulator-modal";
+  import { trackCustomEvent } from "../lib/meta-pixel";
+
+  // ---------- Penyimpanan aman (halaman tetap jalan bila gagal) ----------
+  const STORAGE_KEY = "jadicuan:kalkulator-modal:v1";
+  const TOUR_KEY = "jadicuan:kalkulator-modal:tur-dilihat";
+  const VARIANT_KEY = "jadicuan:kalkulator-modal:varian-harga";
+
+  function readStorage(key: string): string | null {
+    try {
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+  function writeStorage(key: string, value: string): void {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch {
+      /* penyimpanan penuh atau diblokir: abaikan */
+    }
+  }
+  function removeStorage(key: string): void {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      /* abaikan */
+    }
+  }
+
+  // ---------- State ----------
+  type State = {
+    step: number; // 1-4 isian, 5 hasil
+    businessName: string;
+    businessType: string;
+    values: ModalInput;
+    sewaBulananManual: boolean;
+    contohId: string | null;
+  };
+
+  function freshState(): State {
+    return {
+      step: 1,
+      businessName: "",
+      businessType: "",
+      values: emptyModalInput(),
+      sewaBulananManual: false,
+      contohId: null,
+    };
+  }
+
+  function loadState(): State {
+    const base = freshState();
+    const raw = readStorage(STORAGE_KEY);
+    if (!raw) return base;
+    try {
+      const saved = JSON.parse(raw) as Partial<State>;
+      const values = { ...base.values };
+      for (const key of Object.keys(values) as Array<keyof ModalInput>) {
+        const v = saved.values?.[key];
+        if (key === "hitungGajiSendiri") values.hitungGajiSendiri = v === true;
+        else if (v === null || (typeof v === "number" && Number.isFinite(v))) {
+          (values as Record<string, unknown>)[key] = v;
+        }
+      }
+      return {
+        step: typeof saved.step === "number" && saved.step >= 1 && saved.step <= 5 ? saved.step : 1,
+        businessName: typeof saved.businessName === "string" ? saved.businessName.slice(0, 60) : "",
+        businessType: typeof saved.businessType === "string" ? saved.businessType : "",
+        values,
+        sewaBulananManual: saved.sewaBulananManual === true,
+        contohId: typeof saved.contohId === "string" ? saved.contohId : null,
+      };
+    } catch {
+      return base;
+    }
+  }
+
+  let state = loadState();
+  const saveState = () => writeStorage(STORAGE_KEY, JSON.stringify(state));
+
+  // ---------- Elemen ----------
+  function $(selector: string): HTMLElement {
+    const el = document.querySelector<HTMLElement>(selector);
+    if (!el) throw new Error(`Elemen kalkulator modal "${selector}" tidak ditemukan.`);
+    return el;
+  }
+  const form = $("#modal-form") as HTMLFormElement;
+  const stepSections = [...document.querySelectorAll<HTMLElement>(".modal-step")];
+  const results = $("#modal-results");
+  const progressLabel = $("#progress-label");
+  const progressTrack = $(".modal-progress-track");
+  const progressFill = $("#progress-fill");
+  const navBack = $("#nav-back") as HTMLButtonElement;
+  const navNext = $("#nav-next") as HTMLButtonElement;
+  const nav = $("#modal-nav");
+  const notes = $("#modal-notes");
+  const numberInputs = [...document.querySelectorAll<HTMLInputElement>("input[data-field]")];
+  const STEP_NAMES = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan", "Hasil"];
+
+  // ---------- Pelacakan (hanya nama event + varian harga) ----------
+  let trackedStart = false;
+  let trackedComplete = false;
+  function markStart(): void {
+    if (trackedStart) return;
+    trackedStart = true;
+    trackCustomEvent("modal_start");
+  }
+
+  // ---------- Satuan mengikuti jenis usaha ----------
+  const UNIT_BY_TYPE: Record<string, string> = {
+    makanan: "porsi",
+    minuman: "gelas",
+    jajanan: "porsi",
+    warung: "transaksi",
+    jasa: "transaksi",
+    lainnya: "transaksi",
+  };
+  const unit = () => UNIT_BY_TYPE[state.businessType] ?? "porsi";
+  function renderUnits(): void {
+    for (const el of document.querySelectorAll<HTMLElement>("[data-unit]")) el.textContent = unit();
+  }
+
+  // ---------- Isian angka ----------
+  function displayValue(input: HTMLInputElement, value: number | null): string {
+    if (value === null) return "";
+    if (input.dataset.kind === "persen") return String(value).replace(".", ",");
+    return formatRibuan(value);
+  }
+
+  function fillInputs(): void {
+    for (const input of numberInputs) {
+      const field = input.dataset.field as ModalField;
+      input.value = displayValue(input, state.values[field]);
+    }
+    ($("#modal-businessName") as HTMLInputElement).value = state.businessName;
+    ($("#modal-businessType") as HTMLSelectElement).value = state.businessType;
+    ($("#modal-hitungGajiSendiri") as HTMLInputElement).checked = state.values.hitungGajiSendiri;
+  }
+
+  /** Format ribuan saat mengetik tanpa membuat kursor melompat. */
+  function reformatKeepingCaret(input: HTMLInputElement): number | null {
+    const caret = input.selectionStart ?? input.value.length;
+    const digitsBefore = input.value.slice(0, caret).replace(/\D/g, "").length;
+    const value = parseBulat(input.value);
+    const formatted = value === null ? "" : formatRibuan(value);
+    if (formatted !== input.value) {
+      input.value = formatted;
+      let pos = 0;
+      let seen = 0;
+      while (pos < formatted.length && seen < digitsBefore) {
+        if (/\d/.test(formatted[pos])) seen++;
+        pos++;
+      }
+      if (document.activeElement === input) input.setSelectionRange(pos, pos);
+    }
+    return value;
+  }
+
+  function setValue(field: ModalField, value: number | null): void {
+    (state.values as Record<string, unknown>)[field] = value;
+    const input = numberInputs.find((i) => i.dataset.field === field);
+    if (input && document.activeElement !== input) input.value = displayValue(input, value);
+  }
+
+  function applyAutoRent(): void {
+    if (state.sewaBulananManual) return;
+    setValue("sewaBulanan", sewaBulananDariSetahun(state.values.sewaSetahun));
+  }
+
+  form.addEventListener("input", (event) => {
+    const target = event.target;
+    markStart();
+    if (target instanceof HTMLInputElement && target.dataset.field) {
+      const field = target.dataset.field as ModalField;
+      const value =
+        target.dataset.kind === "persen" ? parsePersen(target.value) : reformatKeepingCaret(target);
+      (state.values as Record<string, unknown>)[field] = value;
+      if (field === "sewaBulanan") state.sewaBulananManual = true;
+      if (field === "sewaSetahun") applyAutoRent();
+      if (["hargaJual", "persenHPP", "targetHarian"].includes(field)) state.contohId = null;
+    } else if (target instanceof HTMLInputElement && target.dataset.textField) {
+      state.businessName = target.value.slice(0, 60);
+    }
+    update();
+  });
+
+  form.addEventListener("change", (event) => {
+    const target = event.target;
+    markStart();
+    if (target instanceof HTMLSelectElement && target.dataset.textField === "businessType") {
+      state.businessType = target.value;
+      renderUnits();
+    }
+    if (target instanceof HTMLInputElement && target.dataset.boolField === "hitungGajiSendiri") {
+      state.values.hitungGajiSendiri = target.checked;
+    }
+    if (target instanceof HTMLInputElement && target.dataset.kind === "persen") {
+      target.value = displayValue(target, state.values[target.dataset.field as ModalField]);
+    }
+    update();
+  });
+
+  $("#rent-auto").addEventListener("click", () => {
+    state.sewaBulananManual = false;
+    applyAutoRent();
+    update();
+  });
+
+  // ---------- Contoh cepat ----------
+  const exampleToggle = $("#example-toggle");
+  const exampleOptions = $("#example-options");
+  exampleToggle.addEventListener("click", () => {
+    const open = exampleOptions.hidden;
+    exampleOptions.hidden = !open;
+    exampleToggle.setAttribute("aria-expanded", String(open));
+  });
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-example]")) {
+    button.addEventListener("click", () => {
+      const contoh = CONTOH_CEPAT.find((c) => c.id === button.dataset.example);
+      if (!contoh) return;
+      markStart();
+      setValue("hargaJual", contoh.hargaJual);
+      setValue("persenHPP", contoh.persenHPP);
+      setValue("targetHarian", contoh.targetHarian);
+      state.contohId = contoh.id;
+      $("#example-status").textContent =
+        `Contoh ${contoh.nama} dipakai: harga jual, persen HPP, dan target sudah terisi di langkah 3. Ganti dengan angkamu.`;
+      update();
+    });
+  }
+
+  // ---------- Bantuan istilah ----------
+  document.addEventListener("click", (event) => {
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-help-toggle]");
+    if (!button) return;
+    const text = document.getElementById(button.getAttribute("aria-controls") ?? "");
+    if (!text) return;
+    const open = button.getAttribute("aria-expanded") !== "true";
+    button.setAttribute("aria-expanded", String(open));
+    text.hidden = !open;
+  });
+
+  // ---------- Pembaruan tampilan ----------
+  function update(): void {
+    const result = calculateModal(state.values);
+    $("#subtotal-modal").textContent = formatRupiah(
+      result.rincianModal
+        .filter((i) => i.key !== "danaTakTerduga" && i.key !== "cadanganKas")
+        .reduce((sum, i) => sum + i.amount, 0),
+    );
+    $("#subtotal-sales").textContent = formatRupiah(result.penjualanBulanan);
+    $("#subtotal-opex").textContent = formatRupiah(result.biayaOperasionalBulanan);
+    $("#owner-salary-field").hidden = !state.values.hitungGajiSendiri;
+    $("#example-badge").hidden = state.contohId === null;
+
+    const autoRent = sewaBulananDariSetahun(state.values.sewaSetahun);
+    const rentHint = document.querySelector<HTMLElement>('[data-hint-for="sewaBulanan"]');
+    if (rentHint) {
+      rentHint.textContent = autoRent
+        ? `Otomatis dari sewa setahun ÷ 12 (${formatRupiah(autoRent)}). Boleh diubah.`
+        : "Kosongkan kalau tidak menyewa.";
+    }
+    $("#rent-auto").hidden = !(state.sewaBulananManual && autoRent && state.values.sewaBulanan !== autoRent);
+
+    notes.hidden = result.peringatan.length === 0;
+    notes.replaceChildren(...result.peringatan.map((text) => el("p", text)));
+
+    if (state.step === 5) renderResults(result);
+    saveState();
+  }
+
+  function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = "", className = ""): HTMLElementTagNameMap[K] {
+    const node = document.createElement(tag);
+    if (text) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+
+  // ---------- Langkah ----------
+  function showStep(step: number, { focus = true } = {}): void {
+    state.step = step;
+    const isResult = step === 5;
+    for (const section of stepSections) section.hidden = Number(section.dataset.step) !== step;
+    results.hidden = !isResult;
+    nav.hidden = isResult;
+    navBack.hidden = step === 1;
+    navNext.textContent = step === 4 ? "Lihat hasil →" : "Lanjut →";
+    progressLabel.textContent = isResult ? "Hasil" : `Langkah ${step} dari 4 · ${STEP_NAMES[step - 1]}`;
+    progressTrack.setAttribute("aria-valuenow", String(step));
+    progressFill.style.width = `${Math.min(step, 4) * 25}%`;
+    for (const item of document.querySelectorAll<HTMLElement>("[data-progress-step]")) {
+      const n = Number(item.dataset.progressStep);
+      item.classList.toggle("is-done", n < step);
+      item.classList.toggle("is-current", n === step);
+    }
+    update();
+    if (focus) {
+      $("#modal-progress").scrollIntoView({ block: "start" });
+      const heading = isResult ? $("#results-heading") : $(`#step-${step}-heading`);
+      heading.focus({ preventScroll: true });
+    }
+  }
+
+  navBack.addEventListener("click", () => showStep(Math.max(1, state.step - 1)));
+  navNext.addEventListener("click", () => {
+    const next = Math.min(5, state.step + 1);
+    if (next === 5 && !trackedComplete) {
+      trackedComplete = true;
+      trackCustomEvent("modal_complete");
+    }
+    showStep(next);
+  });
+  $("#edit-numbers").addEventListener("click", () => showStep(4));
+
+  function resetAll(message: string): void {
+    if (!window.confirm("Hapus semua isian dan mulai dari awal?")) return;
+    removeStorage(STORAGE_KEY);
+    state = freshState();
+    fillInputs();
+    renderUnits();
+    exampleOptions.hidden = true;
+    exampleToggle.setAttribute("aria-expanded", "false");
+    $("#example-status").textContent = "";
+    showStep(1);
+    $("#clear-status").textContent = message;
+  }
+  $("#restart").addEventListener("click", () => resetAll(""));
+  $("#clear-data").addEventListener("click", () => resetAll("Data isianmu sudah dihapus dari perangkat ini."));
+
+  // ---------- Hasil ----------
+  function renderResults(r: ModalResult): void {
+    const u = unit();
+    const v = state.values;
+    const kurangPenjualan = r.belumDiisi.includes("hargaJual") || r.belumDiisi.includes("targetHarian");
+
+    // Kartu utama
+    const hero = $("#result-hero");
+    hero.className = "modal-hero-card";
+    const heroChildren: HTMLElement[] = [];
+    if (kurangPenjualan) {
+      hero.classList.add("is-muted");
+      heroChildren.push(el("span", "Perkiraan balik modal", "modal-hero-kicker"));
+      heroChildren.push(el("strong", "Lengkapi angka penjualan dulu", "modal-hero-value"));
+      heroChildren.push(el("p", "Isi harga jual dan target terjual per hari di langkah 3 supaya hasilnya bisa dihitung."));
+      const go = el("button", "Isi langkah 3", "button button-secondary");
+      go.type = "button";
+      go.addEventListener("click", () => showStep(3));
+      heroChildren.push(go);
+    } else if (r.balikModalBulan === null) {
+      hero.classList.add("is-negative");
+      heroChildren.push(el("span", "Perkiraan balik modal", "modal-hero-kicker"));
+      heroChildren.push(el("strong", "Belum balik modal dengan angka ini", "modal-hero-value"));
+    } else if (r.totalModalAwal === 0) {
+      hero.classList.add("is-muted");
+      heroChildren.push(el("span", "Perkiraan balik modal", "modal-hero-kicker"));
+      heroChildren.push(el("strong", "Modal awal belum diisi", "modal-hero-value"));
+      heroChildren.push(el("p", "Isi modal awal di langkah 2 untuk melihat kapan modalmu kembali."));
+      const go = el("button", "Isi langkah 2", "button button-secondary");
+      go.type = "button";
+      go.addEventListener("click", () => showStep(2));
+      heroChildren.push(go);
+    } else {
+      heroChildren.push(el("span", "Perkiraan balik modal", "modal-hero-kicker"));
+      // "sekitar 18 bulan (1 tahun 6 bulan)" → angka utama + keterangan tahun
+      const [utama, tahun] = formatBulan(r.balikModalBulan).split(" (");
+      heroChildren.push(el("strong", utama, "modal-hero-value"));
+      if (tahun) heroChildren.push(el("p", `Atau ${tahun.replace(")", "")}.`));
+    }
+    hero.replaceChildren(...heroChildren);
+
+    // Penjelasan otomatis
+    const messages: Array<{ tone: "danger" | "warn" | "info" | "ok"; text: string }> = [];
+    if (!kurangPenjualan && r.dibawahBep) {
+      messages.push({
+        tone: "danger",
+        text:
+          r.bepStatus === "margin-habis"
+            ? `Awas: harga jual belum menutup modal bahan${v.persenPlatform ? " dan biaya platform" : ""}. Setiap ${u} yang terjual justru menambah rugi. Naikkan harga jual atau turunkan persen HPP.`
+            : `Awas: target ${formatRibuan(v.targetHarian ?? 0)} ${u} per hari masih di bawah titik impas ${formatRibuan(r.bepHarianPorsi ?? 0)} ${u} per hari. Dengan angka ini, usahamu rugi setiap bulan.`,
+      });
+    }
+    if (!kurangPenjualan && r.labaBersihBulanan <= 0) {
+      messages.push({
+        tone: "warn",
+        text: "Dengan angka ini, usahamu belum menutup biaya. Coba naikkan harga, kurangi biaya bulanan, atau naikkan target penjualan.",
+      });
+    }
+    const terbesar = [...r.rincianModal].sort((a, b) => b.amount - a.amount)[0];
+    if (r.balikModalBulan !== null && r.totalModalAwal > 0) {
+      if (r.balikModalBulan > 24) {
+        messages.push({
+          tone: "warn",
+          text: `Balik modalnya cukup lama. Cek komponen modal terbesar (${terbesar.label.toLowerCase()}, ${formatRupiah(terbesar.amount)}), mungkin bisa dikurangi atau dicicil.`,
+        });
+      } else {
+        messages.push({
+          tone: "ok",
+          text: `Dengan angka ini, modal awal diperkirakan kembali dalam ${formatBulan(r.balikModalBulan)}. Kenyataannya bisa lebih lama, terutama di bulan-bulan awal saat penjualan belum stabil.`,
+        });
+      }
+    }
+    if (r.belumDiisi.includes("persenHPP") && !kurangPenjualan) {
+      messages.push({
+        tone: "info",
+        text: "Persen HPP belum diisi, jadi modal bahan dianggap Rp0. Hasilnya akan terlihat lebih bagus dari kenyataan.",
+      });
+    }
+    if (!v.hitungGajiSendiri && !kurangPenjualan) {
+      messages.push({
+        tone: "info",
+        text: "Gaji untuk dirimu belum dihitung. Kalau kamu ikut bekerja di usaha ini, centang \"Hitung gaji untuk diriku sendiri\" di langkah 4 supaya hasilnya lebih jujur.",
+      });
+    }
+    for (const text of r.peringatan) messages.push({ tone: "info", text });
+    $("#result-messages").replaceChildren(
+      ...messages.map((m) => {
+        const p = el("p", m.text, `modal-message is-${m.tone}`);
+        if (m.tone === "danger") p.setAttribute("role", "alert");
+        return p;
+      }),
+    );
+
+    // Kartu ringkas
+    let bepValue: string;
+    let bepNote: string;
+    switch (r.bepStatus) {
+      case "ok":
+      case "tanpa-biaya":
+        bepValue = `${formatRibuan(r.bepHarianPorsi ?? 0)} ${u}/hari`;
+        bepNote =
+          r.bepStatus === "tanpa-biaya"
+            ? "Belum ada biaya bulanan yang diisi."
+            : `Kamu perlu menjual minimal ${formatRibuan(r.bepHarianPorsi ?? 0)} ${u} per hari supaya tidak rugi.`;
+        break;
+      case "margin-habis":
+        bepValue = "Tidak tercapai";
+        bepNote = "Harga jual belum menutup modal bahan, jadi berapa pun yang terjual tetap rugi.";
+        break;
+      case "hari-buka-nol":
+        bepValue = "–";
+        bepNote = "Hari buka per bulan masih 0.";
+        break;
+      default:
+        bepValue = "–";
+        bepNote = "Isi harga jual dulu.";
+    }
+    const metrics: Array<[string, string, string, string]> = [
+      ["Total modal awal", formatRupiah(r.totalModalAwal), "Termasuk dana tak terduga dan cadangan kas.", ""],
+      [
+        "Laba bersih per bulan",
+        formatRupiah(r.labaBersihBulanan),
+        "Setelah modal bahan, biaya platform, dan biaya bulanan.",
+        r.labaBersihBulanan > 0 ? "is-positive" : r.labaBersihBulanan < 0 ? "is-negative" : "",
+      ],
+      ["Titik impas harian", bepValue, bepNote, r.dibawahBep ? "is-negative" : ""],
+      ["Penjualan per bulan", formatRupiah(r.penjualanBulanan), `${formatRupiah(v.hargaJual ?? 0)} × ${formatRibuan(v.targetHarian ?? 0)} ${u} × ${formatRibuan(v.hariBuka ?? 26)} hari.`, ""],
+    ];
+    $("#result-metrics").replaceChildren(
+      ...metrics.map(([label, value, note, tone]) => {
+        const card = el("div", "", `modal-metric ${tone}`.trim());
+        card.append(el("span", label), el("strong", value), el("small", note));
+        return card;
+      }),
+    );
+
+    // Rincian modal (bagan batang CSS)
+    const items = r.rincianModal.filter((i) => i.amount > 0).sort((a, b) => b.amount - a.amount);
+    const capital = $("#result-capital");
+    if (items.length === 0) {
+      capital.replaceChildren(el("p", "Modal awal belum diisi.", "hpp-hint"));
+    } else {
+      const max = items[0].amount;
+      const list = el("ul", "", "modal-bars");
+      items.forEach((item, index) => {
+        const li = el("li", "", index === 0 ? "is-top" : "");
+        const head = el("div", "", "modal-bar-head");
+        const share = Math.round((item.amount / r.totalModalAwal) * 100);
+        head.append(el("span", item.label), el("strong", `${formatRupiah(item.amount)} · ${share}%`));
+        const track = el("div", "", "modal-bar-track");
+        const fill = el("span");
+        fill.style.width = `${Math.max(2, (item.amount / max) * 100)}%`;
+        track.append(fill);
+        li.append(head, track);
+        list.append(li);
+      });
+      capital.replaceChildren(list);
+    }
+
+    // Rincian per bulan
+    const monthly = el("ul", "", "modal-lines");
+    const rows: Array<[string, number, string]> = [
+      ["Penjualan sebulan", r.penjualanBulanan, ""],
+      ["Modal bahan", -r.biayaBahan, ""],
+      ["Biaya platform online", -r.biayaPlatform, ""],
+      ["Biaya bulanan", -r.biayaOperasionalBulanan, ""],
+      ["Laba bersih", r.labaBersihBulanan, "is-total"],
+    ];
+    for (const [label, amount, cls] of rows) {
+      if (label === "Biaya platform online" && amount === 0) continue;
+      const li = el("li", "", cls);
+      li.append(el("span", label), el("strong", amount < 0 ? `−${formatRupiah(-amount)}` : formatRupiah(amount)));
+      monthly.append(li);
+    }
+    $("#result-monthly").replaceChildren(monthly);
+  }
+
+  // ---------- Salin ringkasan ----------
+  function buildSummary(): string {
+    const r = calculateModal(state.values);
+    const u = unit();
+    const nama = state.businessName.trim() || "usahaku";
+    const balik =
+      r.balikModalBulan === null
+        ? "belum balik modal dengan angka ini"
+        : r.totalModalAwal === 0
+          ? "modal awal belum diisi"
+          : formatBulan(r.balikModalBulan);
+    const bep =
+      r.bepHarianPorsi !== null
+        ? `minimal ${formatRibuan(r.bepHarianPorsi)} ${u} per hari`
+        : r.bepStatus === "margin-habis"
+          ? "tidak tercapai dengan harga ini"
+          : "belum bisa dihitung";
+    return [
+      `Ringkasan modal ${nama}`,
+      `Total modal awal: ${formatRupiah(r.totalModalAwal)}`,
+      `Laba bersih per bulan: ${formatRupiah(r.labaBersihBulanan)}`,
+      `Perkiraan balik modal: ${balik}`,
+      `Titik impas: ${bep}`,
+      "",
+      "Estimasi, bukan jaminan. Dihitung di jadicuan.co.id",
+    ].join("\n");
+  }
+
+  async function copyText(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.append(area);
+      area.select();
+      let ok = false;
+      try {
+        ok = document.execCommand("copy");
+      } catch {
+        ok = false;
+      }
+      area.remove();
+      return ok;
+    }
+  }
+
+  $("#copy-summary").addEventListener("click", async () => {
+    trackCustomEvent("modal_share_click");
+    const ok = await copyText(buildSummary());
+    $("#copy-status").textContent = ok
+      ? "Ringkasan tersalin. Tempel di WhatsApp atau catatanmu."
+      : "Gagal menyalin otomatis. Coba tekan lama pada angka di atas untuk menyalin manual.";
+  });
+
+  // ---------- Tombol versi lengkap + uji harga ----------
+  function priceVariant(): string {
+    if (!SHOW_PRICE_TEST) return "off";
+    const saved = readStorage(VARIANT_KEY);
+    if (saved && PRICE_TEST_VARIANTS.some((variant) => variant.id === saved)) return saved;
+    const picked = PRICE_TEST_VARIANTS[Math.floor(Math.random() * PRICE_TEST_VARIANTS.length)].id;
+    writeStorage(VARIANT_KEY, picked);
+    return picked;
+  }
+  const variant = priceVariant();
+  const variantConfig = PRICE_TEST_VARIANTS.find((v) => v.id === variant);
+  if (variantConfig) {
+    const price = $("#price-test");
+    price.replaceChildren(
+      document.createTextNode(`Perkiraan harga ${formatRupiah(variantConfig.price)} `),
+      el("span", "(harga belum final)"),
+    );
+    price.hidden = false;
+  }
+  $("#upgrade-button").addEventListener("click", () => {
+    trackCustomEvent("modal_upgrade_click", { price_variant: variant });
+    $("#upgrade-button").hidden = true;
+    const thanks = $("#upgrade-thanks");
+    thanks.hidden = false;
+    thanks.setAttribute("tabindex", "-1");
+    thanks.focus();
+  });
+
+  // ---------- Tur panduan ----------
+  const tour = $("#modal-tour");
+  const tourBubble = $("#tour-bubble");
+  const tourSpot = $("#tour-spot");
+  type TourStep = { target: () => HTMLElement | null; title: string; text: string };
+  const visible = (selector: string) =>
+    [...document.querySelectorAll<HTMLElement>(selector)].find((node) => node.offsetParent !== null) ?? null;
+  const TOUR_STEPS: TourStep[] = [
+    {
+      target: () => $("#modal-progress"),
+      title: "Empat langkah singkat",
+      text: "Bilah ini menunjukkan kamu di langkah ke berapa. Data tidak hilang saat kamu kembali ke langkah sebelumnya.",
+    },
+    {
+      target: () => visible(".modal-step:not([hidden]) .modal-field"),
+      title: "Isi yang kamu tahu",
+      text: "Ketik angka tanpa titik, nanti dirapikan otomatis. Kolom yang tidak relevan boleh dikosongkan.",
+    },
+    {
+      target: () => visible("#example-toggle"),
+      title: "Belum punya angka?",
+      text: "Tekan Pakai contoh untuk mengisi harga, HPP, dan target dari contoh usaha. Ganti dengan angkamu setelahnya.",
+    },
+    {
+      target: () => visible(".modal-step:not([hidden]) [data-help-toggle], .modal-results:not([hidden]) [data-help-toggle], .modal-explainer [data-help-toggle]"),
+      title: "Bingung istilahnya?",
+      text: "Tekan tanda tanya untuk penjelasan singkat dengan contoh angka.",
+    },
+    {
+      target: () => (state.step === 5 ? $("#result-hero") : $("#modal-nav")),
+      title: "Lihat hasilnya",
+      text: "Setelah langkah 4, kamu akan melihat perkiraan balik modal, titik impas harian, dan rincian modal. Semuanya estimasi, bukan jaminan.",
+    },
+  ];
+  let tourIndex = 0;
+  let tourSteps: TourStep[] = [];
+  let tourReturnFocus: HTMLElement | null = null;
+  let tourSeenInMemory = false;
+
+  function positionTour(): void {
+    const step = tourSteps[tourIndex];
+    const target = step?.target();
+    if (!target) return;
+    const pad = 8;
+    const rect = target.getBoundingClientRect();
+    tourSpot.style.top = `${rect.top - pad}px`;
+    tourSpot.style.left = `${rect.left - pad}px`;
+    tourSpot.style.width = `${rect.width + pad * 2}px`;
+    tourSpot.style.height = `${rect.height + pad * 2}px`;
+
+    const vw = document.documentElement.clientWidth;
+    const vh = window.innerHeight;
+    const bw = Math.min(360, vw - 32);
+    tourBubble.style.width = `${bw}px`;
+    const bh = tourBubble.offsetHeight;
+    let top = rect.bottom + pad + 12;
+    if (top + bh > vh - 12) top = rect.top - pad - 12 - bh;
+    if (top < 12) top = Math.max(12, vh - bh - 12);
+    const left = Math.min(Math.max(16, rect.left), vw - bw - 16);
+    tourBubble.style.top = `${top}px`;
+    tourBubble.style.left = `${left}px`;
+  }
+
+  function renderTourStep(): void {
+    const step = tourSteps[tourIndex];
+    const target = step.target();
+    // Instan, bukan smooth (bawaan CSS situs), supaya sorotan langsung tepat.
+    target?.scrollIntoView({ block: "center", behavior: "instant" });
+    $("#tour-count").textContent = `${tourIndex + 1} dari ${tourSteps.length}`;
+    $("#tour-title").textContent = step.title;
+    $("#tour-text").textContent = step.text;
+    ($("#tour-prev") as HTMLButtonElement).hidden = tourIndex === 0;
+    $("#tour-next").textContent = tourIndex === tourSteps.length - 1 ? "Selesai" : "Lanjut";
+    positionTour();
+    tourBubble.focus();
+  }
+
+  function startTour(): void {
+    tourSteps = TOUR_STEPS.filter((step) => step.target() !== null);
+    if (tourSteps.length === 0) return;
+    tourReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    tourIndex = 0;
+    tour.hidden = false;
+    document.documentElement.classList.add("modal-tour-open");
+    renderTourStep();
+  }
+
+  function endTour(): void {
+    tour.hidden = true;
+    document.documentElement.classList.remove("modal-tour-open");
+    tourSeenInMemory = true;
+    writeStorage(TOUR_KEY, "1");
+    (tourReturnFocus ?? $("#tour-again")).focus({ preventScroll: true });
+  }
+
+  $("#tour-skip").addEventListener("click", endTour);
+  $("#tour-prev").addEventListener("click", () => {
+    tourIndex = Math.max(0, tourIndex - 1);
+    renderTourStep();
+  });
+  $("#tour-next").addEventListener("click", () => {
+    if (tourIndex >= tourSteps.length - 1) endTour();
+    else {
+      tourIndex++;
+      renderTourStep();
+    }
+  });
+  $("#tour-again").addEventListener("click", startTour);
+  tour.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      endTour();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = [...tourBubble.querySelectorAll<HTMLElement>("button")].filter((b) => !b.hidden);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === tourBubble)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+  window.addEventListener("resize", () => {
+    if (!tour.hidden) positionTour();
+  });
+  window.addEventListener("scroll", () => {
+    if (!tour.hidden) positionTour();
+  }, { passive: true });
+
+  // ---------- Mulai ----------
+  fillInputs();
+  renderUnits();
+  showStep(state.step, { focus: false });
+  if (readStorage(TOUR_KEY) !== "1" && !tourSeenInMemory) {
+    window.setTimeout(startTour, 400);
+  }
+</script>
