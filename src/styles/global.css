@@ -2630,7 +2630,7 @@ img {
 @media (max-width: 620px) {
   .modal-scenario {
     gap: 12px;
-    padding: 12px 12px 12px 16px;
+    padding: 14px 14px 14px 18px;
   }
 
   /* HP: kotak balik modal selebar kartu, angka per baris (label kiri, angka kanan) agar tidak terpotong. */
@@ -2659,8 +2659,8 @@ img {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 10px;
-    padding: 10px 12px;
+    gap: 12px;
+    padding: 11px 12px;
     border-radius: 0;
   }
 
@@ -2677,12 +2677,42 @@ img {
 }
 
 @media (max-width: 620px) {
+  /* HP: tanpa bingkai bertumpuk. Panel versi lengkap dan tiap bagiannya jadi bagian biasa
+     yang dipisah garis tipis, supaya kartu skenario hampir selebar layar. */
+  .modal-results {
+    padding: 16px 14px;
+  }
+
   .modal-full {
-    padding: 12px;
+    gap: 0;
+    margin-top: 10px;
+    padding: 18px 0 0;
+    border: 0;
+    border-top: 1px solid #cfe0f4;
+    border-radius: 0;
+    background: none;
+  }
+
+  .modal-full-head {
+    padding-bottom: 6px;
   }
 
   .modal-full-part {
-    padding: 14px 12px;
+    gap: 12px;
+    padding: 18px 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+  }
+
+  .modal-full-foot {
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .modal-scenarios {
+    gap: 14px;
   }
 }
 
