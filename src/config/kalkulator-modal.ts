@@ -12,9 +12,8 @@
 // - harga: harga final (Rp). null = uji harga di bawah tetap berjalan.
 //   Harga di sini HARUS sama dengan harga di landing page Scalev.
 export const VERSI_LENGKAP: { dijual: boolean; urlPembelian: string; harga: number | null } = {
-  // dijual tetap false sampai isi landing page Scalev sudah untuk Kalkulator Modal (14 Nov 2026:
-  // halaman masih berisi teks, harga Rp149.000, dan testimoni produk Valuasi Oto).
-  dijual: false,
+  // Dijual sejak 14 Nov 2026. Landing page Scalev sudah dicek: produk Kalkulator Modal, harga Rp25.000.
+  dijual: true,
   urlPembelian: "https://jadicuan.myscalev.com/kalkulator-modal-usaha-25k",
   harga: 25000,
 };
