@@ -2398,78 +2398,167 @@ img {
   font-weight: 600;
 }
 
-.modal-scenarios {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+.modal-scenario-input span:first-child {
+  min-width: 48px;
 }
 
-.modal-scenario {
+.modal-scenarios {
   display: grid;
-  align-content: start;
-  gap: 8px;
+  gap: 12px;
+}
+
+/* Kartu skenario: lebar penuh, warna aksen per skenario (sama dengan warna kategori di beranda). */
+.modal-scenario {
+  --accent: var(--blue);
+  --tint: #edf6ff;
+  position: relative;
+  display: grid;
+  gap: 14px;
   min-width: 0;
-  padding: 14px;
+  padding: 16px 18px 16px 22px;
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 13px;
-  background: #fbfdff;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(27, 68, 122, 0.05);
+}
+
+.modal-scenario::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--accent);
+  content: "";
+}
+
+.modal-scenario.is-sepi {
+  --accent: #d47a43;
+  --tint: #fff4ec;
+}
+
+.modal-scenario.is-ramai {
+  --accent: #199b8c;
+  --tint: #e9faf5;
 }
 
 .modal-scenario.is-normal {
   border-color: #b9d6f6;
-  background: #f4f9ff;
+  box-shadow: 0 10px 24px rgba(22, 119, 232, 0.1);
 }
 
 .modal-scenario.is-negative {
   border-color: #f1d5d0;
-  background: #fff8f6;
+  background: #fffaf8;
 }
 
-.modal-scenario header {
+.modal-scenario-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.modal-scenario-title {
   display: grid;
   gap: 2px;
 }
 
-.modal-scenario header strong {
+.modal-scenario-title strong {
   color: var(--navy);
-  font-size: 17px;
+  font-size: 20px;
+  letter-spacing: -0.02em;
 }
 
-.modal-scenario header span {
+.modal-scenario-title span {
+  justify-self: start;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.modal-scenario-payback {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--tint);
+  text-align: right;
+}
+
+.modal-scenario-payback span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.modal-scenario-payback strong {
+  color: var(--accent);
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.modal-scenario-payback small {
   color: var(--muted);
   font-size: 13px;
   font-weight: 650;
 }
 
-.modal-scenario dl {
+.modal-scenario.is-negative .modal-scenario-payback {
+  background: #fdecea;
+}
+
+.modal-scenario.is-negative .modal-scenario-payback strong {
+  color: #a3392b;
+}
+
+.modal-scenario-stats {
   display: grid;
-  gap: 6px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
   margin: 0;
 }
 
-.modal-scenario dl div {
+.modal-scenario-stats div {
   display: grid;
-  gap: 1px;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: #f7faff;
 }
 
-.modal-scenario dt {
+.modal-scenario-stats dt {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
 }
 
-.modal-scenario dd {
+.modal-scenario-stats dd {
   margin: 0;
   color: var(--navy);
-  font-size: 15px;
-  font-weight: 750;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
+}
+
+.modal-scenario-stats .is-minus dd {
+  color: #a3392b;
 }
 
 .modal-scenario-warn {
   margin: 0;
   color: #a3392b;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   line-height: 1.45;
 }
@@ -2538,24 +2627,62 @@ img {
   line-height: 1.6;
 }
 
-@media (max-width: 760px) {
-  .modal-scenarios {
-    grid-template-columns: minmax(0, 1fr);
+@media (max-width: 620px) {
+  .modal-scenario {
+    gap: 12px;
+    padding: 12px 12px 12px 16px;
   }
 
-  .modal-scenario dl {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 12px;
+  /* HP: kotak balik modal selebar kartu, angka per baris (label kiri, angka kanan) agar tidak terpotong. */
+  .modal-scenario-head {
+    display: grid;
+  }
+
+  .modal-scenario-payback {
+    justify-items: start;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .modal-scenario-payback strong {
+    font-size: 19px;
+  }
+
+  .modal-scenario-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border-radius: 11px;
+  }
+
+  .modal-scenario-stats div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 0;
+  }
+
+  .modal-scenario-stats div:nth-child(even) {
+    background: #fff;
+  }
+
+  .modal-scenario-stats dd {
+    flex: 0 0 auto;
+    font-size: 16px;
+    overflow-wrap: normal;
+    white-space: nowrap;
   }
 }
 
 @media (max-width: 620px) {
   .modal-full {
-    padding: 14px;
+    padding: 12px;
   }
 
   .modal-full-part {
-    padding: 14px;
+    padding: 14px 12px;
   }
 }
 

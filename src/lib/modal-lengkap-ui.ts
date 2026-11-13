@@ -200,18 +200,31 @@ export function pasangVersiLengkap(ctx: KonteksHalaman) {
     const u = ctx.satuan();
     const hasil = hitungSkenario(ctx.ambil().values, persen, calculateModal);
     const kartu = hasil.map((h) => {
-      const card = el("article", "", `modal-scenario${h.id === "normal" ? " is-normal" : ""}${h.dibawahBep ? " is-negative" : ""}`);
-      const head = el("header");
-      head.append(el("strong", NAMA_SKENARIO[h.id]), el("span", h.id === "normal" ? "Sesuai targetmu" : `${h.persen}% dari target`));
-      const dl = el("dl");
-      const baris: Array<[string, string]> = [
-        ["Terjual per hari", `${formatRibuan(h.targetHarian)} ${u}`],
-        ["Penjualan per bulan", formatRupiah(h.penjualanBulanan)],
-        ["Laba bersih per bulan", formatRupiah(h.labaBersihBulanan)],
-        ["Balik modal", h.balikModalBulan === null ? "Belum balik modal" : h.totalModalAwal === 0 ? "Modal awal belum diisi" : formatBulan(h.balikModalBulan)],
+      const card = el("article", "", `modal-scenario is-${h.id}${h.dibawahBep ? " is-negative" : ""}`);
+
+      // Kepala: nama skenario di kiri, balik modal (angka yang paling dicari) di kanan.
+      const head = el("header", "", "modal-scenario-head");
+      const judul = el("div", "", "modal-scenario-title");
+      judul.append(el("strong", NAMA_SKENARIO[h.id]), el("span", h.id === "normal" ? "Sesuai targetmu" : `${h.persen}% dari target`));
+      const balik = el("div", "", "modal-scenario-payback");
+      const bulan = h.balikModalBulan === null ? null : formatBulan(h.balikModalBulan);
+      balik.append(
+        el("span", "Balik modal"),
+        el("strong", h.balikModalBulan === null ? "Belum balik modal" : h.totalModalAwal === 0 ? "Modal awal belum diisi" : bulan!.replace(/ \(.*\)$/, "")),
+      );
+      const rincianTahun = bulan?.match(/\((.*)\)$/)?.[1];
+      if (rincianTahun && h.totalModalAwal > 0) balik.append(el("small", rincianTahun));
+      head.append(judul, balik);
+
+      // Isi: tiga angka sejajar (bertumpuk di HP).
+      const dl = el("dl", "", "modal-scenario-stats");
+      const baris: Array<[string, string, string]> = [
+        ["Terjual per hari", `${formatRibuan(h.targetHarian)} ${u}`, ""],
+        ["Penjualan per bulan", formatRupiah(h.penjualanBulanan), ""],
+        ["Laba bersih per bulan", formatRupiah(h.labaBersihBulanan), h.labaBersihBulanan < 0 ? "is-minus" : ""],
       ];
-      for (const [k, v] of baris) {
-        const row = el("div");
+      for (const [k, v, cls] of baris) {
+        const row = el("div", "", cls);
         row.append(el("dt", k), el("dd", v));
         dl.append(row);
       }
