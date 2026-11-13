@@ -5,6 +5,10 @@ import ModalHelp from "../components/kalkulator-modal/ModalHelp.astro";
 import ModalNumberField from "../components/kalkulator-modal/ModalNumberField.astro";
 import { CONTOH_CEPAT } from "../lib/modal";
 import { links } from "../config/links";
+import { VERSI_LENGKAP } from "../config/kalkulator-modal";
+
+// Tombol beli baru tampil bila Owner sudah mengisi tautan Scalev.
+const dijual = VERSI_LENGKAP.dijual && VERSI_LENGKAP.urlPembelian.startsWith("https://");
 
 const webApplicationJsonLd = {
   "@context": "https://schema.org",
@@ -27,7 +31,20 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
   description="Hitung modal awal usaha, laba bersih per bulan, titik impas harian, dan perkiraan kapan modal kembali. Gratis, langkah demi langkah, angka tetap di perangkatmu."
   canonicalPath="/kalkulator-modal"
 >
+  <!--
+    Tautan aktivasi /kalkulator-modal/#kode=... : pindahkan kode dari alamat ke sessionStorage
+    SEBELUM Meta Pixel dimuat (Pixel mencatat alamat halaman), lalu bersihkan alamatnya.
+  -->
+  <script is:inline>
+    (function () {
+      var m = /^#kode=([0-9A-Za-z-]{20,200})$/.exec(location.hash);
+      if (!m) return;
+      try { sessionStorage.setItem("jadicuan:kalkulator-modal:kode-tautan", m[1]); } catch (e) {}
+      history.replaceState(null, "", location.pathname + location.search);
+    })();
+  </script>
   <section class="hpp-page modal-page">
+    <p class="modal-access-banner" id="access-banner" role="status" hidden></p>
     <header class="hpp-intro modal-intro">
       <span class="eyebrow"><span class="eyebrow-dot"></span> Alat gratis untuk usaha kecil</span>
       <h1>Kalkulator modal &amp; balik modal.</h1>
@@ -246,13 +263,80 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
           <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="10" rx="2.5" /><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" /></svg>
         </div>
         <div class="modal-locked-body">
-          <span class="section-kicker">Versi lengkap · Belum tersedia</span>
-          <h3 id="locked-heading">3 skenario (sepi, normal, ramai) + simpan banyak usaha + unduh PDF</h3>
-          <p><strong>Belum tersedia.</strong> Fitur ini belum dibuat. Kami ingin tahu dulu apakah kamu membutuhkannya.</p>
-          <p class="modal-price" id="price-test" hidden></p>
-          <button class="button button-primary" type="button" id="upgrade-button">Kabari aku saat tersedia</button>
-          <p class="modal-thanks" id="upgrade-thanks" role="status" hidden>Terima kasih, minatmu sudah kami catat. Kami tidak meminta kontak apa pun, jadi pantau kabarnya di Instagram <a href={links.instagram} target="_blank" rel="noreferrer">@jadicuan.pub</a>.</p>
+          {dijual ? (
+            <>
+              <span class="section-kicker">Versi lengkap</span>
+              <h3 id="locked-heading">3 skenario (sepi, normal, ramai) + simpan banyak usaha + unduh PDF</h3>
+              <p>Lihat hasil usahamu saat penjualan sepi, normal, dan ramai, simpan sampai 20 usaha untuk dibandingkan, lalu unduh ringkasannya sebagai PDF. Semua angka tetap di perangkatmu.</p>
+              <p class="modal-price" id="price-test" hidden></p>
+              <a class="button button-primary" id="buy-full" href={VERSI_LENGKAP.urlPembelian} target="_blank" rel="noopener noreferrer">Beli versi lengkap <span aria-hidden="true">↗</span></a>
+              <p class="modal-buy-note">Pembayaran di halaman pembelian JadiCuan. Setelah pembayaran, kode akses dikirim ke WhatsApp-mu.</p>
+              <details class="modal-access" id="access-entry">
+                <summary>Sudah punya kode akses?</summary>
+                <div class="modal-access-body">
+                  <label for="access-code">Tempel kode akses dari pesan kami</label>
+                  <textarea id="access-code" rows="3" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Contoh: ABCD-EFGH-…"></textarea>
+                  <button class="button button-primary" type="button" id="access-submit">Buka versi lengkap</button>
+                </div>
+              </details>
+            </>
+          ) : (
+            <>
+              <span class="section-kicker">Versi lengkap · Belum tersedia</span>
+              <h3 id="locked-heading">3 skenario (sepi, normal, ramai) + simpan banyak usaha + unduh PDF</h3>
+              <p><strong>Belum tersedia.</strong> Fitur ini belum dibuat. Kami ingin tahu dulu apakah kamu membutuhkannya.</p>
+              <p class="modal-price" id="price-test" hidden></p>
+              <button class="button button-primary" type="button" id="upgrade-button">Kabari aku saat tersedia</button>
+              <p class="modal-thanks" id="upgrade-thanks" role="status" hidden>Terima kasih, minatmu sudah kami catat. Kami tidak meminta kontak apa pun, jadi pantau kabarnya di Instagram <a href={links.instagram} target="_blank" rel="noreferrer">@jadicuan.pub</a>.</p>
+            </>
+          )}
+          <p class="modal-access-status" id="access-status" role="status"></p>
         </div>
+      </section>
+
+      <!-- Versi lengkap (tampil setelah kode akses valid). Semua dihitung dan disimpan di perangkat ini. -->
+      <section class="modal-full" id="full-version" aria-labelledby="full-heading" hidden>
+        <div class="modal-full-head">
+          <span class="section-kicker">Versi lengkap</span>
+          <h3 id="full-heading">Skenario, usaha tersimpan, dan PDF</h3>
+          <p class="modal-full-badge" id="full-badge"></p>
+        </div>
+
+        <section class="modal-full-part" aria-labelledby="scenario-heading">
+          <h4 id="scenario-heading">3 skenario penjualan</h4>
+          <p>Bagaimana kalau penjualan lebih sepi atau lebih ramai dari targetmu? Modal awal tetap sama, yang berubah laba bersih dan lama balik modal.</p>
+          <div class="modal-scenario-inputs">
+            <label class="modal-scenario-input">
+              <span>Sepi</span>
+              <input id="scenario-sepi" type="text" inputmode="numeric" autocomplete="off" aria-describedby="scenario-unit" />
+              <span>% dari target</span>
+            </label>
+            <label class="modal-scenario-input">
+              <span>Ramai</span>
+              <input id="scenario-ramai" type="text" inputmode="numeric" autocomplete="off" aria-describedby="scenario-unit" />
+              <span>% dari target</span>
+            </label>
+          </div>
+          <p class="modal-hint" id="scenario-unit">Sepi 10–100%, ramai 100–300% dari target penjualan per hari.</p>
+          <div class="modal-scenarios" id="scenario-cards"></div>
+        </section>
+
+        <section class="modal-full-part" aria-labelledby="saved-heading">
+          <h4 id="saved-heading">Usaha tersimpan</h4>
+          <p>Simpan hasil ini untuk dibandingkan dengan ide usaha lain. Tersimpan di perangkat ini saja, maksimal 20 usaha.</p>
+          <button class="button button-secondary" type="button" id="save-business">Simpan usaha ini</button>
+          <p class="modal-copy-status" id="save-status" role="status"></p>
+          <ul class="modal-saved-list" id="saved-list"></ul>
+        </section>
+
+        <section class="modal-full-part" aria-labelledby="pdf-heading">
+          <h4 id="pdf-heading">Unduh PDF</h4>
+          <p>Ringkasan lengkap untuk disimpan atau dicetak: hasil, rincian modal, biaya bulanan, 3 skenario, dan angka yang kamu isi.</p>
+          <button class="button button-primary" type="button" id="download-pdf">Unduh PDF</button>
+          <p class="modal-copy-status" id="pdf-status" role="status"></p>
+        </section>
+
+        <p class="modal-full-foot">Kode akses tersimpan di browser ini. Ganti HP? Masukkan kode yang sama lagi. <button class="modal-text-button" type="button" id="access-forget">Lepas kode dari perangkat ini</button></p>
       </section>
     </section>
 
@@ -313,7 +397,8 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
     type ModalInput,
     type ModalResult,
   } from "../lib/modal";
-  import { PRICE_TEST_VARIANTS, SHOW_PRICE_TEST } from "../config/kalkulator-modal";
+  import { PRICE_TEST_VARIANTS, SHOW_PRICE_TEST, VERSI_LENGKAP } from "../config/kalkulator-modal";
+  import { pasangVersiLengkap } from "../lib/modal-lengkap-ui";
   import { trackCustomEvent } from "../lib/meta-pixel";
   import {
     CATATAN_BEP_SEWA,
@@ -634,9 +719,14 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
   });
   $("#edit-numbers").addEventListener("click", () => showStep(4));
 
-  function resetAll(message: string): void {
-    if (!window.confirm("Hapus semua isian dan mulai dari awal?")) return;
+  function resetAll(message: string, { hapusTersimpan = false } = {}): void {
+    const tanya = hapusTersimpan
+      ? "Hapus semua isian dan usaha tersimpan dari perangkat ini?"
+      : "Hapus semua isian dan mulai dari awal?";
+    if (!window.confirm(tanya)) return;
     removeStorage(STORAGE_KEY);
+    if (hapusTersimpan) lengkap.hapusData();
+    else lengkap.lupakanAktif();
     state = freshState();
     fillInputs();
     renderUnits();
@@ -647,7 +737,9 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
     $("#clear-status").textContent = message;
   }
   $("#restart").addEventListener("click", () => resetAll(""));
-  $("#clear-data").addEventListener("click", () => resetAll("Data isianmu sudah dihapus dari perangkat ini."));
+  $("#clear-data").addEventListener("click", () =>
+    resetAll("Data isian dan usaha tersimpan sudah dihapus dari perangkat ini.", { hapusTersimpan: true }),
+  );
 
   // ---------- Hasil ----------
   function renderResults(r: ModalResult): void {
@@ -828,6 +920,7 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
       monthly.append(li);
     }
     $("#result-monthly").replaceChildren(monthly);
+    lengkap.render();
   }
 
   // ---------- Salin ringkasan ----------
@@ -899,23 +992,56 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
     writeStorage(VARIANT_KEY, picked);
     return picked;
   }
-  const variant = priceVariant();
-  const variantConfig = PRICE_TEST_VARIANTS.find((v) => v.id === variant);
-  if (variantConfig) {
-    const price = $("#price-test");
-    price.replaceChildren(
+  // Harga final (VERSI_LENGKAP.harga) menggantikan uji harga. price_variant tetap dikirim
+  // dengan nama event lama (modal_upgrade_click) agar data iklan bisa dibandingkan.
+  const hargaFinal = VERSI_LENGKAP.harga;
+  const variant = hargaFinal !== null ? String(hargaFinal) : priceVariant();
+  const variantConfig = hargaFinal !== null ? null : PRICE_TEST_VARIANTS.find((v) => v.id === variant);
+  const priceLine = document.querySelector<HTMLElement>("#price-test");
+  if (priceLine && hargaFinal !== null) {
+    priceLine.textContent = formatRupiah(hargaFinal);
+    priceLine.hidden = false;
+  } else if (priceLine && variantConfig) {
+    priceLine.replaceChildren(
       document.createTextNode(`Perkiraan harga ${formatRupiah(variantConfig.price)} `),
       el("span", "(harga belum final)"),
     );
-    price.hidden = false;
+    priceLine.hidden = false;
   }
-  $("#upgrade-button").addEventListener("click", () => {
+  // Belum dijual: tombol uji minat. Sudah dijual: tautan ke landing page Scalev.
+  document.querySelector("#upgrade-button")?.addEventListener("click", () => {
     trackCustomEvent("modal_upgrade_click", { price_variant: variant });
     $("#upgrade-button").hidden = true;
     const thanks = $("#upgrade-thanks");
     thanks.hidden = false;
     thanks.setAttribute("tabindex", "-1");
     thanks.focus();
+  });
+  document.querySelector("#buy-full")?.addEventListener("click", () => {
+    trackCustomEvent("modal_upgrade_click", { price_variant: variant });
+  });
+
+  // ---------- Versi lengkap (kode akses, skenario, usaha tersimpan, PDF) ----------
+  const lengkap = pasangVersiLengkap({
+    ambil: () => ({
+      businessName: state.businessName,
+      businessType: state.businessType,
+      values: state.values,
+      sewaBulananManual: state.sewaBulananManual,
+    }),
+    muat: (usaha) => {
+      state = {
+        ...freshState(),
+        businessName: usaha.businessName,
+        businessType: usaha.businessType,
+        values: { ...usaha.values },
+        sewaBulananManual: usaha.sewaBulananManual,
+      };
+      fillInputs();
+      renderUnits();
+      showStep(5);
+    },
+    satuan: () => unit(),
   });
 
   // ---------- Tur panduan ----------

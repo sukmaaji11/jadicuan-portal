@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Admin kode akses · Kalkulator Modal</title>
+<style>
+  :root { --navy:#102b56; --blue:#1677e8; --muted:#64748b; --line:#e2eaf5; --ok:#0b6656; --err:#a3392b; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#f8fbff; color:var(--navy); font:15px/1.5 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; display: grid; gap: 16px; }
+  h1 { margin: 0; font-size: 24px; letter-spacing: -.02em; }
+  h2 { margin: 0 0 10px; font-size: 18px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; }
+  .muted { color: var(--muted); }
+  .warn { background:#fff8ec; border:1px solid #f3dcb2; border-radius:12px; padding:12px 14px; }
+  label { display:block; font-weight:700; margin: 10px 0 4px; }
+  input[type=text], textarea { width:100%; padding:10px 12px; border:1px solid #c9d8ea; border-radius:10px; font: inherit; color: inherit; }
+  textarea { min-height: 150px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+  button { min-height: 42px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--blue); background: var(--blue); color:#fff; font: 700 14px/1 inherit; cursor:pointer; }
+  button.sec { background:#fff; color: var(--blue); }
+  button:disabled { opacity:.5; cursor: not-allowed; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .drop { border: 2px dashed #b9cde6; border-radius: 12px; padding: 18px; text-align:center; }
+  .drop.over { background:#eef6ff; }
+  .ok { color: var(--ok); font-weight: 700; }
+  .err { color: var(--err); font-weight: 700; }
+  code.kode { display:block; word-break: break-all; background:#f4f9ff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:14px; }
+  table { width:100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align:left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.k { font-family: ui-monospace, Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Kode akses Versi Lengkap · Kalkulator Modal</h1>
+    <p class="muted">Halaman ini berjalan offline di browser ini. Kunci rahasia hanya dibaca di sini dan hilang saat halaman ditutup. Jangan unggah halaman ini bersama kunci ke internet.</p>
+  </header>
+
+  <section class="card">
+    <h2>1. Buka kunci rahasia</h2>
+    <div class="drop" id="drop">
+      <p>Seret file <b>kalkulator-modal-kunci-rahasia.json</b> ke sini, atau</p>
+      <input type="file" id="keyfile" accept=".json,application/json" />
+    </div>
+    <p id="keystatus" class="muted">Biasanya ada di Documents\JadiCuanAdmin\.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Buat kode untuk pembeli</h2>
+    <label for="nama">Nama pembeli (opsional, untuk sapaan di pesan WA)</label>
+    <input type="text" id="nama" maxlength="60" placeholder="Contoh: Bu Ani" />
+    <label for="catatan">Catatan (opsional, mis. nomor pesanan Scalev)</label>
+    <input type="text" id="catatan" maxlength="80" placeholder="Contoh: Scalev #1234" />
+    <label for="wa">No. WhatsApp pembeli (opsional, hanya untuk tombol Buka WhatsApp)</label>
+    <input type="text" id="wa" inputmode="tel" maxlength="20" placeholder="08123456789" />
+    <div class="row"><button id="buat" disabled>Buat kode</button></div>
+    <div id="hasil" hidden>
+      <p class="ok" id="hasiljudul"></p>
+      <label>Kode akses</label>
+      <code class="kode" id="kode"></code>
+      <label>Tautan aktivasi</label>
+      <code class="kode" id="tautan"></code>
+      <label for="pesan">Pesan WhatsApp</label>
+      <textarea id="pesan"></textarea>
+      <div class="row">
+        <button class="sec" data-salin="kode">Salin kode</button>
+        <button class="sec" data-salin="tautan">Salin tautan</button>
+        <button data-salin="pesan">Salin pesan WA</button>
+        <button class="sec" id="bukawa">Buka WhatsApp</button>
+      </div>
+      <p id="salinstatus" class="muted"></p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. Riwayat kode</h2>
+    <p class="muted">Tersimpan di browser ini saja. Ekspor ke CSV secara berkala sebagai cadangan. Untuk memblokir kode yang tersebar, masukkan nomor serinya ke SERIAL_DIBLOKIR di src/config/kalkulator-modal.ts.</p>
+    <input type="text" id="cari" placeholder="Cari nama, catatan, atau nomor seri" />
+    <div class="row"><button class="sec" id="ekspor">Ekspor CSV</button></div>
+    <table><thead><tr><th>Nomor seri</th><th>Tanggal</th><th>Nama</th><th>Catatan</th><th></th></tr></thead><tbody id="riwayat"></tbody></table>
+  </section>
+</main>
+<script>
+/* ===== core.mjs (disalin oleh build-admin.mjs, jangan diedit di sini) ===== */
+// Inti pembuat kode akses Kalkulator Modal (Owner/Admin saja, OFFLINE).
+// Dipakai oleh admin.mjs (Node) dan disalin ke admin.html (browser) oleh build-admin.mjs.
+// Format harus sama dengan src/lib/akses-kode.ts (situs hanya memeriksa, tidak membuat).
+// Hanya memakai Web Crypto, jadi berjalan di Node 20+ dan Chrome/Edge.
+
+const ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+const KODE_VERSI = 1;
+const KODE_PRODUK = 1;
+const AWALAN_PESAN = "JCKM";
+const EPOCH_MS = Date.UTC(2026, 0, 1);
+const SITUS = "https://jadicuan.co.id/kalkulator-modal/";
+
+function base32Encode(bytes) {
+  let bits = 0;
+  let value = 0;
+  let out = "";
+  for (const byte of bytes) {
+    value = (value << 8) | byte;
+    bits += 8;
+    while (bits >= 5) {
+      out += ALPHABET[(value >>> (bits - 5)) & 31];
+      bits -= 5;
+    }
+    value &= (1 << bits) - 1;
+  }
+  if (bits > 0) out += ALPHABET[(value << (5 - bits)) & 31];
+  return out;
+}
+
+function labelSerial(serial) {
+  return `KM-${(serial >>> 0).toString(16).toUpperCase().padStart(8, "0")}`;
+}
+
+function formatKode(kode) {
+  return kode.replace(/(.{4})(?=.)/g, "$1-");
+}
+
+/** Nomor hari menurut tanggal WIB (UTC+7), supaya tanggal kode sama dengan kalender Owner. */
+function hariIni(now = Date.now()) {
+  return Math.max(0, Math.floor((now + 7 * 3_600_000 - EPOCH_MS) / 86_400_000));
+}
+
+/** Pasangan kunci baru. Simpan `rahasia` di tempat aman; `publik` (x, y) masuk ke config situs. */
+async function buatPasanganKunci() {
+  const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+  const rahasia = await crypto.subtle.exportKey("jwk", pair.privateKey);
+  return {
+    format: "jadicuan-akses-kalkulator-modal",
+    versi: 1,
+    dibuat: new Date().toISOString(),
+    rahasia,
+    publik: { x: rahasia.x, y: rahasia.y },
+  };
+}
+
+/** Baca dan periksa file kunci rahasia (JSON dari buatPasanganKunci). */
+async function bacaKunci(json) {
+  const data = typeof json === "string" ? JSON.parse(json) : json;
+  if (data?.format !== "jadicuan-akses-kalkulator-modal" || data?.rahasia?.kty !== "EC" || !data.rahasia.d) {
+    throw new Error("Ini bukan file kunci rahasia Kalkulator Modal.");
+  }
+  const key = await crypto.subtle.importKey("jwk", data.rahasia, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+  return { key, publik: data.publik };
+}
+
+function serialAcak() {
+  const b = new Uint32Array(1);
+  crypto.getRandomValues(b);
+  return b[0];
+}
+
+/** Buat satu kode. Nomor seri acak 32-bit, jadi CLI dan halaman admin tidak perlu berbagi urutan. */
+async function buatKode(kunci, { serial = serialAcak(), hari = hariIni() } = {}) {
+  const payload = new Uint8Array(8);
+  const view = new DataView(payload.buffer);
+  view.setUint8(0, KODE_VERSI);
+  view.setUint8(1, KODE_PRODUK);
+  view.setUint32(2, serial >>> 0);
+  view.setUint16(6, hari);
+  const prefix = new TextEncoder().encode(AWALAN_PESAN);
+  const msg = new Uint8Array(prefix.length + payload.length);
+  msg.set(prefix, 0);
+  msg.set(payload, prefix.length);
+  const sig = new Uint8Array(await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, kunci.key, msg));
+  const all = new Uint8Array(payload.length + sig.length);
+  all.set(payload, 0);
+  all.set(sig, payload.length);
+  const kode = base32Encode(all);
+  return {
+    serial: serial >>> 0,
+    label: labelSerial(serial),
+    tanggal: new Date(EPOCH_MS + hari * 86_400_000).toISOString().slice(0, 10),
+    kode,
+    tautan: `${SITUS}#kode=${kode}`,
+  };
+}
+
+/** Pesan WhatsApp siap kirim ke pembeli. */
+function pesanWhatsApp(hasil, nama = "") {
+  return [
+    `Halo${nama ? ` ${nama}` : ""}, terima kasih sudah membeli Versi Lengkap Kalkulator Modal JadiCuan.`,
+    "",
+    "Buka tautan ini untuk mengaktifkan:",
+    hasil.tautan,
+    "",
+    "Atau tempel kode akses ini di halaman kalkulator (bagian Versi lengkap → Sudah punya kode akses?):",
+    formatKode(hasil.kode),
+    "",
+    `Nomor seri: ${hasil.label}. Simpan pesan ini. Kode yang sama bisa dipakai lagi kalau kamu ganti HP.`,
+    "Mohon jangan dibagikan ke orang lain.",
+  ].join("\n");
+}
+
+/* ===== akhir core ===== */
+
+const KUNCI_PUBLIK_SITUS = {"x":"Xt9rBcEfOzmwYYp8HsX9D4GwmmV2MWRXzElrOqiYk90","y":"GaoRPEzurfMx2G_W4BCxWXBJ9K9ehdKb0bRwb-BH67U"};
+const RIWAYAT_KEY = "jadicuan-admin:kalkulator-modal:riwayat";
+let kunci = null;
+let terakhir = null;
+const $ = (id) => document.getElementById(id);
+
+async function muatKunci(file) {
+  const st = $("keystatus");
+  try {
+    const k = await bacaKunci(await file.text());
+    if (k.publik.x !== KUNCI_PUBLIK_SITUS.x || k.publik.y !== KUNCI_PUBLIK_SITUS.y) {
+      throw new Error("Kunci ini tidak cocok dengan kunci publik di situs. Kode yang dibuat tidak akan diterima.");
+    }
+    kunci = k;
+    st.className = "ok";
+    st.textContent = "Kunci cocok dengan situs. Siap membuat kode.";
+    $("buat").disabled = false;
+  } catch (e) {
+    kunci = null;
+    $("buat").disabled = true;
+    st.className = "err";
+    st.textContent = e.message || "File kunci tidak bisa dibaca.";
+  }
+}
+$("keyfile").addEventListener("change", (e) => e.target.files[0] && muatKunci(e.target.files[0]));
+const drop = $("drop");
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) muatKunci(f); });
+
+function bacaRiwayat() { try { return JSON.parse(localStorage.getItem(RIWAYAT_KEY) || "[]"); } catch { return []; } }
+function simpanRiwayat(r) { try { localStorage.setItem(RIWAYAT_KEY, JSON.stringify(r)); } catch {} }
+
+$("buat").addEventListener("click", async () => {
+  if (!kunci) return;
+  const nama = $("nama").value.trim();
+  const catatan = $("catatan").value.trim();
+  const h = await buatKode(kunci);
+  terakhir = { ...h, nama, catatan };
+  simpanRiwayat([terakhir, ...bacaRiwayat()]);
+  $("hasil").hidden = false;
+  $("hasiljudul").textContent = `Kode ${h.label} dibuat (${h.tanggal}).`;
+  $("kode").textContent = formatKode(h.kode);
+  $("tautan").textContent = h.tautan;
+  $("pesan").value = pesanWhatsApp(h, nama);
+  $("salinstatus").textContent = "";
+  tampilRiwayat();
+});
+
+for (const b of document.querySelectorAll("[data-salin]")) {
+  b.addEventListener("click", async () => {
+    const id = b.dataset.salin;
+    const text = id === "pesan" ? $("pesan").value : $(id).textContent;
+    try { await navigator.clipboard.writeText(text); $("salinstatus").textContent = "Tersalin."; }
+    catch { $("salinstatus").textContent = "Gagal menyalin otomatis. Blok teksnya lalu salin manual."; }
+  });
+}
+$("bukawa").addEventListener("click", () => {
+  let no = $("wa").value.replace(/\D/g, "");
+  if (no.startsWith("0")) no = "62" + no.slice(1);
+  const url = (no ? `https://wa.me/${no}` : "https://wa.me/") + `?text=${encodeURIComponent($("pesan").value)}`;
+  window.open(url, "_blank", "noopener");
+});
+
+function tampilRiwayat() {
+  const q = $("cari").value.trim().toLowerCase();
+  const rows = bacaRiwayat().filter((r) => !q || [r.label, r.nama, r.catatan].join(" ").toLowerCase().includes(q));
+  $("riwayat").replaceChildren(...rows.map((r) => {
+    const tr = document.createElement("tr");
+    for (const v of [r.label, r.tanggal, r.nama, r.catatan]) { const td = document.createElement("td"); td.textContent = v || ""; tr.append(td); }
+    const td = document.createElement("td");
+    const btn = document.createElement("button");
+    btn.className = "sec"; btn.textContent = "Kirim ulang";
+    btn.addEventListener("click", () => {
+      terakhir = r;
+      $("hasil").hidden = false;
+      $("hasiljudul").textContent = `Kode lama ${r.label} (${r.tanggal}).`;
+      $("kode").textContent = formatKode(r.kode);
+      $("tautan").textContent = r.tautan;
+      $("pesan").value = pesanWhatsApp(r, r.nama);
+      $("nama").value = r.nama || ""; $("catatan").value = r.catatan || "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    td.append(btn); tr.append(td);
+    return tr;
+  }));
+}
+$("cari").addEventListener("input", tampilRiwayat);
+$("ekspor").addEventListener("click", () => {
+  const esc = (s) => `"${String(s ?? "").replace(/"/g, '""')}"`;
+  const lines = ["nomor_seri,tanggal,nama,catatan,kode,tautan", ...bacaRiwayat().map((r) => [r.label, r.tanggal, r.nama, r.catatan, r.kode, r.tautan].map(esc).join(","))];
+  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `riwayat-kode-kalkulator-modal-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+});
+tampilRiwayat();
+</script>
+</body>
+</html>

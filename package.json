@@ -11,9 +11,10 @@
     "build": "astro check && astro build",
     "check": "astro check",
     "test:hpp": "node --test src/lib/hpp.test.mjs",
-    "test:modal": "node --test src/lib/modal.test.mjs src/lib/modal-sewa.test.mjs",
+    "test:modal": "node --test src/lib/modal.test.mjs src/lib/modal-sewa.test.mjs src/lib/modal-lengkap.test.mjs src/lib/akses-kode.test.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "admin:kode": "node tools/akses-kalkulator-modal/build-admin.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.0",
@@ -24,6 +25,7 @@
     "@sanity/client": "^8.14.1",
     "@sanity/image-url": "^2.1.1",
     "astro": "^6.0.0",
+    "jspdf": "4.2.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "sanity": "6.20.0",

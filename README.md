@@ -17,7 +17,7 @@ Kalkulator HPP tersedia di `/kalkulator-hpp/`, dan Kalkulator Modal & Balik Moda
 | `modal_start` | Interaksi pertama dengan isian (termasuk "Pakai contoh"), sekali per kunjungan | – |
 | `modal_complete` | Sampai halaman hasil, sekali per muat halaman | – |
 | `modal_share_click` | Klik "Salin ringkasan" | – |
-| `modal_upgrade_click` | Klik "Kabari aku saat tersedia" | `price_variant`: `79000`, `99000`, atau `off` |
+| `modal_upgrade_click` | Klik "Kabari aku saat tersedia", atau "Beli versi lengkap" setelah dijual | `price_variant`: `79000`, `99000`, `off`, atau harga final |
 
 Isian dan hasil hitung pengunjung tidak pernah dikirim ke Pixel. Event Kalkulator HPP tidak diubah.
 
@@ -29,6 +29,43 @@ Versi lengkap belum ada. Kartu terkunci di bawah hasil hanya mengukur minat: tid
 - **Mengganti harga:** ubah `PRICE_TEST_VARIANTS`. `price` adalah angka yang tampil, `id` adalah nilai yang dikirim sebagai `price_variant`. Ganti `id` juga kalau harganya diganti, supaya data lama dan baru tidak tercampur. Pengunjung lama otomatis mendapat varian baru.
 
 Setiap pengunjung mendapat satu varian secara acak, yang disimpan di `localStorage` (`jadicuan:kalkulator-modal:varian-harga`).
+
+### Versi lengkap (kode akses, tanpa login)
+
+Isinya: 3 skenario (sepi, normal, ramai), simpan sampai 20 usaha, dan unduh PDF. Semuanya dihitung dan disimpan di browser pembeli. Tidak ada akun, server, atau data pembeli di situs.
+
+**Alur penjualan:**
+
+1. Pembeli menekan "Beli versi lengkap" dan membayar di landing page Scalev.
+2. Owner membuat kode di `tools/akses-kalkulator-modal/admin.html`. Halaman ini dibuka offline dengan klik dua kali. Caranya:
+   - Seret file kunci rahasia ke halaman.
+   - Isi nama atau nomor pesanan Scalev.
+   - Tekan **Buat kode**, lalu **Salin pesan WA** atau **Buka WhatsApp**.
+3. Pembeli membuka tautan di pesan itu (`/kalkulator-modal/#kode=...`), atau menempel kodenya di "Sudah punya kode akses?". Versi lengkap langsung aktif.
+
+**Cara kerja kode:**
+
+- Kode ditandatangani ECDSA P-256 dengan kunci rahasia Owner. Situs hanya memegang kunci publik, jadi kode tidak bisa dipalsukan (`src/lib/akses-kode.ts`).
+- Kode tidak terikat ke HP. Setelah ganti HP atau menghapus data browser, kode yang sama tinggal dimasukkan lagi.
+- Kode dari tautan dipindahkan dari alamat halaman sebelum Meta Pixel dimuat, jadi tidak ikut tercatat di Pixel.
+
+**Kunci rahasia:**
+
+- Lokasinya `%USERPROFILE%\Documents\JadiCuanAdmin\kalkulator-modal-kunci-rahasia.json`.
+- Cadangkan di dua tempat aman. Jangan di-commit dan jangan dikirim lewat chat.
+- Kalau kunci hilang, kode baru tidak bisa dibuat. Kalau kunci diganti, semua kode lama tidak berlaku.
+- Alternatif lewat terminal:
+  - `node tools/akses-kalkulator-modal/admin.mjs buat --nama "Bu Ani" --catatan "Scalev #1234"`
+  - Riwayat kode disimpan di CSV di folder kunci yang sama.
+
+**Pengaturan** (`src/config/kalkulator-modal.ts`, `VERSI_LENGKAP`):
+
+- **Mulai menjual:**
+  1. Isi `urlPembelian` dengan tautan Scalev.
+  2. Ubah `dijual` menjadi `true`.
+  3. Isi `harga` dengan harga final. Harga ini harus sama dengan harga di Scalev. Selama `harga` masih `null`, uji harga tetap berjalan.
+- **Memblokir kode yang tersebar:** tambahkan nomor serinya ke `SERIAL_DIBLOKIR`. Contoh: `KM-1A2B3C4D` ditulis `0x1a2b3c4d`. Setelah itu deploy ulang.
+- **Setelah mengubah `core.mjs` atau `admin.template.html`:** jalankan `npm run admin:kode`. Uji akan gagal kalau `admin.html` tertinggal dari sumbernya.
 
 ## Menjalankan secara lokal
 
