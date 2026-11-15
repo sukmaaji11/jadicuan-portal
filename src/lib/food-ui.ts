@@ -29,6 +29,8 @@ import { barisEksporFood, namaFileEksporFood } from "./food-ekspor";
 import { keCsv } from "./seller-ekspor";
 import { unduhTeks } from "./impor-csv-ui";
 import { unduhXlsx } from "./ekspor-xlsx";
+import { trackCustomEvent } from "./meta-pixel";
+import { rentangBaris } from "./seller-csv";
 
 const KEY_PENGATURAN = "jadicuan:kalkulator-pesan-antar:pengaturan";
 const KEY_TIMPAAN = "jadicuan:kalkulator-pesan-antar:timpaan";
@@ -149,6 +151,8 @@ export function pasangKalkulatorFood(): KonteksFood {
   let pengaturan = muatPengaturan();
   let timpaan = (bacaSimpan<Record<string, TimpaanFood>>(KEY_TIMPAAN) ?? {}) as Partial<Record<PlatformId, TimpaanFood>>;
   const pendengar: Array<() => void> = [];
+  let sudahMulai = false;
+  let sudahSelesai = false;
   const ubah = () => pendengar.forEach((f) => f());
 
   const ctx: KonteksFood = {
@@ -163,7 +167,21 @@ export function pasangKalkulatorFood(): KonteksFood {
     platformAktif: () => PLATFORMS.filter((p) => pengaturan.platformAktif.includes(p)),
     hitung: (menu, id) => hitungFood(menu, id, ctx.profil(id), pengaturan, ctx.kemitraan(id)),
     onUbah: (fn) => pendengar.push(fn),
-    lacak: { mulai: () => undefined, selesai: () => undefined, salin: () => undefined, ekspor: () => undefined }, // diisi tahap event
+    // Pelacakan: nama event saja + rentang/format. TANPA HPP, harga, atau nama menu.
+    lacak: {
+      mulai: () => {
+        if (sudahMulai) return;
+        sudahMulai = true;
+        trackCustomEvent("food_calc_start");
+      },
+      selesai: () => {
+        if (sudahSelesai || !sudahMulai) return;
+        sudahSelesai = true;
+        trackCustomEvent("food_calc_complete");
+      },
+      salin: () => trackCustomEvent("food_share_click"),
+      ekspor: (format) => trackCustomEvent("food_export", { format }),
+    },
   };
 
   function simpanSemua(): void {
@@ -274,6 +292,7 @@ export function pasangKalkulatorFood(): KonteksFood {
     if (!menu) return;
     const aktif = ctx.platformAktif();
     const hasil = aktif.map((id) => ({ id, h: ctx.hitung(menu, id) }));
+    if (hasil.some((x) => x.h.ok)) ctx.lacak.selesai(); // hanya setelah pengguna mulai mengisi (bukan dari draf)
     kartu.replaceChildren(...hasil.map(({ id, h }) => renderKartu(menu, id, h)));
     if (!aktif.length) kartu.append(el("p", "Belum ada platform yang aktif. Pilih platform di Pengaturan.", "seller-empty"));
     kartu.after(statusSalin);
@@ -468,6 +487,11 @@ export function pasangKalkulatorFood(): KonteksFood {
     }, 0);
   });
   pasangBanyakMenu(ctx, {
+    onImpor: (n) => {
+      ctx.lacak.mulai();
+      trackCustomEvent("food_csv_import", { baris: rentangBaris(n) });
+      ctx.lacak.selesai();
+    },
     aksiTambahan: (bar, data) =>
       bar.append(tombolEkspor(ctx, () => data().map((d) => ({ menu: d.menu, hasil: ctx.platformAktif().filter((id) => d.hasil[id]).map((id) => ({ nama: ctx.profil(id).nama, h: d.hasil[id] })) })))),
   });
