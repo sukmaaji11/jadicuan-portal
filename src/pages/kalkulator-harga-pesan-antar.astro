@@ -1,0 +1,122 @@
+---
+import SiteLayout from "../components/SiteLayout.astro";
+import MetaPixel from "../components/MetaPixel.astro";
+import SellerField from "../components/kalkulator-seller/SellerField.astro";
+
+const webApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Kalkulator Harga Pesan Antar JadiCuan",
+  url: "https://jadicuan.co.id/kalkulator-harga-pesan-antar/",
+  description: "Hitung harga display menu di GoFood, GrabFood, ShopeeFood, dan TikTok supaya untung per porsi tetap aman setelah potongan platform.",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  inLanguage: "id-ID",
+};
+
+const HELP = {
+  hpp: "Modal bahan untuk satu porsi, sebelum dikemas.",
+  packing: "Biaya kemasan per porsi: box, plastik, sendok, stiker.",
+  offline: "Harga yang kamu pasang di lapak atau warung. Dipakai untuk melihat apa yang terjadi kalau harga di aplikasi disamakan.",
+  target: "Untung bersih yang ingin kamu pegang per porsi, dalam rupiah, atau dalam persen dari yang dibayar pembeli.",
+};
+---
+
+<SiteLayout
+  title="Kalkulator Harga Pesan Antar (GoFood, GrabFood, ShopeeFood) — JadiCuan"
+  description="Hitung harga display menu di GoFood, GrabFood, ShopeeFood, dan TikTok supaya untung per porsi tetap aman setelah komisi dan biaya platform. Data tetap di perangkatmu."
+  canonicalPath="/kalkulator-harga-pesan-antar"
+>
+  <section class="hpp-page modal-page seller-page food-page">
+    <header class="hpp-intro seller-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Untuk penjual makanan di aplikasi pesan antar</span>
+      <h1>Kalkulator harga pesan antar.</h1>
+      <p>Isi modal satu menu, lalu lihat harga display yang aman di GoFood, GrabFood, ShopeeFood, dan TikTok, uang bersih yang kamu terima, dan untung per porsinya. Semua dihitung di perangkatmu.</p>
+    </header>
+
+    <aside class="seller-banner" role="note" aria-labelledby="food-banner-title">
+      <strong id="food-banner-title">Angka potongan belum diverifikasi.</strong>
+      <p>Cek laporan keuangan di aplikasi mitra kamu, lalu masukkan angka sebenarnya di <a href="#food-settings" data-open-settings>Pengaturan</a>. Angka bawaan hanya angka referensi dari artikel dan contoh di dokumen platform, karena tiap platform menyepakati tarif per mitra.</p>
+    </aside>
+
+    <div class="seller-tabs" role="tablist" aria-label="Cara menghitung">
+      <button class="seller-tab" type="button" role="tab" id="ftab-satu" aria-controls="fpanel-satu" aria-selected="true">Satu menu</button>
+      <button class="seller-tab" type="button" role="tab" id="ftab-csv" aria-controls="fpanel-csv" aria-selected="false" tabindex="-1">Banyak menu (CSV)</button>
+    </div>
+
+    <!-- Tab satu menu -->
+    <section class="hpp-panel seller-panel" id="fpanel-satu" role="tabpanel" aria-labelledby="ftab-satu">
+      <form class="seller-form" id="food-form" novalidate>
+        <div class="modal-grid">
+          <SellerField field="nama" label="Nama menu" kind="teks" placeholder="Contoh: Nasi goreng ayam" />
+          <SellerField field="hpp" label="HPP / modal per porsi" kind="rupiah" placeholder="12.000" help={HELP.hpp} />
+          <SellerField field="packing" label="Packing per porsi" kind="rupiah" optional placeholder="1.500" help={HELP.packing} />
+          <SellerField field="hargaOffline" label="Harga di lapak" kind="rupiah" optional placeholder="20.000" help={HELP.offline} />
+        </div>
+        <fieldset class="food-target">
+          <legend>Target untung per porsi <button class="modal-help-button" type="button" aria-expanded="false" aria-controls="food-target-help" data-help-toggle><span aria-hidden="true">?</span><span class="sr-only">Apa itu target untung?</span></button></legend>
+          <p class="modal-help-text" id="food-target-help" hidden>{HELP.target}</p>
+          <div class="food-target-row">
+            <label class="modal-check"><input type="radio" name="food-mode" value="margin" data-target-mode /> <span>Persen</span></label>
+            <label class="modal-check"><input type="radio" name="food-mode" value="rp" data-target-mode /> <span>Rupiah</span></label>
+            <div class="modal-input-wrap has-suffix food-target-input" data-target-wrap="margin">
+              <input id="food-target-margin" type="text" inputmode="decimal" autocomplete="off" aria-label="Target margin dalam persen" />
+              <span class="modal-affix modal-affix-end" aria-hidden="true">% dari harga bayar</span>
+            </div>
+            <div class="modal-input-wrap has-prefix food-target-input" data-target-wrap="rp">
+              <span class="modal-affix modal-affix-start" aria-hidden="true">Rp</span>
+              <input id="food-target-rp" type="text" inputmode="numeric" autocomplete="off" aria-label="Target untung per porsi dalam rupiah" />
+            </div>
+          </div>
+          <p class="modal-hint">Berlaku untuk semua menu. Diskon, overhead, dan potongan tiap platform diatur di Pengaturan.</p>
+        </fieldset>
+      </form>
+
+      <p class="seller-empty" id="food-empty">Isi HPP menu untuk melihat harga display tiap platform.</p>
+      <div class="food-results" id="food-results" hidden>
+        <div class="food-cards" id="food-cards"></div>
+        <section class="food-offline" id="food-offline" aria-labelledby="food-offline-title" hidden>
+          <h2 id="food-offline-title">Kalau harganya disamakan dengan harga lapak</h2>
+          <ul id="food-offline-list"></ul>
+        </section>
+      </div>
+    </section>
+
+    <!-- Tab banyak menu (tahap 3) -->
+    <section class="hpp-panel seller-panel" id="fpanel-csv" role="tabpanel" aria-labelledby="ftab-csv" hidden>
+      <div id="food-csv-root"></div>
+    </section>
+
+    <details class="modal-advanced seller-settings" id="food-settings">
+      <summary>Pengaturan</summary>
+      <div class="seller-settings-body" id="food-settings-body"></div>
+    </details>
+
+    <section class="seller-results" id="food-table-section" aria-labelledby="food-table-title" hidden>
+      <div class="hpp-section-heading">
+        <span class="section-kicker">Hasil banyak menu</span>
+        <h2 id="food-table-title" tabindex="-1">Harga display per platform</h2>
+      </div>
+      <div id="food-table-root"></div>
+    </section>
+
+    <!-- Tempat ajakan lanjutan nanti (sengaja kosong). -->
+    <div class="seller-cta-slot" id="food-cta-slot" hidden></div>
+
+    <footer class="seller-disclaimer">
+      <p><strong>Hasil ini estimasi. Potongan tiap penjual bisa berbeda tergantung kontrak, promo, dan jenis kemitraan. Cek laporan di aplikasi mitra. Bukan nasihat pajak atau keuangan.</strong></p>
+      <p>Data menu dan file CSV-mu tidak keluar dari perangkat ini: semua dihitung di browser dan tidak dikirim ke server. Pengaturan disimpan di perangkat ini saja.</p>
+    </footer>
+  </section>
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(webApplicationJsonLd).replace(/</g, "\\u003c")}
+  />
+  <MetaPixel tool="food" />
+</SiteLayout>
+
+<script>
+  import { pasangKalkulatorFood } from "../lib/food-ui";
+  pasangKalkulatorFood();
+</script>

@@ -4351,3 +4351,272 @@ button.seller-summary-card {
   gap: 14px;
   min-width: 0;
 }
+
+/* =========================================================================
+   Kalkulator Harga Pesan Antar (/kalkulator-harga-pesan-antar/)
+   Memakai kelas dan variabel Kalkulator Untung Seller (.seller-page) dan form portal.
+   ========================================================================= */
+.food-target {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f9fbff;
+}
+
+.food-target legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.food-target-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.food-target-input {
+  grid-column: 1 / -1;
+}
+
+.food-target .modal-hint {
+  margin: 0;
+}
+
+.food-results {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.food-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.food-card {
+  --accent: var(--sehat);
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--sehat-line);
+  border-left: 5px solid var(--accent);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(27, 68, 122, 0.05);
+}
+
+.food-card.is-tipis {
+  --accent: #d9a33a;
+  border-color: var(--tipis-line);
+  border-left-color: var(--accent);
+}
+
+.food-card.is-rugi {
+  --accent: var(--rugi);
+  border-color: var(--rugi-line);
+  border-left-color: var(--accent);
+  background: #fffaf9;
+}
+
+.food-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.food-card-head strong {
+  color: var(--navy);
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.food-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.food-price {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2px 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f4f9ff;
+}
+
+.food-price span {
+  grid-column: 1;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.food-price strong {
+  grid-column: 1;
+  color: var(--blue);
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.food-price .food-copy {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  min-height: 44px;
+  padding: 0 14px;
+}
+
+.food-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.food-metrics div {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.food-metrics dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.food-metrics dd {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.food-metrics .is-minus dd {
+  color: var(--rugi);
+}
+
+.food-status-note,
+.food-problem {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.food-problem {
+  color: var(--rugi);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.food-breakdown {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.food-breakdown summary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.food-breakdown .seller-breakdown {
+  margin-top: 6px;
+}
+
+.food-results .modal-copy-status:empty {
+  display: none;
+}
+
+.food-offline {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #cfe0f4;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.food-offline h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.food-offline ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.food-offline li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: #f7faff;
+  color: #334864;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.food-offline li.is-rugi {
+  background: var(--rugi-bg);
+}
+
+.food-offline li.is-tipis {
+  background: var(--tipis-bg);
+}
+
+@media (min-width: 760px) {
+  .food-target-row {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .food-target-input {
+    grid-column: auto;
+  }
+
+  .food-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .food-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

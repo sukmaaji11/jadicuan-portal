@@ -29,23 +29,9 @@ const KEY_DRAF = "jadicuan:kalkulator-seller:draf";
 
 export const PROFIL_DASAR = biaya.profil as unknown as Record<MarketplaceId, ProfilBiaya>;
 
-// ---------- Penyimpanan aman ----------
-export function bacaSimpan<T>(key: string): T | null {
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : null;
-  } catch {
-    return null;
-  }
-}
-export function tulisSimpan(key: string, value: unknown): void {
-  try {
-    if (value === null) window.localStorage.removeItem(key);
-    else window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    /* penyimpanan penuh atau diblokir: abaikan */
-  }
-}
+// Penyimpanan aman dan format isian: modul bersama (dipakai juga kalkulator lain).
+import { bacaSimpan, persenTeks, ribuan, tulisSimpan } from "./penyimpanan";
+export { bacaSimpan, ribuan, tulisSimpan };
 
 function $(id: string): HTMLElement {
   const node = document.getElementById(id);
@@ -53,12 +39,6 @@ function $(id: string): HTMLElement {
   return node;
 }
 
-/** "1250000" -> "1.250.000" untuk ditampilkan di isian. */
-export function ribuan(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "";
-  return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-const persenTeks = (v: number | null | undefined) => (v === null || v === undefined || !Number.isFinite(v) ? "" : String(v).replace(".", ","));
 
 // ---------- State bersama ----------
 export type ItemDaftar = { id: number; produk: Produk; sumber: "manual" | "csv"; baris?: number };
