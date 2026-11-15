@@ -20,6 +20,8 @@ import { el, renderKartuHasil } from "./seller-tampil";
 import { pasangHasil } from "./seller-hasil";
 import { pasangImpor } from "./seller-impor";
 import { pasangBanding } from "./seller-banding";
+import { rentangBaris } from "./seller-csv";
+import { trackCustomEvent } from "./meta-pixel";
 
 const KEY_PENGATURAN = "jadicuan:kalkulator-seller:pengaturan";
 const KEY_TIMPAAN = "jadicuan:kalkulator-seller:timpaan";
@@ -135,6 +137,22 @@ export function pasangKalkulatorSeller(): KonteksSeller {
     profilCache = new Map();
     ubah();
   }
+
+  // ---------- Pelacakan (nama event saja + rentang/format, TANPA isi produk atau angka) ----------
+  let sudahMulai = false;
+  let sudahSelesai = false;
+  const lacak = {
+    mulai(): void {
+      if (sudahMulai) return;
+      sudahMulai = true;
+      trackCustomEvent("seller_calc_start");
+    },
+    selesai(): void {
+      if (sudahSelesai) return;
+      sudahSelesai = true;
+      trackCustomEvent("seller_calc_complete");
+    },
+  };
 
   // ---------- Tab ----------
   const tabs = [...document.querySelectorAll<HTMLButtonElement>(".seller-tab")];
@@ -258,11 +276,13 @@ export function pasangKalkulatorSeller(): KonteksSeller {
     $("single-result").hidden = !p;
     $("single-empty").hidden = !!p;
     if (!p) return;
+    if (sudahMulai) lacak.selesai(); // hanya setelah pengguna sendiri mulai mengisi (bukan dari draf)
     const h = ctx.hitung(p);
     kartu.replaceChildren(renderKartuHasil(p, h, { targetMarginPersen: pengaturan.targetMarginPersen, namaMarketplace: ctx.profil(p.marketplace).nama }));
   }
 
   form.addEventListener("input", () => {
+    lacak.mulai();
     petunjukKomisi();
     renderSatu();
     simpanDraf();
@@ -497,8 +517,14 @@ export function pasangKalkulatorSeller(): KonteksSeller {
     petunjukKomisi();
     renderSatu();
   });
-  pasangHasil(ctx);
-  pasangImpor(ctx);
+  pasangHasil(ctx, { onEkspor: (format) => trackCustomEvent("seller_export", { format }) });
+  pasangImpor(ctx, {
+    onImpor: (jumlahBaris) => {
+      lacak.mulai();
+      trackCustomEvent("seller_csv_import", { baris: rentangBaris(jumlahBaris) });
+      if (ctx.daftar().some((d) => d.sumber === "csv")) lacak.selesai();
+    },
+  });
   const isiBanding = pasangBanding(ctx);
   let adaBanding = false;
   ctx.isiFormBanding = (p) => {
