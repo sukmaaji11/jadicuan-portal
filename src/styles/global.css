@@ -4088,3 +4088,117 @@ button.seller-summary-card {
     padding: 22px;
   }
 }
+
+/* Impor CSV */
+.seller-import-intro h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+}
+
+.seller-import-intro p {
+  margin: 0;
+  color: #334864;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.seller-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.seller-drop {
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  min-height: 120px;
+  padding: 20px;
+  border: 2px dashed #b9cde6;
+  border-radius: 14px;
+  background: #f7fbff;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.seller-drop strong {
+  color: var(--blue);
+  font-size: 17px;
+}
+
+.seller-drop.is-over,
+.seller-drop:focus-within {
+  border-color: var(--blue);
+  background: #edf6ff;
+}
+
+.seller-import-privacy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.seller-import-status {
+  margin: 0;
+  color: var(--sehat);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.seller-import-status:empty {
+  display: none;
+}
+
+.seller-import-status.is-error {
+  color: var(--rugi);
+}
+
+.seller-mapping {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #cfe0f4;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.seller-mapping h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.seller-mapping p {
+  margin: 0;
+  color: #334864;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.seller-mapping-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.seller-mapping .button {
+  justify-self: start;
+}
+
+.seller-error-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0 16px 16px 34px;
+  color: #334864;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (min-width: 760px) {
+  .seller-mapping-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

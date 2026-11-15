@@ -1,0 +1,31 @@
+﻿nama_produk;sku;harga_jual;hpp;marketplace;kategori;komisi_persen;diskon_penjual;affiliate_persen;biaya_iklan;roas;packing;retur_persen;biaya_retur;gratis_ongkir;promo;terjual_per_bulan
+Kaos polos hitam;KAOS-01;75.000;42.000;Shopee;Pakaian Pria;8,25;5.000;;;6;1.500;2;15.000;ya;tidak;120
+Kaos polos putih;KAOS-02;75.000;42.000;Shopee;Pakaian Pria;8,25;;;;;1.500;2;15.000;tidak;tidak;95
+Kemeja flanel;KMJ-01;149.000;118.000;Shopee;Pakaian Pria;9;15%;;;4;2.000;5;20.000;tidak;ya;30
+Hijab voal;HJB-01;45.000;21.000;Shopee;Fashion Muslim;10;;;;;1.000;1;10.000;tidak;tidak;300
+Gamis katun;GMS-01;189.000;160.000;Shopee;Fashion Muslim;10;10%;5;;;2.500;4;25.000;tidak;ya;25
+Sepatu sneakers;SPT-01;189.000;120.000;TikTok Shop;Sepatu;6;10%;5;8.000;;2.000;3;25.000;tidak;ya;40
+Sandal jepit;SDL-01;25.000;17.500;TikTok Shop;Sepatu;6;;8;;3;1.000;2;8.000;tidak;tidak;500
+Keripik pedas 200 g;KRP-01;18.000;12.500;Tokopedia;Makanan & Minuman;6;;;;;1.000;;;tidak;tidak;300
+Sambal botol;SMB-01;32.000;15.000;Tokopedia;Makanan & Minuman;6;2.000;;;;1.500;1;12.000;tidak;tidak;150
+Kopi bubuk 250 g;KOP-01;55.000;30.000;Shopee;Makanan & Minuman;6,5;;;;;1.500;;;ya;tidak;80
+Powerbank 10000mAh;PWB-01;149.000;118.000;TikTok Shop;Ponsel & Elektronik;4;5.000;3;;;2.000;4;30.000;tidak;ya;60
+Kabel data Type-C;KBL-01;19.000;9.000;Shopee;Handphone & Aksesoris;5,25;;;;;800;3;6.000;tidak;tidak;400
+Earphone TWS;TWS-01;129.000;110.000;Shopee;Audio;9,5;10%;;;3;1.500;6;25.000;ya;ya;70
+Serum wajah 20 ml;SRM-01;89.000;35.000;TikTok Shop;Kecantikan & Perawatan Pribadi;7;;10;;5;1.500;2;15.000;tidak;ya;200
+Sabun cuci muka;SBN-01;39.000;31.000;Shopee;Perawatan & Kecantikan;8,25;3.000;;;;1.000;2;10.000;tidak;tidak;180
+Tas selempang;TAS-01;99.000;55.000;TikTok Shop;Koper & Tas;7;;;;;2.000;3;20.000;tidak;tidak;45
+Dompet kulit;DMP-01;120.000;95.000;Shopee;Tas Pria;9;10%;5;;4;1.500;2;20.000;tidak;ya;35
+Mainan balok;MNB-01;65.000;38.000;TikTok Shop;Mainan & Hobi;6;;;3.000;;2.000;1;15.000;tidak;tidak;50
+Botol minum 1 L;BTL-01;45.000;22.000;Shopee;Perlengkapan Rumah;9;;;;;1.500;2;10.000;ya;tidak;220
+Pisau dapur;PSU-01;35.000;26.000;TikTok Shop;Peralatan Dapur;6;2.000;5;;;1.500;3;10.000;tidak;ya;90
+Sprei katun;SPR-01;159.000;98.000;Tokopedia;Tekstil & Furnishing;7;;;;;3.000;2;25.000;tidak;tidak;20
+Buku tulis isi 10;BKU-01;28.000;22.500;Shopee;Buku & Alat Tulis;10;;;;;1.000;1;8.000;tidak;tidak;150
+Pakan kucing 1 kg;PKN-01;62.000;48.000;TikTok Shop;Perlengkapan Hewan;6;;;;;1.500;1;15.000;tidak;tidak;100
+Lampu LED 12 W;LMP-01;27.000;14.000;Shopee;Perlengkapan Rumah;9;;;;;1.000;2;7.000;tidak;tidak;250
+;ERR-01;50.000;20.000;Shopee;Pakaian Pria;8;;;;;;;;tidak;tidak;
+Jaket parasut;ERR-02;seratus ribu;60.000;Shopee;Pakaian Pria;8;;;;;;;;tidak;tidak;
+Topi baseball;ERR-03;45.000;25.000;Lazada;Aksesoris Fashion;8;;;;;;;;tidak;tidak;
+Kaus kaki;ERR-04;15.000;;Shopee;Pakaian Pria;8;;;;;;;;tidak;tidak;
+Masker kain;ERR-05;12.000;5.000;TikTok Shop;Kesehatan;6;;;;;;;;mungkin;tidak;
+Payung lipat;ERR-06;55.000;30.000;Shopee;;9;;;;;;;;tidak;tidak;

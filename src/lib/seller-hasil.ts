@@ -81,7 +81,12 @@ export function pasangHasil(ctx: KonteksSeller): { baris(): BarisHasil[] } {
   hapusManual.addEventListener("click", () => {
     if (window.confirm("Hapus semua produk yang ditambahkan manual dari daftar?")) ctx.hapusSumber("manual");
   });
-  aksi.append(hapusManual);
+  const hapusCsv = el("button", "Hapus produk dari CSV", "modal-text-button");
+  hapusCsv.type = "button";
+  hapusCsv.addEventListener("click", () => {
+    if (window.confirm("Hapus semua produk hasil impor CSV dari daftar?")) ctx.hapusSumber("csv");
+  });
+  aksi.append(hapusManual, hapusCsv);
 
   function hitungUlang(): void {
     baris = ctx.daftar().map((item) => ({ item, hasil: ctx.hitung(item.produk) }));
@@ -291,6 +296,8 @@ export function pasangHasil(ctx: KonteksSeller): { baris(): BarisHasil[] } {
   }
 
   function render(): void {
+    hapusManual.hidden = !baris.some((b) => b.item.sumber === "manual");
+    hapusCsv.hidden = !baris.some((b) => b.item.sumber === "csv");
     section.hidden = baris.length === 0;
     if (!baris.length) return;
     renderRingkasan();

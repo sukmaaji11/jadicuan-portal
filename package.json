@@ -15,7 +15,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "admin:kode": "node tools/akses-kalkulator-modal/build-admin.mjs",
-    "test:seller": "node --test src/lib/seller.test.mjs",
+    "test:seller": "node --test src/lib/seller.test.mjs src/lib/seller-csv.test.mjs",
     "test": "npm run test:hpp && npm run test:modal && npm run test:seller"
   },
   "dependencies": {

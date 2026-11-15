@@ -18,6 +18,7 @@ import {
 } from "./seller";
 import { el, renderKartuHasil } from "./seller-tampil";
 import { pasangHasil } from "./seller-hasil";
+import { pasangImpor } from "./seller-impor";
 
 const KEY_PENGATURAN = "jadicuan:kalkulator-seller:pengaturan";
 const KEY_TIMPAAN = "jadicuan:kalkulator-seller:timpaan";
@@ -496,6 +497,7 @@ export function pasangKalkulatorSeller(): KonteksSeller {
     renderSatu();
   });
   pasangHasil(ctx);
+  pasangImpor(ctx);
   muatDraf();
   renderPengaturan();
   petunjukKomisi();
