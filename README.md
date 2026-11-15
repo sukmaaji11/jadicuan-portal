@@ -67,6 +67,104 @@ Isinya: 3 skenario (sepi, normal, ramai), simpan sampai 20 usaha, dan unduh PDF.
 - **Memblokir kode yang tersebar:** tambahkan nomor serinya ke `SERIAL_DIBLOKIR`. Contoh: `KM-1A2B3C4D` ditulis `0x1a2b3c4d`. Setelah itu deploy ulang.
 - **Setelah mengubah `core.mjs` atau `admin.template.html`:** jalankan `npm run admin:kode`. Uji akan gagal kalau `admin.html` tertinggal dari sumbernya.
 
+## Kalkulator Untung Bersih Seller
+
+Halaman `/kalkulator-untung-seller/` (`src/pages/kalkulator-untung-seller.astro`), ditautkan dari menu alat di beranda. Kalkulator ini menghitung untung bersih per produk setelah potongan Shopee, TikTok Shop, dan Tokopedia. Hasilnya: margin, status (Rugi / Tipis / Sehat), harga impas, dan harga jual yang disarankan.
+
+Tidak ada akun dan tidak ada backend. Data produk dan file CSV dihitung di browser dan tidak dikirim ke server. Pengaturan disimpan di `localStorage` dengan kunci `jadicuan:kalkulator-seller:*`.
+
+| File | Isi |
+|---|---|
+| `src/config/biaya-marketplace.json` | Profil biaya Shopee, TikTok Shop / Tokopedia, dan Custom. |
+| `src/config/kalkulator-seller.ts` | `FREE_ROW_LIMIT` (batas baris CSV, `null` = nonaktif) dan ukuran file maksimum. |
+| `src/lib/seller.ts` | Rumus murni: untung, margin, status, harga impas/saran, timpaan Pengaturan, pembaca angka Indonesia. |
+| `src/lib/seller-csv.ts`, `seller-csv-worker.ts` | Pembaca CSV (dijalankan di Web Worker) dan template. |
+| `src/lib/seller-ekspor.ts` | Baris ekspor CSV/XLSX. |
+| `src/lib/seller-ui.ts`, `seller-hasil.ts`, `seller-impor.ts`, `seller-banding.ts`, `seller-tampil.ts` | Tampilan. |
+| `samples/produk-contoh.csv` | 30 produk contoh, termasuk yang rugi dan 6 baris yang sengaja salah format. |
+
+### Memperbarui angka biaya marketplace
+
+1. Buka `src/config/biaya-marketplace.json`. Setiap angka punya `verified`, `source`, dan `catatan`.
+2. Ubah angkanya dan isi `source` dengan link halaman seller center resmi. `verified: true` hanya untuk angka yang dibaca langsung dari seller center. Angka lain tetap `false`.
+3. Perbarui `updatedAt` profil (format `YYYY-MM-DD`).
+4. Jalankan `npm run test:seller`. Uji akan gagal bila ada angka `verified: true` tanpa link `https://`.
+5. Selama masih ada angka `verified: false`, halaman menampilkan banner "Angka biaya belum diverifikasi, cek seller center resmi" beserta daftar angkanya.
+
+Arti nilai di config:
+
+- `null` berarti belum ada angka, sehingga pengguna mengisi sendiri.
+- Persen ditulis 0-100.
+- `komisi.pilihanPersen` adalah daftar tarif per kategori yang bisa dipilih.
+- `komisiDinamis.perKategori` dipakai TikTok Shop berdasarkan nama kategori.
+- `program[].jenis` bernilai `gratis_ongkir`, `promo`, atau `lainnya`. Nilai ini diaktifkan oleh kolom `gratis_ongkir` / `promo` atau dari Pengaturan.
+
+Pengguna bisa menimpa semua angka dari panel **Pengaturan** di halaman, dan timpaan itu hanya tersimpan di perangkatnya.
+
+### Rumus singkat
+
+Semua dihitung per 1 pesanan = 1 barang. Tiap potongan dibulatkan ke rupiah penuh.
+
+- **Harga bersih:** harga jual − diskon penjual.
+- **Dasar biaya:** harga bersih atau harga jual, sesuai `dasar` profil.
+- **Potongan:**
+  - komisi (dengan batas maksimum bila ada)
+  - komisi dinamis (khusus TikTok Shop)
+  - program (gratis ongkir, promo)
+  - pre-order
+  - biaya transaksi
+  - affiliate
+  - biaya proses
+  - logistik
+  - iklan (Rp, atau harga bersih ÷ ROAS)
+  - retur (tingkat retur × biaya per retur)
+  - PPh 0,5% dari harga bersih (bila aktif)
+- **Untung bersih:** harga bersih − potongan − HPP − packing.
+- **Margin:** untung ÷ harga bersih.
+- **Status:**
+  - Rugi bila untung < 0.
+  - Tipis bila margin di bawah batas sehat (bawaan 15%).
+  - Sehat bila margin di atas batas itu.
+- **Harga impas dan harga saran (bawaan target margin 20%):** dihitung dengan rumus tertutup, atau pencarian biner bila ada batas biaya yang tercapai. Hasilnya dibulatkan ke atas ke kelipatan Rp100 (bisa diatur).
+
+### Format CSV
+
+Tombol **Unduh template CSV** di halaman menghasilkan header dan 3 baris contoh.
+
+- **Kolom wajib:** `nama_produk`, `harga_jual`, `hpp`, `marketplace` (Shopee / TikTok Shop / Tokopedia / Custom), `kategori`.
+- **Kolom opsional:** `sku`, `komisi_persen`, `diskon_penjual` (Rp atau %), `affiliate_persen`, `biaya_iklan`, `roas`, `packing`, `logistik`, `retur_persen`, `biaya_retur`, `gratis_ongkir`, `promo`, `preorder`, `pph`, `terjual_per_bulan`, `stok`.
+- **Kolom opsional yang kosong** memakai nilai di Pengaturan.
+- **Alias header yang diterima:** `nama`, `price`, `harga`, `modal`, `cost`, `platform`, `category`, `diskon`, dan lain-lain. Huruf besar/kecil tidak dibedakan. Bila kolom wajib tidak dikenali, halaman menampilkan layar pencocokan kolom.
+- **Format yang dikenali:**
+  - pemisah koma, titik koma, atau tab
+  - file dengan BOM UTF-8
+  - angka seperti `Rp 25.000`, `25.000`, `25000`, `12,5%`, `12.5`
+  - ya/tidak, y/n, true/false, 1/0
+- **Baris yang salah** dilaporkan dengan nomor baris dan alasannya. Baris lain tetap dihitung.
+- **Ekspor** tersedia dalam CSV (titik koma, koma desimal) dan XLSX (SheetJS 0.20.3, dimuat hanya saat tombol Excel ditekan). Isinya kolom input + semua kolom hasil, dan file ekspor bisa diimpor lagi.
+
+### Event Meta Pixel
+
+| Event | Kapan | Parameter |
+|---|---|---|
+| `seller_calc_start` | Pertama kali mengisi form atau mengimpor CSV | - |
+| `seller_calc_complete` | Hasil pertama tampil | - |
+| `seller_csv_import` | File CSV selesai dibaca | `baris`: `1-50`, `51-500`, `501-2000`, atau `2000+` |
+| `seller_export` | Unduh hasil | `format`: `csv` atau `xlsx` |
+
+Tidak ada nama produk atau angka yang dikirim.
+
+Pixel dimuat hanya bila environment variable `PUBLIC_META_PIXEL_ID_SELLER` diisi di Cloudflare Pages. Per 15 Nov 2026 Pixel-nya belum dibuat, jadi halaman berjalan tanpa Pixel.
+
+### Tes
+
+```sh
+npm run test:seller   # rumus, CSV, ekspor
+npm test              # semua: HPP, Modal, Seller
+```
+
+Deploy sama dengan halaman lain: push ke `main`, lalu Cloudflare Pages menjalankan `npm run build`.
+
 ## Menjalankan secara lokal
 
 Gunakan Node.js 20.19+, 22.13+, atau 23.5+.
