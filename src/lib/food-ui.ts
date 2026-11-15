@@ -24,6 +24,7 @@ import { bacaAngka, formatPersen, formatRp } from "./seller";
 import { el } from "./seller-tampil";
 import { bacaSimpan, persenTeks, ribuan, tulisSimpan } from "./penyimpanan";
 import { centang, grup, kolomAngka, pilihan } from "./form-pengaturan";
+import { pasangBanyakMenu } from "./food-banyak";
 
 const KEY_PENGATURAN = "jadicuan:kalkulator-pesan-antar:pengaturan";
 const KEY_TIMPAAN = "jadicuan:kalkulator-pesan-antar:timpaan";
@@ -423,6 +424,7 @@ export function pasangKalkulatorFood(): KonteksFood {
       if (!body.contains(document.activeElement)) renderPengaturan();
     }, 0);
   });
+  pasangBanyakMenu(ctx);
   muatDraf();
   isiTarget();
   renderPengaturan();
