@@ -25,6 +25,10 @@ import { el } from "./seller-tampil";
 import { bacaSimpan, persenTeks, ribuan, tulisSimpan } from "./penyimpanan";
 import { centang, grup, kolomAngka, pilihan } from "./form-pengaturan";
 import { pasangBanyakMenu } from "./food-banyak";
+import { barisEksporFood, namaFileEksporFood } from "./food-ekspor";
+import { keCsv } from "./seller-ekspor";
+import { unduhTeks } from "./impor-csv-ui";
+import { unduhXlsx } from "./ekspor-xlsx";
 
 const KEY_PENGATURAN = "jadicuan:kalkulator-pesan-antar:pengaturan";
 const KEY_TIMPAAN = "jadicuan:kalkulator-pesan-antar:timpaan";
@@ -46,7 +50,7 @@ export type KonteksFood = {
   platformAktif(): PlatformId[];
   hitung(menu: Menu, id: PlatformId): HasilFood;
   onUbah(fn: () => void): void;
-  lacak: { mulai(): void; selesai(): void; salin(): void };
+  lacak: { mulai(): void; selesai(): void; salin(): void; ekspor(format: "csv" | "xlsx"): void };
 };
 
 function muatPengaturan(): PengaturanFood {
@@ -108,6 +112,39 @@ export function kalimatOffline(nama: string, h: Extract<HasilFood, { ok: true }>
   return t;
 }
 
+/** Tombol unduh CSV/XLSX. `data` mengembalikan menu + hasil per platform aktif. */
+export function tombolEkspor(ctx: KonteksFood, data: () => Array<{ menu: Menu; hasil: Array<{ nama: string; h: HasilFood }> }>): HTMLElement {
+  const bar = el("div", "", "seller-export");
+  bar.append(el("span", "Unduh hasil:"));
+  const st = el("span", "", "seller-export-status");
+  st.setAttribute("role", "status");
+  const catatan = (h: HasilFood) => (h.ok ? h.peringatan.map((w) => PESAN_PERINGATAN_FOOD[w]).join(" ") : PESAN_MASALAH[h.masalah]);
+  const csv = el("button", "CSV", "button button-secondary");
+  csv.type = "button";
+  csv.addEventListener("click", () => {
+    unduhTeks(namaFileEksporFood("csv"), keCsv(barisEksporFood(data(), catatan)), "text/csv;charset=utf-8");
+    st.textContent = "CSV diunduh.";
+    ctx.lacak.ekspor("csv");
+  });
+  const xlsx = el("button", "Excel (XLSX)", "button button-secondary");
+  xlsx.type = "button";
+  xlsx.addEventListener("click", async () => {
+    xlsx.disabled = true;
+    st.textContent = "Menyiapkan file Excel…";
+    try {
+      await unduhXlsx(barisEksporFood(data(), catatan), namaFileEksporFood("xlsx"), "Harga pesan antar");
+      st.textContent = "File Excel diunduh.";
+      ctx.lacak.ekspor("xlsx");
+    } catch {
+      st.textContent = "File Excel gagal dibuat. Coba unduh CSV.";
+    } finally {
+      xlsx.disabled = false;
+    }
+  });
+  bar.append(csv, xlsx, st);
+  return bar;
+}
+
 export function pasangKalkulatorFood(): KonteksFood {
   let pengaturan = muatPengaturan();
   let timpaan = (bacaSimpan<Record<string, TimpaanFood>>(KEY_TIMPAAN) ?? {}) as Partial<Record<PlatformId, TimpaanFood>>;
@@ -126,7 +163,7 @@ export function pasangKalkulatorFood(): KonteksFood {
     platformAktif: () => PLATFORMS.filter((p) => pengaturan.platformAktif.includes(p)),
     hitung: (menu, id) => hitungFood(menu, id, ctx.profil(id), pengaturan, ctx.kemitraan(id)),
     onUbah: (fn) => pendengar.push(fn),
-    lacak: { mulai: () => undefined, selesai: () => undefined, salin: () => undefined }, // diisi tahap event
+    lacak: { mulai: () => undefined, selesai: () => undefined, salin: () => undefined, ekspor: () => undefined }, // diisi tahap event
   };
 
   function simpanSemua(): void {
@@ -221,6 +258,12 @@ export function pasangKalkulatorFood(): KonteksFood {
   }
 
   const kartu = $("food-cards");
+  // Ekspor satu menu: menu di form untuk semua platform aktif.
+  const eksporSatu = tombolEkspor(ctx, () => {
+      const m = bacaMenu();
+    return m ? [{ menu: m, hasil: ctx.platformAktif().map((id) => ({ nama: ctx.profil(id).nama, h: ctx.hitung(m, id) })) }] : [];
+  });
+  $("food-results").append(eksporSatu);
   const statusSalin = el("p", "", "modal-copy-status");
   statusSalin.setAttribute("role", "status");
 
@@ -424,7 +467,10 @@ export function pasangKalkulatorFood(): KonteksFood {
       if (!body.contains(document.activeElement)) renderPengaturan();
     }, 0);
   });
-  pasangBanyakMenu(ctx);
+  pasangBanyakMenu(ctx, {
+    aksiTambahan: (bar, data) =>
+      bar.append(tombolEkspor(ctx, () => data().map((d) => ({ menu: d.menu, hasil: ctx.platformAktif().filter((id) => d.hasil[id]).map((id) => ({ nama: ctx.profil(id).nama, h: d.hasil[id] })) })))),
+  });
   muatDraf();
   isiTarget();
   renderPengaturan();

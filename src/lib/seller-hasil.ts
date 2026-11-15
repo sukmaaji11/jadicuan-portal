@@ -5,6 +5,7 @@ import { formatPersen, formatRp, ringkas, type HasilProduk, type MarketplaceId, 
 import { el, LABEL_STATUS, PESAN_PERINGATAN, badgeStatus, renderKartuHasil } from "./seller-tampil";
 import { barisEkspor, keCsv, namaFileEkspor } from "./seller-ekspor";
 import { unduhTeks } from "./seller-impor";
+import { unduhXlsx } from "./ekspor-xlsx";
 import type { ItemDaftar, KonteksSeller } from "./seller-ui";
 
 const PER_HALAMAN = 50;
@@ -114,15 +115,7 @@ export function pasangHasil(ctx: KonteksSeller, opsi: { onEkspor?: (format: "csv
     tombolXlsx.disabled = true;
     statusEkspor.textContent = "Menyiapkan file Excel…";
     try {
-      const XLSX = await import("xlsx");
-      const rows = dataEkspor();
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      ws["!cols"] = rows[0].map((h, i) => ({ wch: i === 0 ? 28 : Math.max(10, String(h).length + 2) }));
-      ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length - 1, c: rows[0].length - 1 } }) };
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Untung bersih");
-      const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" }) as ArrayBuffer;
-      unduhTeks(namaFileEkspor("xlsx"), buf, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      await unduhXlsx(dataEkspor(), namaFileEkspor("xlsx"), "Untung bersih");
       statusEkspor.textContent = "File Excel diunduh.";
       opsi.onEkspor?.("xlsx");
     } catch {

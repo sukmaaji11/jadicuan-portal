@@ -17,7 +17,7 @@
     "admin:kode": "node tools/akses-kalkulator-modal/build-admin.mjs",
     "test:seller": "node --test src/lib/seller.test.mjs src/lib/seller-csv.test.mjs src/lib/seller-ekspor.test.mjs",
     "test": "npm run test:hpp && npm run test:modal && npm run test:seller && npm run test:food",
-    "test:food": "node --test src/lib/food.test.mjs src/lib/food-csv.test.mjs"
+    "test:food": "node --test src/lib/food.test.mjs src/lib/food-csv.test.mjs src/lib/food-ekspor.test.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.0",
