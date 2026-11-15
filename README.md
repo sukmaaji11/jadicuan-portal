@@ -242,6 +242,13 @@ Rumus:
 - untung = uang bersih − h − k − o
 - margin = untung ÷ dibayar pembeli
 
+**Acuan utama adalah harga jual di lapak (L, wajib diisi).** Harga display saran adalah harga terendah yang memenuhi dua syarat:
+
+- uang bersih ≥ L, yaitu p ≥ (L + f) ÷ A, dengan A = bagian harga yang tersisa setelah semua potongan persen
+- untung ≥ target
+
+Jadi harga di aplikasi tidak pernah di bawah harga lapak. HPP dipakai untuk menghitung untung, tidak untuk menurunkan harga.
+
 Untung berbanding lurus dengan p, sehingga harga impas dan harga saran memakai rumus tertutup. Harga saran dibulatkan ke atas ke kelipatan yang dipilih (bawaan Rp500), lalu untungnya dihitung ulang pada harga bulat itu. Target dibaca dalam rupiah bulat.
 
 Status:
@@ -263,8 +270,8 @@ Bila input tidak valid, kalkulator menampilkan pesan yang jelas, bukan hasil tak
 
 Tombol **Unduh template CSV** di tab Banyak menu menghasilkan template berisi 3 contoh.
 
-- **Kolom wajib:** `nama_menu`, `hpp`.
-- **Kolom opsional:** `packing`, `harga_offline`, serta `target_rp`, `target_margin`, `diskon`, `overhead` (menimpa Pengaturan untuk menu itu).
+- **Kolom wajib:** `nama_menu`, `hpp`, `harga_offline` (harga jual di lapak).
+- **Kolom opsional:** `packing`, serta `target_rp`, `target_margin`, `diskon`, `overhead` (menimpa Pengaturan untuk menu itu).
 - **Alias header:** `nama`, `menu`, `modal`, `cost`, `kemasan`, `harga_lapak`, `harga`, `price`.
 - **Toleransi format:** sama dengan kalkulator seller, yaitu pemisah koma atau titik koma, BOM, `Rp 25.000`, dan `12,5%`.
 - **Pencocokan kolom:** bila header wajib tidak dikenali, halaman menampilkan layar pencocokan kolom.

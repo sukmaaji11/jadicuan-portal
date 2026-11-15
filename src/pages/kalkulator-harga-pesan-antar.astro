@@ -17,7 +17,7 @@ const webApplicationJsonLd = {
 const HELP = {
   hpp: "Modal bahan untuk satu porsi, sebelum dikemas.",
   packing: "Biaya kemasan per porsi: box, plastik, sendok, stiker.",
-  offline: "Harga yang kamu pasang di lapak atau warung. Dipakai untuk melihat apa yang terjadi kalau harga di aplikasi disamakan.",
+  offline: "Harga yang kamu pasang di lapak atau warung. Harga di aplikasi dihitung dari harga ini supaya uang yang kamu terima setelah potongan platform minimal sama dengan harga lapak.",
   target: "Untung bersih yang ingin kamu pegang per porsi, dalam rupiah, atau dalam persen dari yang dibayar pembeli.",
 };
 ---
@@ -31,7 +31,7 @@ const HELP = {
     <header class="hpp-intro seller-intro">
       <span class="eyebrow"><span class="eyebrow-dot"></span> Untuk penjual makanan di aplikasi pesan antar</span>
       <h1>Kalkulator harga pesan antar.</h1>
-      <p>Isi modal satu menu, lalu lihat harga display yang aman di GoFood, GrabFood, ShopeeFood, dan TikTok, uang bersih yang kamu terima, dan untung per porsinya. Semua dihitung di perangkatmu.</p>
+      <p>Isi harga jual di lapak dan modal satu menu, lalu lihat harga display yang aman di GoFood, GrabFood, ShopeeFood, dan TikTok: uang yang kamu terima tetap minimal sama dengan harga lapak, dan untung per porsinya terlihat jelas. Semua dihitung di perangkatmu.</p>
     </header>
 
     <aside class="seller-banner" role="note" aria-labelledby="food-banner-title">
@@ -51,7 +51,7 @@ const HELP = {
           <SellerField field="nama" label="Nama menu" kind="teks" placeholder="Contoh: Nasi goreng ayam" />
           <SellerField field="hpp" label="HPP / modal per porsi" kind="rupiah" placeholder="12.000" help={HELP.hpp} />
           <SellerField field="packing" label="Packing per porsi" kind="rupiah" optional placeholder="1.500" help={HELP.packing} />
-          <SellerField field="hargaOffline" label="Harga di lapak" kind="rupiah" optional placeholder="20.000" help={HELP.offline} />
+          <SellerField field="hargaOffline" label="Harga jual di lapak" kind="rupiah" placeholder="20.000" help={HELP.offline} hint="Wajib. Harga di aplikasi dihitung dari harga ini." />
         </div>
         <fieldset class="food-target">
           <legend>Target untung per porsi <button class="modal-help-button" type="button" aria-expanded="false" aria-controls="food-target-help" data-help-toggle><span aria-hidden="true">?</span><span class="sr-only">Apa itu target untung?</span></button></legend>
@@ -59,20 +59,24 @@ const HELP = {
           <div class="food-target-row">
             <label class="modal-check"><input type="radio" name="food-mode" value="margin" data-target-mode /> <span>Persen</span></label>
             <label class="modal-check"><input type="radio" name="food-mode" value="rp" data-target-mode /> <span>Rupiah</span></label>
-            <div class="modal-input-wrap has-suffix food-target-input" data-target-wrap="margin">
-              <input id="food-target-margin" type="text" inputmode="decimal" autocomplete="off" aria-label="Target margin dalam persen" />
-              <span class="modal-affix modal-affix-end" aria-hidden="true">% dari harga bayar</span>
+            <div class="hpp-field food-target-input" data-target-wrap="margin">
+              <div class="modal-input-wrap has-suffix">
+                <input id="food-target-margin" type="text" inputmode="decimal" autocomplete="off" aria-label="Target untung dalam persen dari yang dibayar pembeli" />
+                <span class="modal-affix modal-affix-end" aria-hidden="true">%</span>
+              </div>
             </div>
-            <div class="modal-input-wrap has-prefix food-target-input" data-target-wrap="rp">
-              <span class="modal-affix modal-affix-start" aria-hidden="true">Rp</span>
-              <input id="food-target-rp" type="text" inputmode="numeric" autocomplete="off" aria-label="Target untung per porsi dalam rupiah" />
+            <div class="hpp-field food-target-input" data-target-wrap="rp">
+              <div class="modal-input-wrap has-prefix">
+                <span class="modal-affix modal-affix-start" aria-hidden="true">Rp</span>
+                <input id="food-target-rp" type="text" inputmode="numeric" autocomplete="off" aria-label="Target untung per porsi dalam rupiah" />
+              </div>
             </div>
           </div>
-          <p class="modal-hint">Berlaku untuk semua menu. Diskon, overhead, dan potongan tiap platform diatur di Pengaturan.</p>
+          <p class="modal-hint">Persen dihitung dari yang dibayar pembeli. Berlaku untuk semua menu; diskon, overhead, dan potongan tiap platform diatur di Pengaturan.</p>
         </fieldset>
       </form>
 
-      <p class="seller-empty" id="food-empty">Isi HPP menu untuk melihat harga display tiap platform.</p>
+      <p class="seller-empty" id="food-empty">Isi HPP dan harga jual di lapak untuk melihat harga display tiap platform.</p>
       <div class="food-results" id="food-results" hidden>
         <div class="food-cards" id="food-cards"></div>
         <section class="food-offline" id="food-offline" aria-labelledby="food-offline-title" hidden>

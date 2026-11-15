@@ -23,11 +23,11 @@ test("header menu dan alias, format Indonesia", () => {
   const { hilang, hasil } = baca("Menu,Modal,Kemasan,Harga Lapak\nNasi goreng,\"Rp 11.500\",1.500,20.000\n");
   assert.deepEqual(hilang, []);
   assert.deepEqual(hasil.produk[0], { nama: "Nasi goreng", hpp: 11_500, packing: 1_500, hargaOffline: 20_000, targetRp: null, targetMarginPersen: null, diskonPersen: null, overhead: null });
-  assert.deepEqual(M.petakanHeaderMenu(["Barang", "Rupiah"]).hilang, ["nama_menu", "hpp"]);
+  assert.deepEqual(M.petakanHeaderMenu(["Barang", "Rupiah"]).hilang, ["nama_menu", "hpp", "harga_offline"]);
 });
 
 test("kolom opsional per menu menimpa Pengaturan", () => {
-  const { hasil } = baca("nama_menu;hpp;target_rp;diskon;overhead\nEs teh;2.200;1.500;10%;300\n");
+  const { hasil } = baca("nama_menu;hpp;harga_offline;target_rp;diskon;overhead\nEs teh;2.200;5.000;1.500;10%;300\n");
   const m = hasil.produk[0];
   assert.equal(m.targetRp, 1_500);
   assert.equal(m.diskonPersen, 10);
@@ -35,7 +35,7 @@ test("kolom opsional per menu menimpa Pengaturan", () => {
 });
 
 test("baris salah dilaporkan, baris lain tetap dihitung", () => {
-  const { hasil } = baca("nama_menu;hpp;packing;harga_offline\nA;10.000;;\n;10.000;;\nB;sepuluh;;\nC;0;;\nD;5.000;-500;\nE;5.000;;10%x\n");
+  const { hasil } = baca("nama_menu;hpp;packing;harga_offline\nA;10.000;;15.000\n;10.000;;15.000\nB;sepuluh;;15.000\nC;0;;15.000\nD;5.000;-500;15.000\nE;5.000;;10%x\nF;5.000;;\n");
   assert.equal(hasil.produk.length, 1);
   const per = Object.fromEntries(hasil.error.map((e) => [e.baris, e.alasan.join(" ")]));
   assert.match(per[3], /Nama menu kosong/);
@@ -43,6 +43,7 @@ test("baris salah dilaporkan, baris lain tetap dihitung", () => {
   assert.match(per[5], /lebih dari 0/);
   assert.match(per[6], /minus/);
   assert.match(per[7], /bukan angka/);
+  assert.match(per[8], /Harga jual di lapak.*kosong/);
 });
 
 test("samples/menu-contoh.csv: 16 menu benar, 4 salah, ada yang rugi di harga lapak", async () => {

@@ -7,12 +7,12 @@ import { normalHeader, sel } from "./seller-csv";
 import type { Menu } from "./food";
 
 export type KolomMenu = "nama_menu" | "hpp" | "packing" | "harga_offline" | "target_rp" | "target_margin" | "diskon" | "overhead";
-export const KOLOM_WAJIB_MENU: KolomMenu[] = ["nama_menu", "hpp"];
+export const KOLOM_WAJIB_MENU: KolomMenu[] = ["nama_menu", "hpp", "harga_offline"];
 export const LABEL_KOLOM_MENU: Record<KolomMenu, string> = {
   nama_menu: "Nama menu",
   hpp: "HPP / modal per porsi",
   packing: "Packing per porsi (Rp)",
-  harga_offline: "Harga di lapak (Rp)",
+  harga_offline: "Harga jual di lapak (Rp)",
   target_rp: "Target untung per porsi (Rp)",
   target_margin: "Target margin (%)",
   diskon: "Diskon dari kamu (%)",
@@ -83,12 +83,13 @@ export function barisKeMenu(row: string[], p: PemetaanMenu): { produk: Menu } | 
     nama,
     hpp: hpp ?? 0,
     packing: angka("packing", "rp"),
-    hargaOffline: angka("harga_offline", "rp"),
+    hargaOffline: angka("harga_offline", "rp", true),
     targetRp: angka("target_rp", "rp"),
     targetMarginPersen: angka("target_margin", "persen"),
     diskonPersen: angka("diskon", "persen"),
     overhead: angka("overhead", "rp"),
   };
+  if (menu.hargaOffline === 0) alasan.push("Harga jual di lapak harus lebih dari 0.");
   if ((menu.targetMarginPersen ?? 0) >= 100) alasan.push("Target margin harus di bawah 100%.");
   if ((menu.diskonPersen ?? 0) >= 100) alasan.push("Diskon harus di bawah 100%.");
   return alasan.length ? { alasan } : { produk: menu };

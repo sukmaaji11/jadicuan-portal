@@ -184,3 +184,35 @@ test("config: semua profil ada, semua angka verified:false, sumber https", () =>
   assert.equal(config.profil.tiktok.komisiPersen, 0);
   for (const id of ["gofood", "grabfood", "tiktok"]) assert.equal(config.profil[id].komisiTermasukPPN, null);
 });
+
+test("acuan harga lapak: harga saran tidak pernah di bawah harga lapak, uang bersih minimal harga lapak", () => {
+  // ShopeeFood 20% sudah termasuk PPN, lapak 15.000: (15.000 + 0) / 0,8 = 18.750 -> 19.000 (bukan 18.500 dari target)
+  const sh = F.hitungFood({ ...menu, hargaOffline: 15_000 }, "shopeefood", config.profil.shopeefood, atur());
+  assert.equal(sh.acuan, "lapak");
+  assert.equal(sh.hargaSaran, 19_000);
+  assert.ok(sh.saran.uangBersih >= 15_000);
+  // Lapak 25.000, profil uji 20% + Rp1.000: (25.000 + 1.000) / 0,8 = 32.500
+  const tinggi = F.hitungFood({ ...menu, hargaOffline: 25_000 }, "custom", dasar, atur());
+  assert.equal(tinggi.hargaSaran, 32_500);
+  assert.equal(tinggi.saran.uangBersih, 25_000);
+  assert.ok(tinggi.kenaikanRp > 0);
+  // Target lebih tinggi dari acuan lapak: target yang menentukan
+  const target = F.hitungFood({ ...menu, hargaOffline: 12_000 }, "custom", dasar, atur());
+  assert.equal(target.acuan, "target");
+  assert.equal(target.hargaSaran, 20_000);
+});
+
+test("2.000 kombinasi acak: harga saran >= harga lapak dan uang bersih >= harga lapak", () => {
+  let seed = 11;
+  const rnd = () => ((seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31);
+  for (let i = 0; i < 2000; i++) {
+    const p = { ...dasar, komisiPersen: Math.round(rnd() * 35), komisiTermasukPPN: rnd() < 0.5, biayaTetapPerPesanan: Math.round(rnd() * 3000), biayaLayananPersen: Math.round(rnd() * 5), dasar: rnd() < 0.5 ? "sebelum_diskon" : "setelah_diskon" };
+    const m = { nama: "x", hpp: 1000 + Math.round(rnd() * 30000), packing: Math.round(rnd() * 2000), hargaOffline: 5000 + Math.round(rnd() * 60000), diskonPersen: Math.round(rnd() * 20) };
+    const s = atur({ kelipatan: [100, 500, 1000][Math.floor(rnd() * 3)], targetMarginPersen: Math.round(rnd() * 30) });
+    const h = F.hitungFood(m, "custom", p, s);
+    if (!h.ok) continue;
+    assert.ok(h.hargaSaran >= m.hargaOffline, JSON.stringify({ i, m, h: h.hargaSaran }));
+    assert.ok(h.saran.uangBersih >= m.hargaOffline, JSON.stringify({ i, m, p, ub: h.saran.uangBersih }));
+    assert.ok(h.kenaikanRp >= 0);
+  }
+});

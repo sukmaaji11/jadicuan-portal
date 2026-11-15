@@ -29,7 +29,7 @@ export function pasangBanyakMenu(ctx: KonteksFood, opsi: { onImpor?: (n: number)
     {
       kalkulator: "food",
       judul: "Hitung banyak menu sekaligus",
-      deskripsi: "Unggah file CSV dari Excel atau Google Sheets. Kolom wajib: nama_menu dan hpp. Kolom packing dan harga_offline boleh kosong. Target, diskon, dan potongan platform memakai Pengaturan.",
+      deskripsi: "Unggah file CSV dari Excel atau Google Sheets. Kolom wajib: nama_menu, hpp, dan harga_offline (harga jual di lapak). Kolom packing boleh kosong. Target, diskon, dan potongan platform memakai Pengaturan.",
       satuan: "menu",
       kolomWajib: KOLOM_WAJIB_MENU,
       label: LABEL_KOLOM_MENU,

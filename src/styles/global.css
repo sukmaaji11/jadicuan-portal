@@ -4717,3 +4717,14 @@ button.seller-summary-card {
   gap: 14px;
   min-width: 0;
 }
+
+.food-basis {
+  margin: -4px 0 0;
+  color: #334864;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.food-target .food-target-input {
+  margin: 0;
+}

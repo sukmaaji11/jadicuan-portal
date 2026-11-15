@@ -117,6 +117,7 @@ export type HasilFood =
       ok: true;
       platform: PlatformId;
       target: number; // untung per porsi yang dikejar pada harga saran (Rp)
+      acuan: "lapak" | "target"; // harga saran ditentukan oleh harga lapak atau oleh target untung
       hargaImpas: number; // dibulatkan ke atas ke rupiah
       hargaSaran: number; // dibulatkan ke atas ke kelipatan
       saran: Titik; // hitung ulang pada harga saran yang sudah dibulatkan
@@ -242,13 +243,20 @@ export function hitungFood(
     if (A2 <= 1e-9) return { ok: false, platform, masalah: "target-tidak-tercapai", peringatan };
     tepat = B / A2;
   }
+  // Acuan utama: harga lapak. Uang bersih(p) = A*p - f, jadi harga terendah yang membuat uang
+  // yang diterima minimal sama dengan harga lapak = (L + f) / A. Harga saran = yang lebih tinggi
+  // dari harga itu dan harga untuk mencapai target untung. Hasilnya tidak pernah di bawah harga lapak.
+  const L = angka(menu.hargaOffline) && menu.hargaOffline > 0 ? menu.hargaOffline : null;
+  const tepatLapak = L !== null ? (L + z.f) / A : 0;
+  const acuan: "lapak" | "target" = L !== null && tepatLapak >= tepat ? "lapak" : "target";
+  tepat = Math.max(tepat, tepatLapak);
   const k = s.kelipatan > 0 ? s.kelipatan : 1;
   let hargaSaran = Math.ceil((tepat - 1e-7) / k) * k;
   let saran = titik(hargaSaran, z);
   // Target dalam rupiah bulat (uang tidak punya sen).
   const targetPada = (t: Titik) => Math.round(modeRp ? targetRp : m * t.hargaBayar);
-  // Pembulatan komponen bisa membuat untung kurang 1-2 rupiah dari target: naikkan per kelipatan.
-  for (let i = 0; i < 10 && saran.untung < targetPada(saran); i++) {
+  // Pembulatan komponen bisa membuat untung/uang bersih kurang 1-2 rupiah: naikkan per kelipatan.
+  for (let i = 0; i < 10 && (saran.untung < targetPada(saran) || (L !== null && saran.uangBersih < L)); i++) {
     hargaSaran += k;
     saran = titik(hargaSaran, z);
   }
@@ -264,6 +272,7 @@ export function hitungFood(
     ok: true,
     platform,
     target: targetPada(saran),
+    acuan,
     hargaImpas,
     hargaSaran,
     saran,

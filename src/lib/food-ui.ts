@@ -258,12 +258,14 @@ export function pasangKalkulatorFood(): KonteksFood {
 
   function bacaMenu(): Menu | null {
     const hpp = bacaAngka(field("hpp").value, "rp");
-    if (hpp === null) return null;
+    const hargaOffline = bacaAngka(field("hargaOffline").value, "rp");
+    // Harga jual di lapak wajib: harga di aplikasi dihitung dari harga ini.
+    if (hpp === null || hargaOffline === null || hargaOffline <= 0) return null;
     return {
       nama: field("nama").value.trim() || "Menu tanpa nama",
       hpp,
       packing: bacaAngka(field("packing").value, "rp"),
-      hargaOffline: bacaAngka(field("hargaOffline").value, "rp"),
+      hargaOffline,
     };
   }
   function simpanDraf(): void {
@@ -353,6 +355,15 @@ export function pasangKalkulatorFood(): KonteksFood {
     });
     harga.append(salin);
     card.append(harga);
+    card.append(
+      el(
+        "p",
+        h.acuan === "lapak" && h.offline
+          ? `Dari harga lapak ${formatRp(h.offline.harga)}: setelah semua potongan, uang yang kamu terima ${formatRp(h.saran.uangBersih)}, minimal sama dengan harga lapak.`
+          : `Dinaikkan lagi supaya untung per porsi mencapai targetmu (${formatRp(h.target)}).`,
+        "food-basis",
+      ),
+    );
 
     const dl = el("dl", "", "food-metrics");
     const m = (label: string, nilai: string, cls = "") => {
