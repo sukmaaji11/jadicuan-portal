@@ -1,0 +1,103 @@
+{
+  "_catatan": "Profil potongan Kalkulator Harga Pesan Antar. Disusun dari draf Seli 15 Nov 2026 (fees-food.draft.json). Tidak ada platform yang mempublikasikan satu tarif tunggal: tarif disepakati per mitra, jadi SEMUA angka verified:false (angka referensi). null = belum ada angka / belum diketahui; pengguna mengisi sendiri di Pengaturan. Persen ditulis 0-100. Cara memperbarui: README bagian Kalkulator Harga Pesan Antar.",
+  "versi": 1,
+  "tarifPPN": {
+    "persen": 11,
+    "verified": false,
+    "catatan": "Dipakai bila PPN ditambahkan di atas komisi. Angka dari catatan sumber pihak ketiga di draf (GoFood: 'PPN atas komisi ditambahkan (11%), belum pasti'). Bisa diubah di Pengaturan."
+  },
+  "profil": {
+    "gofood": {
+      "nama": "GoFood",
+      "updatedAt": "2026-11-15",
+      "verified": false,
+      "komisiPersen": 20,
+      "komisiAntarSendiriPersen": null,
+      "rentangDilaporkan": null,
+      "dasar": "sebelum_diskon",
+      "komisiTermasukPPN": null,
+      "biayaTetapPerPesanan": 1000,
+      "biayaLayananPersen": 0,
+      "biayaIklanPersen": 0,
+      "source": [
+        "https://biztips.gobiz.co.id/topics/promo-dan-iklan/pengenalan-promo-go-food/cek-detail-cara-menghitung-hpp-di-go-food-dengan-tepat",
+        "https://app.gobiz.com/files/terms-and-condition/gofood-merchant-v04.2025",
+        "https://hitungcerdas.net/blog/cara-menghitung-komisi-ojol",
+        "https://duniaku.id/berapa-persen-potongan-gofood-untuk-penjual/"
+      ],
+      "catatan": "Dokumen resmi GoFood: biaya layanan 'ditentukan dan disepakati' per mitra. Contoh di panduan resmi GoBiz Biztips memakai 20% + Rp1.000 dan menyebut komisi tiap resto berbeda. Sumber pihak ketiga: PPN atas komisi ditambahkan (11%), belum pasti. Iklan GoFood kena PPN 11% dan dipotong dari pendapatan."
+    },
+    "grabfood": {
+      "nama": "GrabFood",
+      "updatedAt": "2026-11-15",
+      "verified": false,
+      "komisiPersen": 30,
+      "komisiAntarSendiriPersen": null,
+      "rentangDilaporkan": [20, 30],
+      "dasar": "sebelum_diskon",
+      "komisiTermasukPPN": null,
+      "biayaTetapPerPesanan": 0,
+      "biayaLayananPersen": 0,
+      "biayaIklanPersen": 0,
+      "source": [
+        "https://www.grab.com/id/en/merchant-blog/faq-rahasia-untung-pedagang/",
+        "https://www.grab.com/id/en/terms-policies/transport-delivery-logistics/",
+        "https://duniaku.id/fakta-komisi-grabfood-terbaru/",
+        "https://hitungcerdas.net/blog/potongan-gofood-grabfood-shopeefood",
+        "https://www.kapanlagi.com/feeds/cara-daftar-gofood-dan-grabfood-panduan-lengkap-untuk-bisnis-kuliner-da1548c01a.html"
+      ],
+      "catatan": "Dokumen resmi Grab: Partner Service Fee mengikuti perjanjian kemitraan. FAQ Grab (lama): komisi standar awal 20%, skema berbeda per segmen. Artikel pihak ketiga: 25-30%. Default 30% dipakai sebagai angka konservatif. Sumber berbeda soal PPN termasuk atau ditambah."
+    },
+    "shopeefood": {
+      "nama": "ShopeeFood",
+      "updatedAt": "2026-11-15",
+      "verified": false,
+      "komisiPersen": 20,
+      "komisiAntarSendiriPersen": null,
+      "rentangDilaporkan": [15, 20],
+      "dasar": "sebelum_diskon",
+      "komisiTermasukPPN": true,
+      "biayaTetapPerPesanan": 0,
+      "biayaLayananPersen": 0,
+      "rentangBiayaLayanan": [3, 5],
+      "biayaIklanPersen": 0,
+      "source": [
+        "https://www.shopeefood.co.id/merchants/terms",
+        "https://www.bizzy.co.id/blog/cara-daftar-shopee-food-2026-lewat-hp-6-langkah-gratis/",
+        "https://cikadu.id/daftar-shopee-food-merchant-2026/",
+        "https://dealls.com/pengembangan-karir/cara-daftar-shopee-food"
+      ],
+      "catatan": "Ketentuan Merchant ShopeeFood resmi: Biaya Layanan sudah termasuk PPN; persentasenya tidak dicantumkan (diatur perjanjian). Biaya penarikan Rp3.000 per pencairan untuk rekening selain BCA/BNI/BRI/Mandiri (tidak dihitung per porsi). Persen 15-20% dan service fee 3-5% dari artikel pihak ketiga."
+    },
+    "tiktok": {
+      "nama": "TikTok",
+      "updatedAt": "2026-11-15",
+      "verified": false,
+      "komisiPersen": 0,
+      "komisiAntarSendiriPersen": null,
+      "rentangDilaporkan": [2, 10],
+      "dasar": "sebelum_diskon",
+      "komisiTermasukPPN": null,
+      "biayaTetapPerPesanan": 0,
+      "biayaLayananPersen": 0,
+      "biayaIklanPersen": 0,
+      "source": ["https://klikit.io/id/learn/tiktok-shop-instant-delivery-indonesia"],
+      "catatan": "Belum ada sumber resmi untuk layanan pesan antar makanan TikTok di Indonesia. Rentang 2-10% dari blog vendor, tidak bisa dipercaya. Isi sendiri dari laporan mitra."
+    },
+    "custom": {
+      "nama": "Custom",
+      "updatedAt": "2026-11-15",
+      "verified": false,
+      "komisiPersen": 0,
+      "komisiAntarSendiriPersen": null,
+      "rentangDilaporkan": null,
+      "dasar": "sebelum_diskon",
+      "komisiTermasukPPN": true,
+      "biayaTetapPerPesanan": 0,
+      "biayaLayananPersen": 0,
+      "biayaIklanPersen": 0,
+      "source": [],
+      "catatan": "Atur sendiri untuk platform lain."
+    }
+  }
+}
