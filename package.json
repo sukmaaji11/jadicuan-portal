@@ -14,7 +14,9 @@
     "test:modal": "node --test src/lib/modal.test.mjs src/lib/modal-sewa.test.mjs src/lib/modal-lengkap.test.mjs src/lib/akses-kode.test.mjs",
     "preview": "astro preview",
     "astro": "astro",
-    "admin:kode": "node tools/akses-kalkulator-modal/build-admin.mjs"
+    "admin:kode": "node tools/akses-kalkulator-modal/build-admin.mjs",
+    "test:seller": "node --test src/lib/seller.test.mjs",
+    "test": "npm run test:hpp && npm run test:modal && npm run test:seller"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.0",

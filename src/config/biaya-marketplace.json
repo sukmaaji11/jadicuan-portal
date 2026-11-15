@@ -1,0 +1,199 @@
+{
+  "_catatan": "Profil biaya Kalkulator Untung Bersih Seller. Disusun dari riset Seli 15 Nov 2026 (riset-biaya-marketplace-nov2026.md). verified:true HANYA untuk angka yang dibaca langsung dari seller center resmi. Angka lain verified:false dan memicu banner peringatan. null = belum ada angka; pengguna mengisi sendiri di Pengaturan. Cara memperbarui: lihat README bagian Kalkulator Untung Seller.",
+  "versi": 1,
+  "profil": {
+    "shopee": {
+      "nama": "Shopee",
+      "updatedAt": "2026-11-15",
+      "source": "https://seller.shopee.co.id/edu/article/16057",
+      "dasar": "setelah_diskon",
+      "komisi": {
+        "nama": "Biaya administrasi",
+        "pilihanPersen": [2.5, 4.25, 5.25, 6.5, 6.75, 8.25, 9, 9.5, 10],
+        "persenDefault": null,
+        "batasMaks": null,
+        "verified": true,
+        "source": "https://seller.shopee.co.id/edu/article/18418",
+        "catatan": "Tarif menurut sub-kategori; pilih yang sesuai produkmu. Sudah termasuk PPN. Tidak ada batas maksimum untuk Star/Star+ (artikel 2037)."
+      },
+      "komisiDinamis": null,
+      "biayaProses": {
+        "nilai": 1250,
+        "verified": true,
+        "source": "https://seller.shopee.co.id/edu/article/16057",
+        "catatan": "Per pesanan selesai. Penjual Non-Star yang mengunggah produk pertama sebelum 1 Agu 2026 bebas biaya ini untuk 50 pesanan pertama."
+      },
+      "biayaLogistik": null,
+      "biayaTransaksi": {
+        "persen": 0,
+        "verified": false,
+        "source": "https://seller.shopee.co.id/edu/article/16057",
+        "catatan": "Sumber sekunder: tidak ada untuk Non-Star/Star. Shopee Mall 1,8% (maks Rp50.000) belum dicakup."
+      },
+      "program": [
+        {
+          "id": "gratisOngkirXtra",
+          "nama": "Gratis Ongkir XTRA",
+          "jenis": "gratis_ongkir",
+          "persen": null,
+          "batasMaks": 40000,
+          "verified": false,
+          "source": "https://seller.shopee.co.id/edu/article/3479",
+          "catatan": "Batas Rp40.000 per produk (ukuran biasa) resmi. Persen per kategori belum terverifikasi; isi sendiri. Naik mulai 1 Des 2026 (batas Rp60.000)."
+        },
+        {
+          "id": "promoXtra",
+          "nama": "Promo XTRA",
+          "jenis": "promo",
+          "persen": 4.5,
+          "batasMaks": 60000,
+          "verified": true,
+          "source": "https://seller.shopee.co.id/edu/article/2038",
+          "catatan": "Resmi untuk Star/Star+."
+        }
+      ],
+      "preorder": {
+        "persen": 3,
+        "verified": false,
+        "source": "https://seller.shopee.co.id/edu/article/16057",
+        "catatan": "Sumber sekunder (flexeet.com)."
+      },
+      "pph": {
+        "persen": 0.5,
+        "verified": false,
+        "source": "https://seller.shopee.co.id/edu/article/16057",
+        "catatan": "PPh Pasal 22 dipungut sejak 2 Okt 2026 (sumber sekunder). Orang pribadi dengan omzet sampai Rp500 juta/tahun yang sudah mengunggah surat pernyataan tidak dipungut."
+      }
+    },
+    "tiktokshop": {
+      "nama": "TikTok Shop / Tokopedia",
+      "updatedAt": "2026-11-15",
+      "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=10010845&lang=en",
+      "dasar": "setelah_diskon",
+      "komisi": {
+        "nama": "Komisi platform",
+        "pilihanPersen": [],
+        "rentangPersen": [2.5, 12.2],
+        "persenDefault": null,
+        "batasMaks": null,
+        "verified": false,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=10010845&lang=en",
+        "catatan": "Resmi hanya rentang 2,5-12,2% menurut tipe penjual dan sub-kategori. Tabel per kategori ada di PDF seller center; isi sendiri."
+      },
+      "komisiDinamis": {
+        "nama": "Komisi dinamis",
+        "batasMaks": 60000,
+        "verified": false,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=6385751723132688",
+        "catatan": "Persen per kategori resmi (16 Sep 2026). Batas Rp60.000 per item dari halaman resmi, tapi halaman lain menyebut Rp650.000: cek ulang.",
+        "perKategori": {
+          "Ponsel & Elektronik": 3,
+          "Komputer & Peralatan Kantor": 4,
+          "Otomotif & Motor": 7.5,
+          "Peralatan Rumah Tangga": 6,
+          "Perbaikan Rumah": 7.5,
+          "Makanan & Minuman": 6.5,
+          "Perkakas": 7,
+          "Kesehatan": 6.5,
+          "Olahraga & Outdoor": 6.5,
+          "Perlengkapan Rumah": 8,
+          "Kecantikan & Perawatan Pribadi": 7,
+          "Perlengkapan Hewan": 8,
+          "Mainan & Hobi": 8,
+          "Peralatan Dapur": 8,
+          "Furnitur": 6.5,
+          "Pakaian Pria & Pakaian Dalam": 8,
+          "Aksesoris Perhiasan": 4.5,
+          "Aksesoris Fashion": 7.5,
+          "Koper & Tas": 8,
+          "Bayi & Ibu Hamil": 7,
+          "Sepatu": 8,
+          "Tiket & Voucher": 6,
+          "Pakaian Wanita & Pakaian Dalam": 8,
+          "Tekstil & Furnishing": 8,
+          "Buku, Majalah & Audio": 8,
+          "Koleksi": 8,
+          "Fashion Muslim": 8,
+          "Fashion Anak": 7.5,
+          "Produk Virtual": 6,
+          "Perlengkapan Kantor": 8
+        }
+      },
+      "biayaProses": {
+        "nilai": 1250,
+        "verified": true,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=10010845&lang=en",
+        "catatan": "Per pesanan."
+      },
+      "biayaLogistik": {
+        "nilai": 0,
+        "rentang": [540, 5060],
+        "verified": false,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=3039885401655041",
+        "catatan": "Rp540-Rp5.060 per pesanan menurut berat dan rute (sejak 1 Mei 2026). Isi sesuai produkmu."
+      },
+      "biayaTransaksi": {
+        "persen": 0,
+        "verified": false,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=7753828090824449",
+        "catatan": "Biaya layanan Mall 1,8% (maks Rp50.000) hanya untuk Mall; belum dicakup."
+      },
+      "program": [
+        {
+          "id": "growthXtraSuper",
+          "nama": "Growth Xtra Super",
+          "jenis": "promo",
+          "persen": 2,
+          "batasMaks": 20000,
+          "verified": true,
+          "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=7753828090824449",
+          "catatan": "Opsional."
+        },
+        {
+          "id": "liveSpecials",
+          "nama": "Live Specials",
+          "jenis": "lainnya",
+          "persen": 2,
+          "batasMaks": 20000,
+          "verified": true,
+          "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=7753828090824449",
+          "catatan": "Opsional, per SKU."
+        }
+      ],
+      "preorder": {
+        "persen": 3,
+        "verified": true,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=10010845&lang=en",
+        "catatan": "3% x (harga item - diskon penjual)."
+      },
+      "pph": {
+        "persen": 0.5,
+        "verified": false,
+        "source": "https://seller-id.tokopedia.com/university/essay?knowledge_id=10010845&lang=en",
+        "catatan": "Belum ada sumber resmi untuk TikTok Shop."
+      }
+    },
+    "custom": {
+      "nama": "Custom",
+      "updatedAt": "2026-11-15",
+      "source": "",
+      "dasar": "setelah_diskon",
+      "komisi": {
+        "nama": "Komisi",
+        "pilihanPersen": [],
+        "persenDefault": 0,
+        "batasMaks": null,
+        "verified": false,
+        "source": "",
+        "catatan": "Isi sendiri di Pengaturan."
+      },
+      "komisiDinamis": null,
+      "biayaProses": { "nilai": 0, "verified": false, "source": "", "catatan": "Isi sendiri." },
+      "biayaLogistik": { "nilai": 0, "verified": false, "source": "", "catatan": "Isi sendiri." },
+      "biayaTransaksi": { "persen": 0, "verified": false, "source": "", "catatan": "Isi sendiri." },
+      "program": [],
+      "preorder": { "persen": 0, "verified": false, "source": "", "catatan": "Isi sendiri." },
+      "pph": { "persen": 0.5, "verified": false, "source": "", "catatan": "Isi sendiri." }
+    }
+  }
+}
