@@ -78,7 +78,7 @@ Tidak ada akun dan tidak ada backend. Data produk dan file CSV dihitung di brows
 | `src/config/biaya-marketplace.json` | Profil biaya Shopee, TikTok Shop / Tokopedia, dan Custom. |
 | `src/config/kalkulator-seller.ts` | `FREE_ROW_LIMIT` (batas baris CSV, `null` = nonaktif) dan ukuran file maksimum. |
 | `src/lib/seller.ts` | Rumus murni: untung, margin, status, harga impas/saran, timpaan Pengaturan, pembaca angka Indonesia. |
-| `src/lib/seller-csv.ts`, `seller-csv-worker.ts` | Pembaca CSV (dijalankan di Web Worker) dan template. |
+| `src/lib/seller-csv.ts` | Pembaca CSV dan template. Tampilan impor dan Web Worker ada di modul bersama `impor-csv-ui.ts` dan `csv-worker.ts`. |
 | `src/lib/seller-ekspor.ts` | Baris ekspor CSV/XLSX. |
 | `src/lib/seller-ui.ts`, `seller-hasil.ts`, `seller-impor.ts`, `seller-banding.ts`, `seller-tampil.ts` | Tampilan. |
 | `samples/produk-contoh.csv` | 30 produk contoh, termasuk yang rugi dan 6 baris yang sengaja salah format. |
@@ -161,6 +161,135 @@ Pixel dimuat hanya bila environment variable `PUBLIC_META_PIXEL_ID_SELLER` diisi
 ```sh
 npm run test:seller   # rumus, CSV, ekspor
 npm test              # semua: HPP, Modal, Seller
+```
+
+Deploy sama dengan halaman lain: push ke `main`, lalu Cloudflare Pages menjalankan `npm run build`.
+
+## Kalkulator Harga Pesan Antar
+
+Halaman `/kalkulator-harga-pesan-antar/` (`src/pages/kalkulator-harga-pesan-antar.astro`) ada di menu alat beranda. Pengguna mengisi HPP satu menu, lalu melihat untuk GoFood, GrabFood, ShopeeFood, TikTok, dan profil Custom:
+
+- harga display yang aman, beserta tombol **Salin harga**
+- uang bersih yang diterima
+- untung per porsi dan total potongan
+- status Aman, Tipis, atau Rugi bila harga disamakan dengan harga lapak
+- rincian potongan
+
+Mode **Banyak menu (CSV)** menampilkan tabel per platform, dan hasilnya bisa diekspor ke CSV atau XLSX.
+
+Tidak ada akun dan tidak ada backend. Menu dan file CSV dihitung di browser dan tidak dikirim ke server. Pengaturan disimpan di `localStorage` dengan kunci `jadicuan:kalkulator-pesan-antar:*`.
+
+| File | Isi |
+|---|---|
+| `src/config/biaya-pesan-antar.json` | Profil potongan per platform dan tarif PPN. |
+| `src/lib/food.ts` | Rumus murni: harga saran, harga impas, uang bersih, untung, dan perbandingan dengan harga lapak. |
+| `src/lib/food-csv.ts`, `food-ekspor.ts` | CSV menu dan baris ekspor. |
+| `src/lib/food-ui.ts`, `food-banyak.ts` | Tampilan. |
+| `samples/menu-contoh.csv` | 20 baris contoh, termasuk menu yang rugi dan 4 baris yang sengaja salah. |
+
+Beberapa modul dipakai bersama Kalkulator Untung Seller:
+
+- `seller.ts`: pembaca angka dan format
+- `seller-csv.ts`: pembaca CSV
+- `impor-csv-ui.ts` dan `csv-worker.ts`: tampilan impor dan Web Worker
+- `ekspor-xlsx.ts`, `penyimpanan.ts`, `form-pengaturan.ts`
+
+### Memperbarui angka potongan
+
+Tidak ada platform yang mempublikasikan satu tarif tunggal, karena tarif disepakati per mitra. Karena itu semua angka di config `verified: false` dan halaman selalu menampilkan banner "Angka potongan belum diverifikasi". Angka yang belum diganti pengguna diberi label "Angka referensi, belum diverifikasi".
+
+1. Buka `src/config/biaya-pesan-antar.json`.
+2. Ubah angka di profil platform:
+   - `komisiPersen`
+   - `komisiAntarSendiriPersen`
+   - `komisiTermasukPPN`: `true`, `false`, atau `null` bila belum diketahui
+   - `dasar`: `sebelum_diskon` atau `setelah_diskon`
+   - `biayaTetapPerPesanan`
+   - `biayaLayananPersen`
+   - `biayaIklanPersen`
+3. Ubah juga `tarifPPN.persen` bila perlu.
+4. Perbarui `updatedAt`, `source`, dan `catatan`.
+5. Jalankan `npm run test:food`.
+
+Selama `komisiTermasukPPN` bernilai `null`, kalkulator menghitung dengan PPN ditambahkan karena itu angka yang lebih hati-hati. Kartu platform itu menampilkan peringatan sampai pengguna memilih di Pengaturan.
+
+Pengguna bisa menimpa semua angka dari panel **Pengaturan**. Angka timpaan itulah yang dipakai.
+
+### Rumus singkat
+
+Notasi:
+
+| Simbol | Arti |
+|---|---|
+| p | harga display |
+| d | diskon dari penjual |
+| c | komisi |
+| t | PPN atas komisi (0 bila sudah termasuk) |
+| f | biaya tetap per pesanan |
+| s | biaya layanan |
+| a | iklan/promo |
+| h, k, o | HPP, packing, overhead |
+| x | PPh 0 atau 0,5% |
+
+Rumus:
+
+- dibayar pembeli = p(1−d)
+- dasar komisi = p atau p(1−d)
+- komisi = dasar × c × (1+t)
+- biaya lain = dasar × (s+a) + f
+- PPh = x × dibayar pembeli
+- uang bersih = dibayar pembeli − komisi − biaya lain − PPh
+- untung = uang bersih − h − k − o
+- margin = untung ÷ dibayar pembeli
+
+Untung berbanding lurus dengan p, sehingga harga impas dan harga saran memakai rumus tertutup. Harga saran dibulatkan ke atas ke kelipatan yang dipilih (bawaan Rp500), lalu untungnya dihitung ulang pada harga bulat itu. Target dibaca dalam rupiah bulat.
+
+Status:
+
+- **Rugi:** untung < 0.
+- **Tipis:** untung di antara 0 dan target.
+- **Aman:** untung ≥ target.
+
+Status dihitung pada harga lapak bila diisi, dan pada harga saran bila tidak.
+
+Bila input tidak valid, kalkulator menampilkan pesan yang jelas, bukan hasil tak hingga. Kasusnya:
+
+- HPP 0 atau negatif
+- diskon 100%
+- total potongan 100% atau lebih
+- target margin yang tidak mungkin tercapai
+
+### Format CSV menu
+
+Tombol **Unduh template CSV** di tab Banyak menu menghasilkan template berisi 3 contoh.
+
+- **Kolom wajib:** `nama_menu`, `hpp`.
+- **Kolom opsional:** `packing`, `harga_offline`, serta `target_rp`, `target_margin`, `diskon`, `overhead` (menimpa Pengaturan untuk menu itu).
+- **Alias header:** `nama`, `menu`, `modal`, `cost`, `kemasan`, `harga_lapak`, `harga`, `price`.
+- **Toleransi format:** sama dengan kalkulator seller, yaitu pemisah koma atau titik koma, BOM, `Rp 25.000`, dan `12,5%`.
+- **Pencocokan kolom:** bila header wajib tidak dikenali, halaman menampilkan layar pencocokan kolom.
+- **Baris salah:** dilaporkan dengan nomor baris dan alasannya. Baris lain tetap dihitung.
+- **Ekspor:** satu baris per menu per platform aktif, berisi kolom input dan semua hasil.
+
+### Event Meta Pixel
+
+| Event | Kapan | Parameter |
+|---|---|---|
+| `food_calc_start` | Pertama kali mengisi menu atau mengimpor CSV | - |
+| `food_calc_complete` | Hasil pertama tampil | - |
+| `food_csv_import` | CSV selesai dibaca | `baris`: `1-50` / `51-500` / `501-2000` / `2000+` |
+| `food_export` | Unduh hasil | `format`: `csv` / `xlsx` |
+| `food_share_click` | Tombol "Salin harga" | - |
+
+HPP, harga, dan nama menu tidak pernah dikirim.
+
+Pixel dimuat hanya bila `PUBLIC_META_PIXEL_ID_FOOD` diisi di Cloudflare Pages.
+
+### Tes
+
+```sh
+npm run test:food   # rumus, CSV, ekspor
+npm test            # semua kalkulator
 ```
 
 Deploy sama dengan halaman lain: push ke `main`, lalu Cloudflare Pages menjalankan `npm run build`.
