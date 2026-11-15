@@ -2,7 +2,9 @@
 // difilter (Rugi di atas secara default), dan rincian per produk. Tabel ditampilkan per halaman
 // supaya ribuan baris tetap ringan.
 import { formatPersen, formatRp, ringkas, type HasilProduk, type MarketplaceId, type Status } from "./seller";
-import { el, LABEL_STATUS, badgeStatus, renderKartuHasil } from "./seller-tampil";
+import { el, LABEL_STATUS, PESAN_PERINGATAN, badgeStatus, renderKartuHasil } from "./seller-tampil";
+import { barisEkspor, keCsv, namaFileEkspor } from "./seller-ekspor";
+import { unduhTeks } from "./seller-impor";
 import type { ItemDaftar, KonteksSeller } from "./seller-ui";
 
 const PER_HALAMAN = 50;
@@ -11,7 +13,7 @@ const URUTAN_STATUS: Record<Status, number> = { rugi: 0, tipis: 1, sehat: 2 };
 
 export type BarisHasil = { item: ItemDaftar; hasil: HasilProduk };
 
-export function pasangHasil(ctx: KonteksSeller): { baris(): BarisHasil[] } {
+export function pasangHasil(ctx: KonteksSeller, opsi: { onEkspor?: (format: "csv" | "xlsx") => void } = {}): { baris(): BarisHasil[] } {
   const root = document.getElementById("results-root")!;
   const section = document.getElementById("seller-results")!;
   let baris: BarisHasil[] = [];
@@ -86,7 +88,51 @@ export function pasangHasil(ctx: KonteksSeller): { baris(): BarisHasil[] } {
   hapusCsv.addEventListener("click", () => {
     if (window.confirm("Hapus semua produk hasil impor CSV dari daftar?")) ctx.hapusSumber("csv");
   });
-  aksi.append(hapusManual, hapusCsv);
+  // Ekspor: semua produk (bukan hanya yang tersaring), urut Rugi dulu.
+  const ekspor = el("div", "", "seller-export");
+  ekspor.append(el("span", "Unduh hasil:"));
+  const statusEkspor = el("span", "", "seller-export-status");
+  statusEkspor.setAttribute("role", "status");
+  const dataEkspor = () => {
+    const urutan = [...baris].sort((a, b) => nilaiUrut(a, "status") as number - (nilaiUrut(b, "status") as number));
+    return barisEkspor(
+      urutan.map((b) => ({ produk: b.item.produk, hasil: b.hasil })),
+      (id) => ctx.profil(id).nama,
+      (h) => h.peringatan.map((w) => PESAN_PERINGATAN[w]).join(" "),
+    );
+  };
+  const tombolCsv = el("button", "CSV", "button button-secondary");
+  tombolCsv.type = "button";
+  tombolCsv.addEventListener("click", () => {
+    unduhTeks(namaFileEkspor("csv"), keCsv(dataEkspor()), "text/csv;charset=utf-8");
+    statusEkspor.textContent = "CSV diunduh.";
+    opsi.onEkspor?.("csv");
+  });
+  const tombolXlsx = el("button", "Excel (XLSX)", "button button-secondary");
+  tombolXlsx.type = "button";
+  tombolXlsx.addEventListener("click", async () => {
+    tombolXlsx.disabled = true;
+    statusEkspor.textContent = "Menyiapkan file Excel…";
+    try {
+      const XLSX = await import("xlsx");
+      const rows = dataEkspor();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws["!cols"] = rows[0].map((h, i) => ({ wch: i === 0 ? 28 : Math.max(10, String(h).length + 2) }));
+      ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length - 1, c: rows[0].length - 1 } }) };
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Untung bersih");
+      const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" }) as ArrayBuffer;
+      unduhTeks(namaFileEkspor("xlsx"), buf, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      statusEkspor.textContent = "File Excel diunduh.";
+      opsi.onEkspor?.("xlsx");
+    } catch {
+      statusEkspor.textContent = "File Excel gagal dibuat. Coba unduh CSV.";
+    } finally {
+      tombolXlsx.disabled = false;
+    }
+  });
+  ekspor.append(tombolCsv, tombolXlsx, statusEkspor);
+  aksi.append(ekspor, hapusManual, hapusCsv);
 
   function hitungUlang(): void {
     baris = ctx.daftar().map((item) => ({ item, hasil: ctx.hitung(item.produk) }));

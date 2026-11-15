@@ -15,7 +15,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "admin:kode": "node tools/akses-kalkulator-modal/build-admin.mjs",
-    "test:seller": "node --test src/lib/seller.test.mjs src/lib/seller-csv.test.mjs",
+    "test:seller": "node --test src/lib/seller.test.mjs src/lib/seller-csv.test.mjs src/lib/seller-ekspor.test.mjs",
     "test": "npm run test:hpp && npm run test:modal && npm run test:seller"
   },
   "dependencies": {
@@ -31,7 +31,8 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "sanity": "6.20.0",
-    "styled-components": "6.1.19"
+    "styled-components": "6.1.19",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

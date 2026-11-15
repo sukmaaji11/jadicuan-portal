@@ -4202,3 +4202,147 @@ button.seller-summary-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Ekspor */
+.seller-export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  width: 100%;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.seller-export-status {
+  color: var(--sehat);
+  font-weight: 650;
+}
+
+/* Bandingkan */
+.seller-compare-inputs {
+  display: grid;
+  gap: 10px;
+}
+
+.seller-compare-inputs:empty {
+  display: none;
+}
+
+.seller-compare-product {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 11px;
+  background: #f4f9ff;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.seller-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.seller-compare-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--sehat-line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.seller-compare-card.is-rugi {
+  border-color: var(--rugi-line);
+  background: #fffaf9;
+}
+
+.seller-compare-card.is-tipis {
+  border-color: var(--tipis-line);
+}
+
+.seller-compare-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.seller-compare-card header strong {
+  color: var(--navy);
+  font-size: 17px;
+}
+
+.seller-compare-card .seller-result-profit strong {
+  color: var(--navy);
+  font-size: 26px;
+}
+
+.seller-compare-card.is-rugi .seller-result-profit strong {
+  color: var(--rugi);
+}
+
+.seller-compare-best {
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e2f6f0;
+  color: var(--sehat);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.seller-compare-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.seller-compare-list div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.seller-compare-list dt {
+  color: #334864;
+}
+
+.seller-compare-list dd {
+  margin: 0;
+  color: var(--navy);
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.seller-panel .seller-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.seller-panel .seller-empty p {
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .seller-compare {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+#csv-root,
+#compare-root {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}

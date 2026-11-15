@@ -19,6 +19,7 @@ import {
 import { el, renderKartuHasil } from "./seller-tampil";
 import { pasangHasil } from "./seller-hasil";
 import { pasangImpor } from "./seller-impor";
+import { pasangBanding } from "./seller-banding";
 
 const KEY_PENGATURAN = "jadicuan:kalkulator-seller:pengaturan";
 const KEY_TIMPAAN = "jadicuan:kalkulator-seller:timpaan";
@@ -498,6 +499,17 @@ export function pasangKalkulatorSeller(): KonteksSeller {
   });
   pasangHasil(ctx);
   pasangImpor(ctx);
+  const isiBanding = pasangBanding(ctx);
+  let adaBanding = false;
+  ctx.isiFormBanding = (p) => {
+    adaBanding = true;
+    isiBanding(p);
+  };
+  // Buka tab Bandingkan langsung: pakai produk dari form bila belum ada yang dibandingkan.
+  document.getElementById("tab-banding")?.addEventListener("click", () => {
+    const p = bacaForm();
+    if (p && !adaBanding) ctx.isiFormBanding(p);
+  });
   muatDraf();
   renderPengaturan();
   petunjukKomisi();
