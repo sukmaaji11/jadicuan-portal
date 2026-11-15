@@ -1,0 +1,55 @@
+---
+// Kolom isian Kalkulator Untung Seller. Memakai kelas yang sama dengan Kalkulator Modal
+// (modal-field, modal-input-wrap) supaya tampilannya seragam. Pembacaan angka diatur oleh
+// src/lib/seller-ui.ts lewat data-sfield dan data-kind.
+type Props = {
+  field: string;
+  label: string;
+  kind: "rupiah" | "bulat" | "persen" | "teks";
+  suffix?: string;
+  optional?: boolean;
+  hint?: string;
+  help?: string; // penjelasan singkat istilah, tampil lewat tombol "?"
+  placeholder?: string;
+  list?: string; // id <datalist> untuk saran isian
+};
+
+const { field, label, kind, suffix, optional = false, hint, help, placeholder, list } = Astro.props;
+const id = `seller-${field}`;
+const hintId = hint ? `${id}-hint` : undefined;
+const helpId = `${id}-help`;
+---
+
+<div class="hpp-field modal-field">
+  <div class="modal-label-row">
+    <label for={id}>
+      {label}
+      {optional && <span class="hpp-optional"> (opsional)</span>}
+    </label>
+    {help && (
+      <button class="modal-help-button" type="button" aria-expanded="false" aria-controls={helpId} data-help-toggle>
+        <span aria-hidden="true">?</span>
+        <span class="sr-only">Apa itu {label.toLowerCase()}?</span>
+      </button>
+    )}
+  </div>
+  {help && <p class="modal-help-text" id={helpId} hidden>{help}</p>}
+  <div class:list={["modal-input-wrap", { "has-prefix": kind === "rupiah", "has-suffix": !!suffix }]}>
+    {kind === "rupiah" && <span class="modal-affix modal-affix-start" aria-hidden="true">Rp</span>}
+    <input
+      id={id}
+      type="text"
+      inputmode={kind === "persen" ? "decimal" : kind === "teks" ? "text" : "numeric"}
+      autocomplete="off"
+      maxlength={kind === "teks" ? 80 : kind === "persen" ? 6 : 19}
+      placeholder={placeholder}
+      aria-describedby={hintId}
+      list={list}
+      data-sfield={field}
+      data-kind={kind}
+    />
+    {suffix && <span class="modal-affix modal-affix-end" aria-hidden="true">{suffix}</span>}
+  </div>
+  {hint && <p class="modal-hint" id={hintId}>{hint}</p>}
+  <slot />
+</div>

@@ -1,0 +1,173 @@
+---
+import SiteLayout from "../components/SiteLayout.astro";
+import MetaPixel from "../components/MetaPixel.astro";
+import SellerField from "../components/kalkulator-seller/SellerField.astro";
+import biaya from "../config/biaya-marketplace.json";
+import { MARKETPLACES, belumTerverifikasi, type ProfilBiaya } from "../lib/seller";
+
+const profil = biaya.profil as unknown as Record<string, ProfilBiaya>;
+const kategoriTiktok = Object.keys(profil.tiktokshop.komisiDinamis?.perKategori ?? {});
+const pilihanShopee = profil.shopee.komisi.pilihanPersen;
+// Banner: angka di config yang belum terverifikasi (profil Custom selalu diisi pengguna, jadi tidak ikut).
+const belum = MARKETPLACES.filter((id) => id !== "custom")
+  .map((id) => ({ nama: profil[id].nama, daftar: belumTerverifikasi(profil[id]) }))
+  .filter((x) => x.daftar.length > 0);
+
+const webApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Kalkulator Untung Bersih Seller Marketplace JadiCuan",
+  url: "https://jadicuan.co.id/kalkulator-untung-seller/",
+  description:
+    "Hitung untung bersih, margin, harga impas, dan harga jual yang disarankan untuk produk di Shopee, TikTok Shop, dan Tokopedia.",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  inLanguage: "id-ID",
+};
+
+const HELP = {
+  hpp: "Modal per satu barang: harga beli atau biaya produksi, sebelum dikirim ke pembeli.",
+  komisi: "Biaya admin atau komisi yang dipotong marketplace dari setiap penjualan, dalam persen. Besarnya tergantung kategori produkmu di seller center.",
+  diskon: "Diskon atau voucher yang kamu tanggung sendiri, bukan dari marketplace. Tulis rupiah (5.000) atau persen (10%).",
+  affiliate: "Komisi untuk kreator atau affiliate yang membantu menjual, dalam persen dari harga.",
+  roas: "ROAS = penjualan dibagi biaya iklan. ROAS 5 berarti setiap Rp1 iklan menghasilkan Rp5 penjualan, jadi biaya iklan per pesanan = harga ÷ 5.",
+  retur: "Perkiraan berapa persen pesanan yang dikembalikan, dan biaya yang kamu tanggung setiap kali ada retur (ongkir balik, barang rusak).",
+  logistik: "Biaya layanan logistik TikTok Shop per pesanan, Rp540 sampai Rp5.060 menurut berat dan rute.",
+};
+---
+
+<SiteLayout
+  title="Kalkulator Untung Bersih Seller Marketplace — JadiCuan"
+  description="Hitung untung bersih per produk setelah semua potongan Shopee, TikTok Shop, dan Tokopedia: margin, harga impas, dan harga jual yang disarankan. Data tetap di perangkatmu."
+  canonicalPath="/kalkulator-untung-seller"
+>
+  <section class="hpp-page modal-page seller-page">
+    <header class="hpp-intro seller-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Untuk seller Shopee, TikTok Shop & Tokopedia</span>
+      <h1>Kalkulator untung bersih seller.</h1>
+      <p>Masukkan produkmu satu per satu atau unggah CSV. Lihat untung bersih setelah semua potongan marketplace, margin, harga impas, dan harga jual yang disarankan. Semua dihitung di perangkatmu.</p>
+    </header>
+
+    {belum.length > 0 && (
+      <aside class="seller-banner" role="note" aria-labelledby="seller-banner-title">
+        <strong id="seller-banner-title">Angka biaya belum diverifikasi, cek seller center resmi.</strong>
+        <ul>
+          {belum.map((b) => <li><b>{b.nama}:</b> {b.daftar.join(", ")}.</li>)}
+        </ul>
+        <p>Kamu bisa mengubah semua angka biaya di <a href="#seller-settings" data-open-settings>Pengaturan</a>.</p>
+      </aside>
+    )}
+
+    <div class="seller-tabs" role="tablist" aria-label="Cara menghitung">
+      <button class="seller-tab" type="button" role="tab" id="tab-satu" aria-controls="panel-satu" aria-selected="true">Satu produk</button>
+      <button class="seller-tab" type="button" role="tab" id="tab-csv" aria-controls="panel-csv" aria-selected="false" tabindex="-1">Impor CSV</button>
+      <button class="seller-tab" type="button" role="tab" id="tab-banding" aria-controls="panel-banding" aria-selected="false" tabindex="-1">Bandingkan</button>
+    </div>
+
+    <!-- Tab 1: satu produk -->
+    <section class="hpp-panel seller-panel" id="panel-satu" role="tabpanel" aria-labelledby="tab-satu">
+      <form class="seller-form" id="seller-form" novalidate>
+        <div class="modal-grid">
+          <SellerField field="nama" label="Nama produk" kind="teks" placeholder="Contoh: Kaos polos hitam" />
+          <div class="hpp-field modal-field">
+            <div class="modal-label-row"><label for="seller-marketplace">Marketplace</label></div>
+            <select id="seller-marketplace" class="modal-select" data-sfield="marketplace">
+              <option value="shopee">Shopee</option>
+              <option value="tiktokshop">TikTok Shop / Tokopedia</option>
+              <option value="custom">Custom (atur sendiri)</option>
+            </select>
+          </div>
+          <SellerField field="hargaJual" label="Harga jual" kind="rupiah" placeholder="100.000" />
+          <SellerField field="hpp" label="HPP / modal per barang" kind="rupiah" placeholder="60.000" help={HELP.hpp} />
+          <SellerField field="kategori" label="Kategori" kind="teks" list="seller-kategori-list" placeholder="Contoh: Sepatu" hint="Untuk TikTok Shop, kategori menentukan komisi dinamis." />
+          <SellerField field="komisiPersen" label="Komisi / biaya admin" kind="persen" suffix="%" list="seller-komisi-list" help={HELP.komisi} hint="" />
+        </div>
+        <datalist id="seller-kategori-list">
+          {kategoriTiktok.map((k) => <option value={k} />)}
+        </datalist>
+        <datalist id="seller-komisi-list">
+          {pilihanShopee.map((p) => <option value={String(p).replace(".", ",")} />)}
+        </datalist>
+
+        <details class="modal-advanced seller-more" id="seller-more">
+          <summary>Biaya lain (opsional)</summary>
+          <p class="seller-more-note">Kosongkan untuk memakai nilai bawaan di Pengaturan.</p>
+          <div class="modal-grid">
+            <SellerField field="diskon" label="Diskon / voucher dari kamu" kind="teks" placeholder="5.000 atau 10%" help={HELP.diskon} optional />
+            <SellerField field="affiliatePersen" label="Komisi affiliate" kind="persen" suffix="%" help={HELP.affiliate} optional />
+            <SellerField field="biayaIklan" label="Biaya iklan per pesanan" kind="rupiah" optional hint="Atau isi ROAS iklan saja." />
+            <SellerField field="roas" label="ROAS iklan" kind="persen" placeholder="Contoh: 5" help={HELP.roas} optional />
+            <SellerField field="packing" label="Biaya packing per pesanan" kind="rupiah" optional />
+            <SellerField field="logistik" label="Biaya layanan logistik" kind="rupiah" help={HELP.logistik} optional hint="Khusus TikTok Shop / Tokopedia." />
+            <SellerField field="returPersen" label="Tingkat retur" kind="persen" suffix="%" help={HELP.retur} optional />
+            <SellerField field="biayaRetur" label="Biaya per retur" kind="rupiah" optional />
+            <SellerField field="terjualPerBulan" label="Perkiraan terjual per bulan" kind="bulat" suffix="pcs" optional hint="Untuk menghitung total untung per bulan." />
+            <SellerField field="sku" label="SKU" kind="teks" optional />
+          </div>
+          <fieldset class="seller-checks">
+            <legend>Program dan pajak</legend>
+            <label class="modal-check"><input type="checkbox" data-sfield="gratisOngkir" /> <span>Ikut program gratis ongkir</span></label>
+            <label class="modal-check"><input type="checkbox" data-sfield="promo" /> <span>Ikut program promo</span></label>
+            <label class="modal-check"><input type="checkbox" data-sfield="preorder" /> <span>Produk pre-order</span></label>
+            <label class="modal-check"><input type="checkbox" data-sfield="pph" /> <span>Hitung PPh 0,5% dari omzet</span></label>
+          </fieldset>
+        </details>
+      </form>
+
+      <section class="seller-single" id="single-result" aria-live="polite" aria-labelledby="single-heading" hidden>
+        <h2 class="sr-only" id="single-heading">Hasil produk ini</h2>
+        <div class="seller-single-body" id="single-body"></div>
+        <div class="seller-single-actions">
+          <button class="button button-primary" type="button" id="add-to-list">Tambahkan ke daftar</button>
+          <button class="button button-secondary" type="button" id="compare-this">Bandingkan di semua marketplace</button>
+        </div>
+        <p class="modal-copy-status" id="add-status" role="status"></p>
+      </section>
+      <p class="seller-empty" id="single-empty">Isi nama, harga jual, dan HPP untuk melihat hasilnya.</p>
+    </section>
+
+    <!-- Tab 2: impor CSV (tahap 3) -->
+    <section class="hpp-panel seller-panel" id="panel-csv" role="tabpanel" aria-labelledby="tab-csv" hidden>
+      <div id="csv-root"></div>
+    </section>
+
+    <!-- Tab 3: bandingkan marketplace (tahap 4) -->
+    <section class="hpp-panel seller-panel" id="panel-banding" role="tabpanel" aria-labelledby="tab-banding" hidden>
+      <div id="compare-root"></div>
+    </section>
+
+    <!-- Pengaturan: nilai bawaan + timpaan angka biaya. Disimpan di perangkat. -->
+    <details class="modal-advanced seller-settings" id="seller-settings">
+      <summary>Pengaturan</summary>
+      <div class="seller-settings-body" id="settings-body"></div>
+    </details>
+
+    <!-- Hasil daftar produk -->
+    <section class="seller-results" id="seller-results" aria-labelledby="results-heading" hidden>
+      <div class="hpp-section-heading">
+        <span class="section-kicker">Hasil</span>
+        <h2 id="results-heading" tabindex="-1">Untung bersih produkmu</h2>
+      </div>
+      <div id="results-root"></div>
+    </section>
+
+    <!-- Tempat ajakan lanjutan nanti (sengaja kosong). -->
+    <div class="seller-cta-slot" id="seller-cta-slot" hidden></div>
+
+    <footer class="seller-disclaimer">
+      <p><strong>Hasil ini estimasi. Cek ulang biaya di seller center resmi. Bukan nasihat pajak atau keuangan.</strong></p>
+      <p>Data produk dan file CSV-mu tidak keluar dari perangkat ini: semua dihitung di browser dan tidak dikirim ke server. Pengaturan disimpan di perangkat ini saja.</p>
+    </footer>
+  </section>
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(webApplicationJsonLd).replace(/</g, "\\u003c")}
+  />
+  <MetaPixel tool="seller" />
+</SiteLayout>
+
+<script>
+  import { pasangKalkulatorSeller } from "../lib/seller-ui";
+  pasangKalkulatorSeller();
+</script>

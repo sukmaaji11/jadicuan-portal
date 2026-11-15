@@ -2,13 +2,15 @@
 // Meta Pixel dengan autoConfig dimatikan. Setiap kalkulator punya Pixel sendiri:
 //   hpp   -> PUBLIC_META_PIXEL_ID
 //   modal -> PUBLIC_META_PIXEL_ID_MODAL
+//   seller -> PUBLIC_META_PIXEL_ID_SELLER (Kalkulator Untung Seller; Pixel belum dibuat Owner per 15 Nov 2026)
 // Kalau variabelnya kosong, Pixel tidak dipasang di halaman itu.
 // Letakkan di dalam <SiteLayout> (lihat catatan di kalkulator-hpp.astro).
-type Props = { tool: "hpp" | "modal" };
+type Props = { tool: "hpp" | "modal" | "seller" };
 const { tool } = Astro.props;
 const pixelIds = {
   hpp: import.meta.env.PUBLIC_META_PIXEL_ID,
   modal: import.meta.env.PUBLIC_META_PIXEL_ID_MODAL,
+  seller: import.meta.env.PUBLIC_META_PIXEL_ID_SELLER,
 };
 const metaPixelId = pixelIds[tool]?.trim();
 ---

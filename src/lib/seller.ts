@@ -420,3 +420,58 @@ export function formatPersen(pecahan: number | null, desimal = 1): string {
   const v = Math.round(pecahan * 100 * 10 ** desimal) / 10 ** desimal;
   return `${String(v).replace(".", ",")}%`;
 }
+
+// ---------------- Membaca angka format Indonesia ----------------
+/**
+ * Membaca angka dari isian atau CSV: "Rp 25.000", "25.000", "25000", "1.250,5", "12,5%", "12.5".
+ * jenis "rp": koma diikuti tepat 3 angka dianggap pemisah ribuan ("25,000" = 25000).
+ * jenis "persen"/"angka": koma = desimal ("12,5" = 12.5).
+ * Kembali null bila kosong atau bukan angka.
+ */
+export function bacaAngka(teks: unknown, jenis: "rp" | "persen" | "angka" = "angka"): number | null {
+  if (typeof teks === "number") return Number.isFinite(teks) ? teks : null;
+  if (typeof teks !== "string") return null;
+  let s = teks.trim().replace(/^rp\.?/i, "").replace(/[\s%]/g, "").replace(/ /g, "");
+  if (!s) return null;
+  const minus = /^[-−(]/.test(s) || /\)$/.test(s);
+  s = s.replace(/^[-−(+]/, "").replace(/\)$/, "");
+  if (!/^[0-9.,]+$/.test(s)) return null;
+  const titik = s.includes(".");
+  const koma = s.includes(",");
+  if (titik && koma) {
+    // Pemisah yang muncul terakhir = desimal.
+    if (s.lastIndexOf(",") > s.lastIndexOf(".")) s = s.replace(/\./g, "").replace(",", ".");
+    else s = s.replace(/,/g, "");
+  } else if (titik) {
+    if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, ""); // 25.000 / 1.250.000
+    else if ((s.match(/\./g) ?? []).length > 1) return null;
+  } else if (koma) {
+    if (jenis === "rp" && /^\d{1,3}(,\d{3})+$/.test(s)) s = s.replace(/,/g, "");
+    else if ((s.match(/,/g) ?? []).length > 1) return null;
+    else s = s.replace(",", ".");
+  }
+  const v = Number(s);
+  if (!Number.isFinite(v)) return null;
+  return minus ? -v : v;
+}
+
+/** ya/tidak, y/n, true/false, 1/0, iya/ga (tidak peka huruf besar). null = kosong/tidak dikenal. */
+export function bacaYaTidak(teks: unknown): boolean | null {
+  if (typeof teks === "boolean") return teks;
+  if (typeof teks === "number") return teks === 1 ? true : teks === 0 ? false : null;
+  if (typeof teks !== "string") return null;
+  const t = teks.trim().toLowerCase();
+  if (["ya", "y", "iya", "yes", "true", "1", "aktif", "ikut"].includes(t)) return true;
+  if (["tidak", "t", "n", "no", "false", "0", "ga", "gak", "nggak", "tdk", "tidak ikut"].includes(t)) return false;
+  return null;
+}
+
+/** "shopee", "TikTok Shop", "tokopedia", "tts", "custom" -> id marketplace. */
+export function bacaMarketplace(teks: unknown): MarketplaceId | null {
+  if (typeof teks !== "string") return null;
+  const t = teks.toLowerCase().replace(/[^a-z]/g, "");
+  if (t === "shopee") return "shopee";
+  if (["tiktok", "tiktokshop", "tokopedia", "tts", "tiktokshoptokopedia", "tokped"].includes(t)) return "tiktokshop";
+  if (["custom", "lainnya", "lain"].includes(t)) return "custom";
+  return null;
+}

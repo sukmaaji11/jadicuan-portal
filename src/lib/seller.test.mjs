@@ -197,3 +197,36 @@ test("config: setiap profil lengkap dan angka verified:true punya sumber https",
     }
   }
 });
+
+test("membaca angka format Indonesia dan ekspor Excel", () => {
+  const rp = (t) => S.bacaAngka(t, "rp");
+  assert.equal(rp("Rp 25.000"), 25_000);
+  assert.equal(rp("Rp25.000"), 25_000);
+  assert.equal(rp("25.000"), 25_000);
+  assert.equal(rp("25000"), 25_000);
+  assert.equal(rp("1.250.000"), 1_250_000);
+  assert.equal(rp("25,000"), 25_000);
+  assert.equal(rp("1.250,50"), 1_250.5);
+  assert.equal(rp("1,250.50"), 1_250.5);
+  assert.equal(rp(" Rp 2.500 "), 2_500);
+  assert.equal(rp("-5.000"), -5_000);
+  assert.equal(rp(""), null);
+  assert.equal(rp("abc"), null);
+  assert.equal(rp("1.2.3"), null);
+  const pct = (t) => S.bacaAngka(t, "persen");
+  assert.equal(pct("12,5%"), 12.5);
+  assert.equal(pct("12.5"), 12.5);
+  assert.equal(pct("10"), 10);
+  assert.equal(pct("8,25 %"), 8.25);
+  assert.equal(S.bacaAngka(42), 42);
+});
+
+test("membaca ya/tidak dan nama marketplace", () => {
+  for (const t of ["ya", "Y", "true", "1", "Iya"]) assert.equal(S.bacaYaTidak(t), true);
+  for (const t of ["tidak", "n", "FALSE", "0", "ga"]) assert.equal(S.bacaYaTidak(t), false);
+  assert.equal(S.bacaYaTidak(""), null);
+  assert.equal(S.bacaYaTidak("mungkin"), null);
+  assert.equal(S.bacaMarketplace("Shopee"), "shopee");
+  for (const t of ["TikTok Shop", "tokopedia", "TTS", "Tiktok"]) assert.equal(S.bacaMarketplace(t), "tiktokshop");
+  assert.equal(S.bacaMarketplace("Lazada"), null);
+});
