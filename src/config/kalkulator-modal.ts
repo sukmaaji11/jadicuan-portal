@@ -27,6 +27,10 @@ export const KUNCI_PUBLIK_AKSES = {
   y: "GaoRPEzurfMx2G_W4BCxWXBJ9K9ehdKb0bRwb-BH67U",
 } as const;
 
+// Kunci localStorage tempat kode akses yang sudah aktif disimpan (dipakai halaman kalkulator
+// dan halaman aktivasi /kalkulator-modal/aktivasi/). Jangan diganti: pembeli lama harus aktivasi ulang.
+export const KUNCI_SIMPAN_AKSES = "jadicuan:kalkulator-modal:akses";
+
 // Nomor seri kode yang diblokir (mis. tersebar di grup). Tulis dalam heksadesimal sesuai
 // label, contoh "KM-1A2B3C4D" -> 0x1a2b3c4d. Berlaku setelah situs dideploy ulang.
 export const SERIAL_DIBLOKIR: readonly number[] = [];

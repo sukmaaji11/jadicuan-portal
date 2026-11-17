@@ -37,11 +37,15 @@ Isinya: 3 skenario (sepi, normal, ramai), simpan sampai 20 usaha, dan unduh PDF.
 **Alur penjualan:**
 
 1. Pembeli menekan "Beli versi lengkap" dan membayar di landing page Scalev.
-2. Owner membuat kode di `tools/akses-kalkulator-modal/admin.html`. Halaman ini dibuka offline dengan klik dua kali. Caranya:
+2. Scalev otomatis mengirim tautan halaman aktivasi `https://jadicuan.co.id/kalkulator-modal/aktivasi/` (atur di pesan setelah order di Scalev). Halaman ini juga bisa dibuka dari tautan "Sudah beli?" di kartu versi lengkap. Halaman ini tidak diindeks Google dan tidak masuk sitemap.
+3. Di halaman aktivasi, pembeli menekan **Minta kode aktivasi via WhatsApp**. Tombol ini membuka WhatsApp JadiCuan (`links.whatsapp` di `src/config/links.ts`) dengan pesan berisi isian nama dan nomor pesanan Scalev.
+4. Owner membuat kode di `tools/akses-kalkulator-modal/admin.html`. Halaman ini dibuka offline dengan klik dua kali. Caranya:
    - Seret file kunci rahasia ke halaman.
    - Isi nama atau nomor pesanan Scalev.
-   - Tekan **Buat kode**, lalu **Salin pesan WA** atau **Buka WhatsApp**.
-3. Pembeli membuka tautan di pesan itu (`/kalkulator-modal/#kode=...`), atau menempel kodenya di "Sudah punya kode akses?". Versi lengkap langsung aktif.
+   - Tekan **Buat kode**, lalu **Salin pesan WA** atau **Buka WhatsApp**. Pesannya berisi kode dan tautan halaman aktivasi.
+5. Pembeli menyalin kode, menempelkannya di halaman aktivasi, lalu menekan **Aktifkan** → **Mulai hitung**. Di kalkulator muncul tanda "Versi lengkap aktif", dan fitur tambahan ada di halaman hasil.
+
+Tautan lama berisi kode (`/kalkulator-modal/#kode=...` atau `/kalkulator-modal/aktivasi/#kode=...`) tetap berfungsi. Admin masih menampilkannya sebagai cadangan.
 
 **Cara kerja kode:**
 

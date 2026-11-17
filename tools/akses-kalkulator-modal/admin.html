@@ -61,7 +61,7 @@
       <p class="ok" id="hasiljudul"></p>
       <label>Kode akses</label>
       <code class="kode" id="kode"></code>
-      <label>Tautan aktivasi</label>
+      <label>Tautan aktivasi langsung (cadangan, kalau pembeli kesulitan menempel kode)</label>
       <code class="kode" id="tautan"></code>
       <label for="pesan">Pesan WhatsApp</label>
       <textarea id="pesan"></textarea>
@@ -96,6 +96,8 @@ const KODE_PRODUK = 1;
 const AWALAN_PESAN = "JCKM";
 const EPOCH_MS = Date.UTC(2026, 0, 1);
 const SITUS = "https://jadicuan.co.id/kalkulator-modal/";
+// Halaman aktivasi: pembeli menempelkan kode di sini (tautan ini juga dikirim otomatis oleh Scalev).
+const HALAMAN_AKTIVASI = `${SITUS}aktivasi/`;
 
 function base32Encode(bytes) {
   let bits = 0;
@@ -187,11 +189,11 @@ function pesanWhatsApp(hasil, nama = "") {
   return [
     `Halo${nama ? ` ${nama}` : ""}, terima kasih sudah membeli Versi Lengkap Kalkulator Modal JadiCuan.`,
     "",
-    "Buka tautan ini untuk mengaktifkan:",
-    hasil.tautan,
-    "",
-    "Atau tempel kode akses ini di halaman kalkulator (bagian Versi lengkap → Sudah punya kode akses?):",
+    "Kode aktivasi kamu:",
     formatKode(hasil.kode),
+    "",
+    "Cara aktivasi: salin kode di atas, buka halaman aktivasi berikut, tempel kodenya, lalu tekan Aktifkan.",
+    HALAMAN_AKTIVASI,
     "",
     `Nomor seri: ${hasil.label}. Simpan pesan ini. Kode yang sama bisa dipakai lagi kalau kamu ganti HP.`,
     "Mohon jangan dibagikan ke orang lain.",

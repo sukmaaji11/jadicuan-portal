@@ -1,7 +1,7 @@
 // Tampilan "Versi lengkap" Kalkulator Modal: kode akses, 3 skenario, usaha tersimpan, PDF.
 // Dipasang dari <script> di src/pages/kalkulator-modal.astro lewat pasangVersiLengkap().
 // Semua data tetap di perangkat (localStorage); tidak ada yang dikirim ke server atau Pixel.
-import { KUNCI_PUBLIK_AKSES, SERIAL_DIBLOKIR } from "../config/kalkulator-modal";
+import { KUNCI_PUBLIK_AKSES, KUNCI_SIMPAN_AKSES, SERIAL_DIBLOKIR } from "../config/kalkulator-modal";
 import { PESAN_GAGAL, periksaKode, type InfoAkses } from "./akses-kode";
 import {
   calculateModal,
@@ -26,7 +26,7 @@ import {
 } from "./modal-lengkap";
 import { CATATAN_RINGKASAN_SEWA, sewaDihitungDuaKali } from "./modal-sewa";
 
-const KEY_AKSES = "jadicuan:kalkulator-modal:akses";
+const KEY_AKSES = KUNCI_SIMPAN_AKSES;
 const KEY_TAUTAN = "jadicuan:kalkulator-modal:kode-tautan"; // diisi skrip inline di halaman
 const KEY_DAFTAR = "jadicuan:kalkulator-modal:usaha-tersimpan";
 const KEY_SKENARIO = "jadicuan:kalkulator-modal:skenario";
@@ -123,6 +123,8 @@ export function pasangVersiLengkap(ctx: KonteksHalaman) {
   function tampilkanAkses(): void {
     panel.hidden = !akses;
     kartuJual.hidden = !!akses;
+    const chip = document.getElementById("access-chip");
+    if (chip) chip.hidden = !akses;
     if (akses) $("full-badge").textContent = `Aktif di perangkat ini · ${akses.label}`;
   }
 
@@ -153,17 +155,6 @@ export function pasangVersiLengkap(ctx: KonteksHalaman) {
     tampilkanAkses();
     return true;
   }
-
-  const isian = document.getElementById("access-code") as HTMLTextAreaElement | null;
-  document.getElementById("access-submit")?.addEventListener("click", async () => {
-    if (!isian) return;
-    if (await aktifkan(isian.value, "isian")) {
-      isian.value = "";
-      render();
-      $("full-heading").focus?.();
-      panel.scrollIntoView({ block: "start", behavior: "smooth" });
-    }
-  });
 
   $("access-forget").addEventListener("click", () => {
     if (!window.confirm("Lepas kode akses dari perangkat ini? Usaha tersimpan tidak ikut terhapus. Kode yang sama bisa dimasukkan lagi kapan saja.")) return;

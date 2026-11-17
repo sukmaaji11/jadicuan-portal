@@ -10,7 +10,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         const pathname = new URL(page).pathname.replace(/\/$/, "");
-        return pathname !== "/studio" && pathname !== "/cari";
+        return pathname !== "/studio" && pathname !== "/cari" && pathname !== "/kalkulator-modal/aktivasi";
       },
     }),
   ],

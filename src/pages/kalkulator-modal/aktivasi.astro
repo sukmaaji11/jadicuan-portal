@@ -1,0 +1,86 @@
+---
+// Halaman aktivasi Versi Lengkap Kalkulator Modal (/kalkulator-modal/aktivasi/).
+// Tautan halaman ini dikirim otomatis oleh Scalev setelah pembeli order. Pembeli minta kode lewat
+// WhatsApp, menempelkannya di sini, lalu langsung mulai menghitung. Kode diperiksa di browser
+// (kunci publik); tidak ada data yang dikirim ke server.
+import SiteLayout from "../../components/SiteLayout.astro";
+import MetaPixel from "../../components/MetaPixel.astro";
+import { links } from "../../config/links";
+
+const pesanWa = "Halo JadiCuan, saya sudah order Versi Lengkap Kalkulator Modal.\nNama: \nNomor pesanan Scalev: \nMohon kode aktivasinya. Terima kasih.";
+const urlWa = `${links.whatsapp}?text=${encodeURIComponent(pesanWa)}`;
+---
+
+<SiteLayout
+  title="Aktivasi Versi Lengkap Kalkulator Modal — JadiCuan"
+  description="Aktifkan Versi Lengkap Kalkulator Modal & Balik Modal JadiCuan dengan kode aktivasi."
+  canonicalPath="/kalkulator-modal/aktivasi"
+  noIndex
+>
+  <!-- Tautan lama ...#kode=... : pindahkan kode ke sessionStorage SEBELUM Meta Pixel dimuat
+       (Pixel mencatat alamat halaman), lalu bersihkan alamatnya. -->
+  <script is:inline>
+    (function () {
+      var m = /^#kode=([0-9A-Za-z-]{20,200})$/.exec(location.hash);
+      if (!m) return;
+      try { sessionStorage.setItem("jadicuan:kalkulator-modal:kode-tautan", m[1]); } catch (e) {}
+      history.replaceState(null, "", location.pathname + location.search);
+    })();
+  </script>
+  <section class="hpp-page modal-page aktivasi-page">
+    <header class="hpp-intro modal-intro">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> Versi Lengkap Kalkulator Modal</span>
+      <h1>Aktifkan versi lengkap.</h1>
+      <p>Terima kasih sudah membeli. Ikuti dua langkah di bawah, lalu kamu bisa langsung memakai 3 skenario, simpan banyak usaha, dan unduh PDF.</p>
+    </header>
+
+    <!-- Sudah aktif di perangkat ini -->
+    <section class="hpp-panel aktivasi-done" id="aktivasi-sudah" aria-labelledby="aktivasi-sudah-title" hidden>
+      <span class="aktivasi-check" aria-hidden="true">✓</span>
+      <h2 id="aktivasi-sudah-title" tabindex="-1">Versi lengkap aktif</h2>
+      <p>Aktif di perangkat ini dengan nomor seri <strong class="aktivasi-serial" id="aktivasi-seri"></strong>.</p>
+      <ul class="aktivasi-fitur">
+        <li><strong>3 skenario</strong> penjualan sepi, normal, dan ramai</li>
+        <li><strong>Simpan sampai 20 usaha</strong> untuk dibandingkan</li>
+        <li><strong>Unduh PDF</strong> ringkasan modal</li>
+      </ul>
+      <p class="aktivasi-note">Fitur tambahan muncul di halaman hasil setelah kamu mengisi 4 langkah. Kode tersimpan di browser ini; kalau ganti HP, tempel kode yang sama lagi.</p>
+      <a class="button button-primary aktivasi-cta" href="/kalkulator-modal/">Mulai hitung <span aria-hidden="true">→</span></a>
+      <button class="modal-text-button" type="button" id="aktivasi-ganti">Pakai kode lain</button>
+    </section>
+
+    <!-- Belum aktif -->
+    <div class="aktivasi-steps" id="aktivasi-form">
+      <section class="hpp-panel aktivasi-step" aria-labelledby="aktivasi-1">
+        <span class="aktivasi-num" aria-hidden="true">1</span>
+        <div>
+          <h2 id="aktivasi-1">Minta kode aktivasi</h2>
+          <p>Kirim pesan ke WhatsApp JadiCuan. Lengkapi nama dan nomor pesanan Scalev di pesannya, lalu kami kirim kode aktivasimu.</p>
+          <a class="button button-primary aktivasi-wa" id="aktivasi-wa" href={urlWa} target="_blank" rel="noopener noreferrer">Minta kode aktivasi via WhatsApp <span aria-hidden="true">↗</span></a>
+          <p class="aktivasi-note">WhatsApp JadiCuan: 0821-3301-250</p>
+        </div>
+      </section>
+
+      <section class="hpp-panel aktivasi-step" aria-labelledby="aktivasi-2">
+        <span class="aktivasi-num" aria-hidden="true">2</span>
+        <div>
+          <h2 id="aktivasi-2">Tempel kode dan aktifkan</h2>
+          <form class="aktivasi-form" id="aktivasi-isi" novalidate>
+            <label for="aktivasi-kode">Kode aktivasi dari pesan kami</label>
+            <textarea id="aktivasi-kode" rows="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Tempel seluruh kode di sini, mis. ABCD-EFGH-…"></textarea>
+            <button class="button button-primary" type="submit" id="aktivasi-tombol">Aktifkan</button>
+            <p class="aktivasi-status" id="aktivasi-status" role="status"></p>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <p class="aktivasi-help">Ada kendala? <a href={links.whatsapp} target="_blank" rel="noopener noreferrer">Hubungi kami di WhatsApp</a>. Kode aktivasi diperiksa di perangkatmu dan tidak dikirim ke server.</p>
+  </section>
+  <MetaPixel tool="modal" />
+</SiteLayout>
+
+<script>
+  import { pasangAktivasi } from "../../lib/aktivasi-ui";
+  pasangAktivasi();
+</script>

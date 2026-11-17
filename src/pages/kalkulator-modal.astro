@@ -47,6 +47,7 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
     <p class="modal-access-banner" id="access-banner" role="status" hidden></p>
     <header class="hpp-intro modal-intro">
       <span class="eyebrow"><span class="eyebrow-dot"></span> Alat gratis untuk usaha kecil</span>
+      <span class="modal-active-chip" id="access-chip" hidden>✓ Versi lengkap aktif</span>
       <h1>Kalkulator modal &amp; balik modal.</h1>
       <p>Isi empat langkah singkat, lalu lihat berapa modal yang perlu disiapkan, berapa yang perlu terjual per hari, dan kira-kira kapan modalmu kembali. Angka tetap di perangkatmu.</p>
       <button class="modal-text-button" type="button" id="tour-again">Lihat panduan lagi</button>
@@ -270,15 +271,8 @@ const steps = ["Usahamu", "Modal awal", "Penjualan", "Biaya bulanan"];
               <p>Lihat hasil usahamu saat penjualan sepi, normal, dan ramai, simpan sampai 20 usaha untuk dibandingkan, lalu unduh ringkasannya sebagai PDF. Semua angka tetap di perangkatmu.</p>
               <p class="modal-price" id="price-test" hidden></p>
               <a class="button button-primary" id="buy-full" href={VERSI_LENGKAP.urlPembelian} target="_blank" rel="noopener noreferrer">Beli versi lengkap <span aria-hidden="true">↗</span></a>
-              <p class="modal-buy-note">Pembayaran di halaman pembelian JadiCuan. Setelah pembayaran, kode akses dikirim ke WhatsApp-mu.</p>
-              <details class="modal-access" id="access-entry">
-                <summary>Sudah punya kode akses?</summary>
-                <div class="modal-access-body">
-                  <label for="access-code">Tempel kode akses dari pesan kami</label>
-                  <textarea id="access-code" rows="3" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Contoh: ABCD-EFGH-…"></textarea>
-                  <button class="button button-primary" type="button" id="access-submit">Buka versi lengkap</button>
-                </div>
-              </details>
+              <p class="modal-buy-note">Pembayaran di halaman pembelian JadiCuan. Setelah order, kamu mendapat tautan halaman aktivasi untuk meminta kode lewat WhatsApp.</p>
+              <a class="modal-access-link" id="access-entry" href="/kalkulator-modal/aktivasi/">Sudah beli? Aktifkan versi lengkap di sini <span aria-hidden="true">→</span></a>
             </>
           ) : (
             <>

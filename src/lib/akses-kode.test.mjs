@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import ts from "typescript";
-import { buatKode, buatPasanganKunci, bacaKunci, formatKode as formatAdmin, pesanWhatsApp } from "../../tools/akses-kalkulator-modal/core.mjs";
+import { buatKode, buatPasanganKunci, bacaKunci, formatKode as formatAdmin, HALAMAN_AKTIVASI, pesanWhatsApp } from "../../tools/akses-kalkulator-modal/core.mjs";
 
 const source = await readFile(new URL("./akses-kode.ts", import.meta.url), "utf8");
 const { outputText } = ts.transpileModule(source, {
@@ -61,12 +61,15 @@ test("nomor seri yang diblokir ditolak", async () => {
   assert.equal((await site.periksaKode(hasil.kode, publik, [78])).ok, true);
 });
 
-test("tautan memuat kode, pesan WA memuat tautan dan nomor seri", async () => {
+test("tautan memuat kode, pesan WA memuat kode, halaman aktivasi, dan nomor seri", async () => {
   const hasil = await buatKode(kunci, { serial: 5 });
   assert.equal(hasil.tautan, `https://jadicuan.co.id/kalkulator-modal/#kode=${hasil.kode}`);
   const pesan = pesanWhatsApp(hasil, "Bu Ani");
   assert.match(pesan, /Halo Bu Ani/);
-  assert.ok(pesan.includes(hasil.tautan));
+  assert.ok(pesan.includes(formatAdmin(hasil.kode)));
+  assert.equal(HALAMAN_AKTIVASI, "https://jadicuan.co.id/kalkulator-modal/aktivasi/");
+  assert.ok(pesan.includes(HALAMAN_AKTIVASI));
+  assert.ok(!pesan.includes("#kode="), "pembeli menyalin kode sendiri, bukan tautan berisi kode");
   assert.ok(pesan.includes("KM-00000005"));
 });
 
