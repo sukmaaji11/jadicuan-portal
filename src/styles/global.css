@@ -2269,55 +2269,78 @@ img {
 
 /* ---------- Halaman aktivasi /kalkulator-modal/aktivasi/ ---------- */
 .aktivasi-page {
-  max-width: 760px;
+  max-width: 560px;
+}
+
+.aktivasi-intro {
+  margin-bottom: 22px;
 }
 
 .aktivasi-steps {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .aktivasi-steps[hidden] {
   display: none;
 }
 
-.aktivasi-step {
+.aktivasi-step,
+.aktivasi-done {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
+  gap: 14px;
 }
 
-.aktivasi-num {
+.aktivasi-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aktivasi-num,
+.aktivasi-check {
   display: grid;
-  width: 36px;
-  height: 36px;
+  flex: none;
+  width: 32px;
+  height: 32px;
   place-items: center;
   border-radius: 50%;
   background: #edf6ff;
   color: var(--blue);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
 }
 
-.aktivasi-step h2,
-.aktivasi-done h2 {
-  margin: 4px 0 8px;
-  font-size: clamp(20px, 3vw, 24px);
+.aktivasi-check {
+  background: #f0faf7;
+  color: #087c68;
+}
+
+.aktivasi-head h2 {
+  margin: 0;
+  font-size: 20px;
   letter-spacing: -0.03em;
 }
 
-.aktivasi-step p,
-.aktivasi-done p {
-  margin: 0 0 14px;
+.aktivasi-step > p,
+.aktivasi-done > p {
+  margin: 0;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.6;
 }
 
 .aktivasi-page .aktivasi-note {
-  margin: 10px 0 0;
   font-size: 13px;
+  text-align: center;
+}
+
+.aktivasi-page .aktivasi-wa,
+.aktivasi-form .button,
+.aktivasi-cta {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .aktivasi-wa {
@@ -2336,15 +2359,15 @@ img {
 }
 
 .aktivasi-form label {
-  color: var(--navy);
-  font-size: 14px;
-  font-weight: 700;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .aktivasi-form textarea {
   width: 100%;
-  min-height: 104px;
-  padding: 12px;
+  min-height: 84px;
+  padding: 12px 14px;
   border: 1px solid #c9d8ea;
   border-radius: 12px;
   background: #fff;
@@ -2357,19 +2380,22 @@ img {
   resize: vertical;
 }
 
+.aktivasi-form textarea::placeholder {
+  color: #9aa8bb;
+  font-weight: 500;
+}
+
 .aktivasi-form textarea:focus-visible {
   outline: 3px solid rgba(22, 119, 232, 0.25);
   border-color: var(--blue);
 }
 
-.aktivasi-form .button {
-  justify-self: start;
-}
-
 .aktivasi-page .aktivasi-status {
   margin: 0;
   color: #0b6656;
+  font-size: 14px;
   font-weight: 650;
+  line-height: 1.5;
 }
 
 .aktivasi-page .aktivasi-status:empty {
@@ -2384,6 +2410,10 @@ img {
   border-color: #bfe8df;
 }
 
+.aktivasi-done[hidden] {
+  display: none;
+}
+
 .aktivasi-serial {
   color: var(--navy);
   white-space: nowrap;
@@ -2393,40 +2423,25 @@ img {
   outline: none;
 }
 
-.aktivasi-check {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border-radius: 50%;
-  background: #f0faf7;
-  color: #087c68;
-  font-size: 22px;
-  font-weight: 800;
-}
-
 .aktivasi-fitur {
   display: grid;
-  gap: 8px;
-  margin: 0 0 14px;
+  gap: 6px;
+  margin: 0;
   padding-left: 20px;
   color: var(--navy);
   font-size: 15px;
   line-height: 1.5;
 }
 
-.aktivasi-cta {
-  display: flex;
-  width: 100%;
-  margin: 6px 0 8px;
-  justify-content: center;
+.aktivasi-done .modal-text-button {
+  justify-self: center;
 }
 
 .aktivasi-help {
-  margin: 22px 0 0;
+  margin: 20px 0 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.6;
+  text-align: center;
 }
 
 .aktivasi-help a {
@@ -2437,18 +2452,6 @@ img {
 }
 
 @media (max-width: 520px) {
-  .aktivasi-step {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .aktivasi-wa,
-  .aktivasi-form .button {
-    width: 100%;
-    justify-content: center;
-    justify-self: stretch;
-  }
-
   .modal-intro .modal-active-chip {
     margin: 10px 0 0;
   }
